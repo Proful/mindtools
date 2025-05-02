@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Splitter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+      }
+
+      button {
+        padding: 10px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        width: fit-content;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .result-container {
+        margin-top: 20px;
+      }
+
+      .chunk-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        position: relative;
+      }
+
+      .chunk-text {
+        margin-right: 30px;
+        word-wrap: break-word;
+      }
+
+      .copy-btn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        background-color: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .copy-btn:hover {
+        background-color: #0b7dda;
+      }
+
+      .character-count {
+        color: #666;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Text Splitter</h1>
+      <p>
+        Enter your text below and click "Split by Length" to divide it into
+        chunks of 250 characters each, or "Split by Separator" to divide it at
+        each "~" character.
+      </p>
+
+      <textarea
+        id="input-text"
+        placeholder="Enter your text here..."
+      ></textarea>
+
+      <div class="button-group" style="display: flex; gap: 10px">
+        <button id="submit-btn">Split by Length (250)</button>
+        <button id="separator-btn" style="background-color: #2196f3">
+          Split by Separator (~)
+        </button>
+      </div>
+
+      <div class="result-container" id="result-container">
+        <h2>Results:</h2>
+        <div id="chunks-list"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const inputText = document.getElementById("input-text");
+        const submitBtn = document.getElementById("submit-btn");
+        const separatorBtn = document.getElementById("separator-btn");
+        const chunksList = document.getElementById("chunks-list");
+
+        submitBtn.addEventListener("click", function () {
+          const text = inputText.value;
+          const chunks = splitTextByLength(text, 250);
+          displayChunks(chunks, "length");
+        });
+
+        separatorBtn.addEventListener("click", function () {
+          const text = inputText.value;
+          const chunks = splitTextBySeparator(text, "~");
+          displayChunks(chunks, "separator");
+        });
+
+        function splitTextByLength(text, maxLength) {
+          const chunks = [];
+          let currentPosition = 0;
+
+          while (currentPosition < text.length) {
+            chunks.push(
+              text.substring(currentPosition, currentPosition + maxLength),
+            );
+            currentPosition += maxLength;
+          }
+
+          return chunks;
+        }
+
+        function splitTextBySeparator(text, separator) {
+          // Split by the separator and keep the non-empty chunks
+          return text.split(separator).filter((chunk) => chunk.trim() !== "");
+        }
+
+        function displayChunks(chunks, splitType) {
+          chunksList.innerHTML = "";
+
+          if (
+            chunks.length === 0 ||
+            (chunks.length === 1 && chunks[0].trim() === "")
+          ) {
+            chunksList.innerHTML = "<p>No text to split.</p>";
+            return;
+          }
+
+          // Create a heading showing which split method was used
+          const methodHeading = document.createElement("h3");
+          methodHeading.textContent =
+            splitType === "separator"
+              ? "Split by separator (~)"
+              : "Split by length (250 characters)";
+          chunksList.appendChild(methodHeading);
+
+          chunks.forEach((chunk, index) => {
+            const chunkItem = document.createElement("div");
+            chunkItem.className = "chunk-item";
+
+            const chunkText = document.createElement("div");
+            chunkText.className = "chunk-text";
+            chunkText.textContent = chunk;
+
+            const characterCount = document.createElement("div");
+            characterCount.className = "character-count";
+            characterCount.textContent = `Chunk ${index + 1} - ${chunk.length} characters`;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.textContent = "Copy";
+            copyBtn.addEventListener("click", function () {
+              copyTextToClipboard(chunk, copyBtn);
+            });
+
+            chunkItem.appendChild(chunkText);
+            chunkItem.appendChild(characterCount);
+            chunkItem.appendChild(copyBtn);
+            chunksList.appendChild(chunkItem);
+          });
+        }
+
+        function copyTextToClipboard(text, button) {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              const originalText = button.textContent;
+              button.textContent = "Copied!";
+              setTimeout(() => {
+                button.textContent = originalText;
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Failed to copy text: ", err);
+              alert("Failed to copy text to clipboard");
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
