@@ -1,0 +1,20 @@
+html, css and javascript
+
+- build a quiz application
+- url: /quiz?data=base64encodeddata
+  extract data from search parameter. it contains base64 encoded data of json (see ex1.txt for example)
+  decode the encoded data and we will receive json data (ex1.json for example)
+- build mobile first responsive design
+- show one quiz question per page or screen.
+  - show quiz question
+  - show 4 option (radio button)
+- show answer
+  - check the selected option is correct or not 
+  - if correct, show green tick mark
+  - if wrong, show red cross mark 
+- keep track of total question, number of correct answer
+- show two more button, prev and next 
+  - on clicking prev, go to prev quiz question
+  - on clicking next, go to next quiz question
+- on final page, show another button "Result"
+  - on clicking Result, display total question, number of correct, number of wrong

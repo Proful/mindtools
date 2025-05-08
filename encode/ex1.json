@@ -1,0 +1,82 @@
+[
+  {
+    "question": "What is force?",
+    "options": ["A push or pull", "How heavy", "Speed up", "Change direction"],
+    "correct_answer": "A push or pull",
+    "explanation": "Force is defined as a push or pull that can make things move, stop, or change direction."
+  },
+  {
+    "question": "What does mass tell us about an object?",
+    "options": ["How fast it moves", "How heavy it is", "Its color", "Its shape"],
+    "correct_answer": "How heavy it is",
+    "explanation": "Mass is a measure of how heavy an object is, regardless of its size."
+  },
+  {
+    "question": "What happens when you apply more force to a toy car?",
+    "options": ["It slows down", "It stops", "It speeds up", "It gets heavier"],
+    "correct_answer": "It speeds up",
+    "explanation": "Applying more force to a toy car will increase its speed or acceleration."
+  },
+  {
+    "question": "If two objects have the same size but different masses, which one is harder to move?",
+    "options": ["The lighter one", "The heavier one", "Both are the same", "Depends on color"],
+    "correct_answer": "The heavier one",
+    "explanation": "An object with more mass requires more force to move or accelerate."
+  },
+  {
+    "question": "What is acceleration?",
+    "options": ["A push", "How heavy", "Speeding up or slowing down", "A shape"],
+    "correct_answer": "Speeding up or slowing down",
+    "explanation": "Acceleration refers to a change in speed or direction."
+  },
+  {
+    "question": "What does the formula 'Force = Mass × Acceleration' tell us?",
+    "options": [
+      "Force increases with more mass or acceleration",
+      "Mass decreases with more force",
+      "Acceleration is not related to mass",
+      "Force and mass are unrelated"
+    ],
+    "correct_answer": "Force increases with more mass or acceleration",
+    "explanation": "The formula shows that force is directly proportional to both mass and acceleration."
+  },
+  {
+    "question": "Why does a heavy car require more force to move than a toy car?",
+    "options": [
+      "It is smaller",
+      "It has less mass",
+      "It has more mass",
+      "It is lighter"
+    ],
+    "correct_answer": "It has more mass",
+    "explanation": "A heavier car has more mass, so more force is needed to move it."
+  },
+  {
+    "question": "What will happen if you push a ball and a brick with the same force?",
+    "options": [
+      "Both will move the same distance",
+      "The ball will move farther",
+      "The brick will move farther",
+      "Neither will move"
+    ],
+    "correct_answer": "The ball will move farther",
+    "explanation": "The ball has less mass, so it accelerates more with the same force."
+  },
+  {
+    "question": "If you stop pedaling your bike, what happens to the acceleration?",
+    "options": ["It increases", "It decreases", "It stays the same", "It reverses"],
+    "correct_answer": "It decreases",
+    "explanation": "When you stop pedaling, there is less force applied, so the bike slows down (negative acceleration)."
+  },
+  {
+    "question": "What connects force, mass, and acceleration?",
+    "options": [
+      "Newton’s Law",
+      "Gravity",
+      "Friction",
+      "Color"
+    ],
+    "correct_answer": "Newton’s Law",
+    "explanation": "Newton’s second law of motion explains how force, mass, and acceleration are related."
+  }
+]

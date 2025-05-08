@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Application</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background-color: #4caf50;
+        transition: width 0.3s ease;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .score {
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .quiz-container {
+        flex-grow: 1;
+      }
+
+      .question {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .option {
+        position: relative;
+        background-color: #f9f9f9;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .option:hover {
+        background-color: #f1f1f1;
+        border-color: #ccc;
+      }
+
+      .option.selected {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .option.correct {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .option.incorrect {
+        background-color: #ffebee;
+        border-color: #f44336;
+      }
+
+      .option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .option label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .option span.radio {
+        height: 20px;
+        width: 20px;
+        min-width: 20px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        margin-right: 12px;
+        position: relative;
+      }
+
+      .option input:checked ~ label span.radio {
+        border-color: #4caf50;
+      }
+
+      .option input:checked ~ label span.radio:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #4caf50;
+      }
+
+      .option span.mark {
+        margin-left: auto;
+        font-size: 1.2rem;
+        display: none;
+      }
+
+      .option.correct span.mark {
+        display: block;
+        color: #4caf50;
+      }
+
+      .option.incorrect span.mark {
+        display: block;
+        color: #f44336;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-prev {
+        background-color: #e0e0e0;
+        color: #333;
+      }
+
+      .btn-prev:hover:not(:disabled) {
+        background-color: #d0d0d0;
+      }
+
+      .btn-next {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .btn-next:hover:not(:disabled) {
+        background-color: #45a049;
+      }
+
+      .btn-result {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      .btn-result:hover {
+        background-color: #0b7dda;
+      }
+
+      .btn-restart {
+        background-color: #9c27b0;
+        color: white;
+      }
+
+      .btn-restart:hover {
+        background-color: #7b1fa2;
+      }
+
+      .results {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .results h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .results p {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+
+      .results .percentage {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #4caf50;
+        margin: 20px 0;
+      }
+
+      .results-details {
+        display: flex;
+        justify-content: space-around;
+        margin: 30px 0;
+      }
+
+      .results-item {
+        text-align: center;
+      }
+
+      .results-item p:first-child {
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .correct-count {
+        color: #4caf50;
+      }
+
+      .incorrect-count {
+        color: #f44336;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .explanation {
+        background-color: #f8f9fa;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        display: none;
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-size: 1.5rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 40px;
+        color: #f44336;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading">Loading quiz...</div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the quiz data from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get("data");
+
+        if (!encodedData) {
+          showError(
+            "No quiz data found in URL. Please provide data parameter.",
+          );
+          return;
+        }
+
+        try {
+          // Decode base64 data
+          const jsonData = atob(encodedData);
+          const quizData = JSON.parse(jsonData);
+
+          if (!Array.isArray(quizData) || quizData.length === 0) {
+            showError(
+              "Invalid quiz data format. Expected an array of questions.",
+            );
+            return;
+          }
+
+          initQuiz(quizData);
+        } catch (error) {
+          showError("Failed to load quiz data: " + error.message);
+          console.error(error);
+        }
+      });
+
+      function showError(message) {
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+                <div class="container">
+                    <div class="error">
+                        <h2>Error</h2>
+                        <p>${message}</p>
+                    </div>
+                </div>
+            `;
+      }
+
+      function initQuiz(quizData) {
+        const state = {
+          currentQuestion: 0,
+          totalQuestions: quizData.length,
+          correctAnswers: 0,
+          answers: Array(quizData.length).fill(null),
+          quizCompleted: false,
+        };
+
+        renderQuiz(state, quizData);
+
+        // Add event listeners for buttons
+        document.addEventListener("click", function (e) {
+          if (e.target.classList.contains("btn-prev")) {
+            navigateToPrevQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-next")) {
+            navigateToNextQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-result")) {
+            showResults(state);
+          } else if (e.target.classList.contains("btn-restart")) {
+            restartQuiz(state, quizData);
+          }
+        });
+      }
+
+      function renderQuiz(state, quizData) {
+        const appElement = document.getElementById("app");
+
+        if (state.quizCompleted) {
+          renderResults(state, quizData);
+          return;
+        }
+
+        const question = quizData[state.currentQuestion];
+        const isLastQuestion =
+          state.currentQuestion === state.totalQuestions - 1;
+        const userAnswer = state.answers[state.currentQuestion];
+        const showFeedback = userAnswer !== null;
+
+        let optionsHtml = "";
+
+        question.options.forEach((option, index) => {
+          const isSelected = userAnswer === index;
+          const isCorrect =
+            showFeedback &&
+            index === question.options.indexOf(question.correct_answer);
+          const isIncorrect = showFeedback && isSelected && !isCorrect;
+
+          let optionClass = "option";
+          if (isSelected) optionClass += " selected";
+          if (showFeedback && isCorrect) optionClass += " correct";
+          if (isIncorrect) optionClass += " incorrect";
+
+          optionsHtml += `
+                    <div class="${optionClass}" data-index="${index}">
+                        <input type="radio" name="option" id="option${index}" ${isSelected ? "checked" : ""} ${showFeedback ? "disabled" : ""}>
+                        <label for="option${index}">
+                            <span class="radio"></span>
+                            ${option}
+                            <span class="mark">${isCorrect ? "✓" : isIncorrect ? "✗" : ""}</span>
+                        </label>
+                    </div>
+                `;
+        });
+
+        const progress =
+          ((state.currentQuestion + 1) / state.totalQuestions) * 100;
+
+        appElement.innerHTML = `
+                <div class="container">
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${progress}%"></div>
+                    </div>
+                    
+                    <div class="header">
+                        <div class="question-number">Question ${state.currentQuestion + 1} of ${state.totalQuestions}</div>
+                        <div class="score">Score: ${state.correctAnswers}</div>
+                    </div>
+                    
+                    <div class="quiz-container">
+                        <div class="question">${question.question}</div>
+                        <div class="options">${optionsHtml}</div>
+                        
+                        <div class="explanation" ${showFeedback ? 'style="display:block"' : ""}>
+                            <p>${question.explanation}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
+                        ${
+                          isLastQuestion
+                            ? `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>`
+                            : `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next</button>`
+                        }
+                    </div>
+                </div>
+            `;
+
+        // Add event listeners for options
+        if (!showFeedback) {
+          document.querySelectorAll(".option").forEach((option) => {
+            option.addEventListener("click", function () {
+              selectOption(this.dataset.index, state, quizData);
+            });
+          });
+        }
+      }
+
+      function selectOption(optionIndex, state, quizData) {
+        const question = quizData[state.currentQuestion];
+        const selectedOption = question.options[optionIndex];
+        const isCorrect = selectedOption === question.correct_answer;
+
+        // Update state
+        state.answers[state.currentQuestion] = parseInt(optionIndex);
+
+        if (
+          isCorrect &&
+          state.answers.filter((a) => a !== null).length ===
+            state.answers.indexOf(parseInt(optionIndex)) + 1
+        ) {
+          state.correctAnswers++;
+        }
+
+        // Re-render to show feedback
+        renderQuiz(state, quizData);
+      }
+
+      function navigateToPrevQuestion(state, quizData) {
+        if (state.currentQuestion > 0) {
+          state.currentQuestion--;
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function navigateToNextQuestion(state, quizData) {
+        if (state.currentQuestion < state.totalQuestions - 1) {
+          state.currentQuestion++;
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function showResults(state) {
+        state.quizCompleted = true;
+        renderQuiz(state, null);
+      }
+
+      function renderResults(state) {
+        const appElement = document.getElementById("app");
+        const percentage = Math.round(
+          (state.correctAnswers / state.totalQuestions) * 100,
+        );
+        const incorrectAnswers = state.totalQuestions - state.correctAnswers;
+
+        appElement.innerHTML = `
+                <div class="container">
+                    <div class="results">
+                        <h2>Quiz Results</h2>
+                        <div class="percentage">${percentage}%</div>
+                        
+                        <div class="results-details">
+                            <div class="results-item">
+                                <p>${state.totalQuestions}</p>
+                                <p>Total Questions</p>
+                            </div>
+                            <div class="results-item">
+                                <p class="correct-count">${state.correctAnswers}</p>
+                                <p>Correct</p>
+                            </div>
+                            <div class="results-item">
+                                <p class="incorrect-count">${incorrectAnswers}</p>
+                                <p>Wrong</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-restart">Try Again</button>
+                    </div>
+                </div>
+            `;
+      }
+
+      function restartQuiz(state, quizData) {
+        // Reset state
+        state.currentQuestion = 0;
+        state.correctAnswers = 0;
+        state.answers = Array(state.totalQuestions).fill(null);
+        state.quizCompleted = false;
+
+        // Re-render
+        renderQuiz(state, quizData);
+      }
+    </script>
+  </body>
+</html>

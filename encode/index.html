@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON to Base64 Encoder</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      textarea {
+        width: 100%;
+        min-height: 200px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: monospace;
+        margin-bottom: 10px;
+        resize: vertical;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        font-family: monospace;
+        word-break: break-all;
+        display: none;
+      }
+      .result-label {
+        font-weight: bold;
+        margin-top: 20px;
+        display: none;
+      }
+      .btn {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .btn:hover {
+        background-color: #45a049;
+      }
+      .copy-btn {
+        background-color: #2196f3;
+        margin-top: 10px;
+        display: none;
+      }
+      .copy-btn:hover {
+        background-color: #0b7dda;
+      }
+      .error {
+        color: red;
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>JSON to Base64 Encoder</h1>
+
+      <label for="jsonInput">Enter your JSON:</label>
+      <textarea id="jsonInput" placeholder="Enter valid JSON here...">
+{ "example": "Your JSON data here" }</textarea
+      >
+
+      <button id="encodeBtn" class="btn">Encode to Base64</button>
+
+      <div id="error" class="error"></div>
+
+      <div id="resultLabel" class="result-label">Base64 Encoded Result:</div>
+      <div id="result" class="result"></div>
+      <button id="copyBtn" class="btn copy-btn">Copy to Clipboard</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const jsonInput = document.getElementById("jsonInput");
+        const encodeBtn = document.getElementById("encodeBtn");
+        const result = document.getElementById("result");
+        const resultLabel = document.getElementById("resultLabel");
+        const copyBtn = document.getElementById("copyBtn");
+        const error = document.getElementById("error");
+
+        encodeBtn.addEventListener("click", function () {
+          try {
+            // Parse the JSON first to validate it
+            const jsonData = JSON.parse(jsonInput.value);
+
+            // Convert JSON to string and then to Base64
+            const jsonString = JSON.stringify(jsonData);
+            // Use this function to handle Unicode characters
+            const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
+
+            // Display the result
+            result.textContent = base64Data;
+            result.style.display = "block";
+            resultLabel.style.display = "block";
+            copyBtn.style.display = "block";
+            error.style.display = "none";
+          } catch (e) {
+            // Show error if JSON is invalid
+            error.textContent = "Error: Invalid JSON. " + e.message;
+            error.style.display = "block";
+            result.style.display = "none";
+            resultLabel.style.display = "none";
+            copyBtn.style.display = "none";
+          }
+        });
+
+        copyBtn.addEventListener("click", function () {
+          // Copy the encoded result to clipboard
+          navigator.clipboard
+            .writeText(result.textContent)
+            .then(() => {
+              const originalText = copyBtn.textContent;
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => {
+                copyBtn.textContent = originalText;
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Failed to copy: ", err);
+            });
+        });
+      });
+    </script>
+  </body>
+</html>
