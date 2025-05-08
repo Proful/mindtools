@@ -310,7 +310,7 @@
 
         try {
           // Decode base64 data
-          const jsonData = atob(encodedData);
+          const jsonData = decodeURIComponent(escape(atob(encodedData)));
           const quizData = JSON.parse(jsonData);
 
           if (!Array.isArray(quizData) || quizData.length === 0) {
@@ -456,11 +456,7 @@
         // Update state
         state.answers[state.currentQuestion] = parseInt(optionIndex);
 
-        if (
-          isCorrect &&
-          state.answers.filter((a) => a !== null).length ===
-            state.answers.indexOf(parseInt(optionIndex)) + 1
-        ) {
+        if (isCorrect) {
           state.correctAnswers++;
         }
 
