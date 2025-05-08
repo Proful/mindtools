@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown to HTML Converter</title>
+    <style>
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 100%;
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      /* Container */
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Markdown input */
+      #markdown-input {
+        width: 100%;
+        height: 200px;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        font-family: monospace;
+        resize: vertical;
+      }
+
+      /* Convert button */
+      #convert-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #4a5568;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 1rem 0;
+        transition: background-color 0.2s;
+      }
+
+      #convert-btn:hover {
+        background-color: #2d3748;
+      }
+
+      /* Output styles */
+      .output-container {
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-top: 1rem;
+        background-color: #f8fafc;
+      }
+
+      .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .output-label {
+        font-weight: bold;
+        color: #4a5568;
+      }
+
+      #copy-btn {
+        background-color: #4a5568;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      #copy-btn:hover {
+        background-color: #2d3748;
+      }
+
+      #copy-btn.success {
+        background-color: #48bb78;
+      }
+
+      /* Minimal markdown styling */
+      .markdown-output {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .markdown-output h1,
+      .markdown-output h2,
+      .markdown-output h3,
+      .markdown-output h4,
+      .markdown-output h5,
+      .markdown-output h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+      }
+
+      .markdown-output h1 {
+        font-size: 1.5rem;
+      }
+      .markdown-output h2 {
+        font-size: 1.4rem;
+      }
+      .markdown-output h3 {
+        font-size: 1.3rem;
+      }
+      .markdown-output h4 {
+        font-size: 1.2rem;
+      }
+      .markdown-output h5 {
+        font-size: 1.1rem;
+      }
+      .markdown-output h6 {
+        font-size: 1rem;
+      }
+
+      .markdown-output p {
+        margin-bottom: 1rem;
+      }
+
+      .markdown-output a {
+        color: #4299e1;
+        text-decoration: none;
+      }
+
+      .markdown-output a:hover {
+        text-decoration: underline;
+      }
+
+      .markdown-output ul,
+      .markdown-output ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      .markdown-output li {
+        margin-bottom: 0.25rem;
+      }
+
+      .markdown-output blockquote {
+        border-left: 4px solid #cbd5e0;
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-bottom: 1rem;
+        color: #4a5568;
+      }
+
+      .markdown-output pre {
+        background-color: #edf2f7;
+        border-radius: 4px;
+        padding: 0.75rem;
+        overflow-x: auto;
+        margin-bottom: 1rem;
+      }
+
+      .markdown-output code {
+        font-family: monospace;
+        background-color: #edf2f7;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+
+      .markdown-output pre code {
+        padding: 0;
+        background-color: transparent;
+      }
+
+      .markdown-output img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+      }
+
+      .markdown-output hr {
+        border: 0;
+        border-top: 1px solid #e2e8f0;
+        margin: 1.5rem 0;
+      }
+
+      .markdown-output table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      .markdown-output table,
+      .markdown-output th,
+      .markdown-output td {
+        border: 1px solid #e2e8f0;
+      }
+
+      .markdown-output th,
+      .markdown-output td {
+        padding: 0.5rem;
+        text-align: left;
+      }
+
+      .markdown-output th {
+        background-color: #f7fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Markdown to HTML Converter</h1>
+
+      <textarea
+        id="markdown-input"
+        placeholder="Enter your markdown here..."
+      ></textarea>
+
+      <button id="convert-btn">Convert to HTML</button>
+
+      <div class="output-container">
+        <div class="output-header">
+          <span class="output-label">HTML Preview:</span>
+          <button id="copy-btn">Copy HTML</button>
+        </div>
+        <div id="preview" class="markdown-output"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const markdownInput = document.getElementById("markdown-input");
+        const convertBtn = document.getElementById("convert-btn");
+        const preview = document.getElementById("preview");
+
+        // Set some sample markdown to start with
+        markdownInput.value =
+          '# Hello Markdown\n\nThis is a **bold** text and *italic* text.\n\n## Lists\n\n- Item 1\n- Item 2\n- Item 3\n\n## Code\n\n```javascript\nconsole.log("Hello world!");\n```';
+
+        // Variable to store the generated HTML
+        let generatedHTML = "";
+
+        // Function to convert markdown to HTML
+        function convertMarkdown() {
+          const markdown = markdownInput.value;
+
+          // Configure marked options for security and features
+          marked.setOptions({
+            breaks: true, // Convert \n to <br>
+            gfm: true, // Use GitHub Flavored Markdown
+            headerIds: true,
+            sanitize: false, // We use DOMPurify instead
+          });
+
+          // Convert markdown to HTML
+          generatedHTML = marked.parse(markdown);
+
+          // Display the HTML
+          preview.innerHTML = generatedHTML;
+        }
+
+        // Function to copy HTML to clipboard
+        function copyHTMLToClipboard() {
+          // Create a temporary textarea element
+          const textarea = document.createElement("textarea");
+          textarea.value = generatedHTML;
+          document.body.appendChild(textarea);
+
+          // Select and copy the text
+          textarea.select();
+          document.execCommand("copy");
+
+          // Remove the temporary textarea
+          document.body.removeChild(textarea);
+
+          // Provide visual feedback
+          const copyBtn = document.getElementById("copy-btn");
+          copyBtn.textContent = "Copied!";
+          copyBtn.classList.add("success");
+
+          // Reset the button after a delay
+          setTimeout(() => {
+            copyBtn.textContent = "Copy HTML";
+            copyBtn.classList.remove("success");
+          }, 2000);
+        }
+
+        // Convert the initial markdown
+        convertMarkdown();
+
+        // Add event listeners
+        convertBtn.addEventListener("click", convertMarkdown);
+        document
+          .getElementById("copy-btn")
+          .addEventListener("click", copyHTMLToClipboard);
+
+        // Optional: Auto-update as typing (uncomment if desired)
+        // markdownInput.addEventListener('input', convertMarkdown);
+      });
+    </script>
+  </body>
+</html>
