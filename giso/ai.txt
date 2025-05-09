@@ -1,0 +1,30 @@
+explain below topics to 10 year old. write in 2000 word. each word length should be less than 5.
+expand more detail
+
+```
+    <p><strong>d. Work and Energy</strong></p>
+    <ul>
+      <li>Concept of work</li>
+      <li>Relationship between force and motion</li>
+      <li>Energy sources (renewable and non-renewable)</li>
+    </ul>
+```
+
+---------
+generate 10 quiz question based on above answer.
+generate in json format.
+
+question
+4 option
+correct answer
+explanation
+
+one sample:-
+```
+{
+"question": "What is force?",
+"options": \["A push or pull", "How heavy", "Speed up", "Change direction"],
+"correct\_answer": "A push or pull",
+"explanation": "Force is defined as a push or pull that can make things move, stop, or change direction."
+}
+```

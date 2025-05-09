@@ -256,8 +256,7 @@
         const preview = document.getElementById("preview");
 
         // Set some sample markdown to start with
-        markdownInput.value =
-          '# Hello Markdown\n\nThis is a **bold** text and *italic* text.\n\n## Lists\n\n- Item 1\n- Item 2\n- Item 3\n\n## Code\n\n```javascript\nconsole.log("Hello world!");\n```';
+        markdownInput.value = "";
 
         // Variable to store the generated HTML
         let generatedHTML = "";
@@ -283,9 +282,22 @@
 
         // Function to copy HTML to clipboard
         function copyHTMLToClipboard() {
+          // Create the complete HTML structure
+          const completeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    ${generatedHTML}
+</body>
+</html>`;
           // Create a temporary textarea element
           const textarea = document.createElement("textarea");
-          textarea.value = generatedHTML;
+          textarea.value = completeHTML;
           document.body.appendChild(textarea);
 
           // Select and copy the text
