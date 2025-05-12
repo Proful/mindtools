@@ -60,12 +60,30 @@
         font-weight: 500;
       }
 
+      .title {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        margin-bottom: 40px;
+        font-size: 3rem;
+      }
+
+      .sub-title-2 {
+        font-size: 2.5rem;
+      }
+
+      .sub-title-3 {
+        font-size: 0.5rem;
+      }
+
       .quiz-container {
         flex-grow: 1;
       }
 
       .question {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         font-weight: 500;
         margin-bottom: 20px;
         line-height: 1.4;
@@ -76,6 +94,7 @@
         flex-direction: column;
         gap: 12px;
         margin-bottom: 30px;
+        font-size: 1.5rem;
       }
 
       .option {
@@ -420,6 +439,12 @@
                     <div class="header">
                         <div class="question-number">Question ${state.currentQuestion + 1} of ${state.totalQuestions}</div>
                         <div class="score">Score: ${state.correctAnswers}</div>
+                    </div>
+                    
+                    <div class="title">
+                        <div class="sub-title-1">ICSE SCIENCE (Class 5)</div>
+                        <div class="sub-title-2">The Circulatory System</div>
+                        <div class="sub-title-3">(@proful)</div>
                     </div>
                     
                     <div class="quiz-container">

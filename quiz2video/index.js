@@ -8,19 +8,21 @@ const devices = puppeteer.devices;
 let w = 720;
 let h = 1280;
 
+const encodedData =
+  "W3sicXVlc3Rpb24iOiJXaGF0IGlzIHRoZSBwcmltYXJ5IGZ1bmN0aW9uIG9mIHdoaXRlIGJsb29kIGNlbGxzIChXQkNzKT8iLCJvcHRpb25zIjpbIkNhcnJ5IG94eWdlbiIsIkZpZ2h0IGluZmVjdGlvbnMiLCJDbG90IGJsb29kIiwiQ2FycnkgbnV0cmllbnRzIl0sImNvcnJlY3RfYW5zd2VyIjoiRmlnaHQgaW5mZWN0aW9ucyIsImV4cGxhbmF0aW9uIjoiV2hpdGUgYmxvb2QgY2VsbHMgcHJvdGVjdCB0aGUgYm9keSBhZ2FpbnN0IGdlcm1zLCBpbmZlY3Rpb25zLCBhbmQgb3RoZXIgaGFybWZ1bCBzdWJzdGFuY2VzLiJ9LHsicXVlc3Rpb24iOiJXaGljaCBvcmdhbiBzeXN0ZW0gaW5jbHVkZXMgdGhlIGJyYWluLCBzcGluYWwgY29yZCwgYW5kIG5lcnZlcz8iLCJvcHRpb25zIjpbIkNpcmN1bGF0b3J5IHN5c3RlbSIsIlNrZWxldGFsIHN5c3RlbSIsIk5lcnZvdXMgc3lzdGVtIiwiRGlnZXN0aXZlIHN5c3RlbSJdLCJjb3JyZWN0X2Fuc3dlciI6Ik5lcnZvdXMgc3lzdGVtIiwiZXhwbGFuYXRpb24iOiJUaGUgbmVydm91cyBzeXN0ZW0gY29uc2lzdHMgb2YgdGhlIGJyYWluLCBzcGluYWwgY29yZCwgYW5kIG5lcnZlcywgYW5kIGl0IGNvbnRyb2xzIGFsbCBib2R5IGZ1bmN0aW9ucy4ifSx7InF1ZXN0aW9uIjoiV2hhdCB0eXBlIG9mIGJsb29kIHZlc3NlbCBjYXJyaWVzIGJsb29kIGF3YXkgZnJvbSB0aGUgaGVhcnQ/Iiwib3B0aW9ucyI6WyJBcnRlcmllcyIsIlZlaW5zIiwiQ2FwaWxsYXJpZXMiLCJWYWx2ZXMiXSwiY29ycmVjdF9hbnN3ZXIiOiJBcnRlcmllcyIsImV4cGxhbmF0aW9uIjoiQXJ0ZXJpZXMgY2Fycnkgb3h5Z2VuLXJpY2ggYmxvb2QgYXdheSBmcm9tIHRoZSBoZWFydCB0byB2YXJpb3VzIHBhcnRzIG9mIHRoZSBib2R5LiJ9LHsicXVlc3Rpb24iOiJXaGljaCBjaGFtYmVyIG9mIHRoZSBoZWFydCBwdW1wcyBveHlnZW4tcG9vciBibG9vZCB0byB0aGUgbHVuZ3M/Iiwib3B0aW9ucyI6WyJSaWdodCBhdHJpdW0iLCJMZWZ0IGF0cml1bSIsIlJpZ2h0IHZlbnRyaWNsZSIsIkxlZnQgdmVudHJpY2xlIl0sImNvcnJlY3RfYW5zd2VyIjoiUmlnaHQgdmVudHJpY2xlIiwiZXhwbGFuYXRpb24iOiJUaGUgcmlnaHQgdmVudHJpY2xlIHB1bXBzIG94eWdlbi1wb29yIGJsb29kIHRvIHRoZSBsdW5ncyB0aHJvdWdoIHRoZSBwdWxtb25hcnkgYXJ0ZXJ5LiJ9LHsicXVlc3Rpb24iOiJXaGF0IGlzIHRoZSBmdW5jdGlvbiBvZiB0aGUgdmFsdmVzIGxvY2F0ZWQgYmV0d2VlbiB0aGUgaGVhcnQgY2hhbWJlcnM/Iiwib3B0aW9ucyI6WyJQcmV2ZW50IGJsb29kIGNsb3R0aW5nIiwiUHJldmVudCBiYWNrZmxvdyBvZiBibG9vZCIsIlN0b3JlIG94eWdlbiIsIlJlbW92ZSB3YXN0ZSJdLCJjb3JyZWN0X2Fuc3dlciI6IlByZXZlbnQgYmFja2Zsb3cgb2YgYmxvb2QiLCJleHBsYW5hdGlvbiI6IlZhbHZlcyBlbnN1cmUgdGhhdCBibG9vZCBmbG93cyBpbiB0aGUgY29ycmVjdCBkaXJlY3Rpb24gYW5kIHByZXZlbnQgaXQgZnJvbSBmbG93aW5nIGJhY2t3YXJkLiJ9LHsicXVlc3Rpb24iOiJXaGF0IGlzIHRoZSBwdXJwb3NlIG9mIGJsb29kIHBsYXRlbGV0cz8iLCJvcHRpb25zIjpbIkNhcnJ5IG94eWdlbiIsIkZvcm0gY2xvdHMiLCJUcmFuc3BvcnQgbnV0cmllbnRzIiwiU3RvcmUgZ2x1Y29zZSJdLCJjb3JyZWN0X2Fuc3dlciI6IkZvcm0gY2xvdHMiLCJleHBsYW5hdGlvbiI6IlBsYXRlbGV0cyBoZWxwIGJsb29kIHRvIGNsb3QsIHByZXZlbnRpbmcgZXhjZXNzaXZlIGJsZWVkaW5nIGZyb20gaW5qdXJpZXMuIn0seyJxdWVzdGlvbiI6IldoYXQgaGFwcGVucyB3aGVuIGFydGVyaWVzIGJlY29tZSBuYXJyb3cgZHVlIHRvIGZhdCBkZXBvc2l0cz8iLCJvcHRpb25zIjpbIkJsb29kIHByZXNzdXJlIGluY3JlYXNlcyIsIkJsb29kIHByZXNzdXJlIGRlY3JlYXNlcyIsIkhlYXJ0IHJhdGUgZGVjcmVhc2VzIiwiSGVhcnQgcmF0ZSByZW1haW5zIHRoZSBzYW1lIl0sImNvcnJlY3RfYW5zd2VyIjoiQmxvb2QgcHJlc3N1cmUgaW5jcmVhc2VzIiwiZXhwbGFuYXRpb24iOiJOYXJyb3dlZCBhcnRlcmllcyBpbmNyZWFzZSBibG9vZCBwcmVzc3VyZSBhcyB0aGUgaGVhcnQgaGFzIHRvIHdvcmsgaGFyZGVyIHRvIHB1bXAgYmxvb2QgdGhyb3VnaCB0aGVtLiJ9LHsicXVlc3Rpb24iOiJXaGljaCBvcmdhbiBzeXN0ZW0gaXMgZGlyZWN0bHkgcmVzcG9uc2libGUgZm9yIG94eWdlbmF0aW5nIGJsb29kPyIsIm9wdGlvbnMiOlsiRGlnZXN0aXZlIHN5c3RlbSIsIlJlc3BpcmF0b3J5IHN5c3RlbSIsIlNrZWxldGFsIHN5c3RlbSIsIkV4Y3JldG9yeSBzeXN0ZW0iXSwiY29ycmVjdF9hbnN3ZXIiOiJSZXNwaXJhdG9yeSBzeXN0ZW0iLCJleHBsYW5hdGlvbiI6IlRoZSByZXNwaXJhdG9yeSBzeXN0ZW0gdGFrZXMgaW4gb3h5Z2VuIGFuZCBleHBlbHMgY2FyYm9uIGRpb3hpZGUsIG94eWdlbmF0aW5nIHRoZSBibG9vZC4ifSx7InF1ZXN0aW9uIjoiV2hhdCBpcyB0aGUgbXVzY3VsYXIgb3JnYW4gdGhhdCBwdW1wcyBibG9vZCB0aHJvdWdob3V0IHRoZSBib2R5PyIsIm9wdGlvbnMiOlsiTHVuZ3MiLCJIZWFydCIsIktpZG5leXMiLCJMaXZlciJdLCJjb3JyZWN0X2Fuc3dlciI6IkhlYXJ0IiwiZXhwbGFuYXRpb24iOiJUaGUgaGVhcnQgaXMgYSBtdXNjdWxhciBvcmdhbiB0aGF0IGNvbnRpbnVvdXNseSBwdW1wcyBibG9vZCB0byB0aGUgYm9keSBhbmQgbHVuZ3MuIn0seyJxdWVzdGlvbiI6IldoYXQgaXMgdGhlIHRlcm0gZm9yIHRoZSByaHl0aG1pYyBleHBhbnNpb24gYW5kIGNvbnRyYWN0aW9uIG9mIGFydGVyaWVzIGFzIGJsb29kIGZsb3dzIHRocm91Z2ggdGhlbT8iLCJvcHRpb25zIjpbIlB1bHNlIiwiQmVhdCIsIldhdmUiLCJGbG93Il0sImNvcnJlY3RfYW5zd2VyIjoiUHVsc2UiLCJleHBsYW5hdGlvbiI6IlRoZSBwdWxzZSBpcyB0aGUgcmh5dGhtaWMgdGhyb2JiaW5nIG9mIGFydGVyaWVzIGNhdXNlZCBieSB0aGUgY29udHJhY3Rpb24gb2YgdGhlIGhlYXJ0LiJ9XQ==";
 async function runQuizAutomation() {
   // Create screenshots directory if it doesn't exist
   const screenshotsDir = path.join(__dirname, "screenshots");
   if (fs.existsSync(screenshotsDir)) {
     // Clean up existing screenshots to avoid mixing with new ones
     fs.readdirSync(screenshotsDir)
-      .filter(file => file.endsWith('.png'))
-      .forEach(file => fs.unlinkSync(path.join(screenshotsDir, file)));
+      .filter((file) => file.endsWith(".png"))
+      .forEach((file) => fs.unlinkSync(path.join(screenshotsDir, file)));
     console.log("Cleaned up existing screenshots");
   } else {
     fs.mkdirSync(screenshotsDir);
   }
-  
+
   // Screenshot counter for sequential numbering
   let screenshotCounter = 1;
 
@@ -38,65 +40,11 @@ async function runQuizAutomation() {
     // Create new page
     const page = await browser.newPage();
 
-    // Sample quiz data with correct answers at various positions
-    const sampleQuizData = [
-      {
-        question: "What is JavaScript?",
-        options: [
-          "A programming language",
-          "A markup language",
-          "A database",
-          "An operating system",
-        ],
-        correct_answer: "A programming language",
-        explanation:
-          "JavaScript is a programming language used for web development.",
-      },
-      {
-        question: "What does HTML stand for?",
-        options: [
-          "High Tech Machine Learning",
-          "Hyper Text Markup Language", // Correct answer at index 1
-          "Home Tool Management Language",
-          "Hyperlink Text Making Language",
-        ],
-        correct_answer: "Hyper Text Markup Language",
-        explanation:
-          "HTML is the standard markup language for documents designed to be displayed in a web browser.",
-      },
-      {
-        question: "Which tool is used for automating browsers?",
-        options: [
-          "MongoDB",
-          "React",
-          "Puppeteer", // Correct answer at index 2
-          "Excel",
-        ],
-        correct_answer: "Puppeteer",
-        explanation:
-          "Puppeteer is a Node.js library which provides a high-level API to control headless Chrome or Chromium.",
-      },
-      {
-        question: "What does CSS stand for?",
-        options: [
-          "Computer Style Systems",
-          "Creative Style Solutions",
-          "Colorful Style Sheets",
-          "Cascading Style Sheets", // Correct answer at index 3
-        ],
-        correct_answer: "Cascading Style Sheets",
-        explanation:
-          "CSS stands for Cascading Style Sheets and is used to style web pages.",
-      },
-    ];
-
-    // Convert quiz data to base64
-    const quizDataBase64 = Buffer.from(JSON.stringify(sampleQuizData)).toString(
-      "base64",
-    );
+    const jsonData = decodeURIComponent(escape(atob(encodedData)));
+    const sampleQuizData = JSON.parse(jsonData);
 
     // Load the HTML file with encoded quiz data
-    const filePath = `file://${path.resolve("index.html")}?data=${encodeURIComponent(quizDataBase64)}`;
+    const filePath = `file://${path.resolve("index.html")}?data=${encodedData}`;
 
     await page.goto(filePath, { waitUntil: "networkidle0" });
     console.log("Page loaded successfully");
@@ -122,7 +70,7 @@ async function runQuizAutomation() {
     await page.setUserAgent(customMobileDevice.userAgent);
 
     console.log("Taking screenshots during quiz navigation...");
-    
+
     // Wait for the quiz to load
     await page.waitForSelector(".options", { timeout: 5000 });
     console.log("Quiz loaded");
@@ -165,7 +113,10 @@ async function runQuizAutomation() {
 
       // Take screenshot before selecting answer
       await page.screenshot({
-        path: path.join(screenshotsDir, `${String(screenshotCounter++).padStart(2, '0')}_question_${questionIndex + 1}.png`),
+        path: path.join(
+          screenshotsDir,
+          `${String(screenshotCounter++).padStart(2, "0")}_question_${questionIndex + 1}.png`,
+        ),
         fullPage: true,
       });
 
@@ -193,7 +144,10 @@ async function runQuizAutomation() {
 
       // Take screenshot after selecting answer (showing feedback)
       await page.screenshot({
-        path: path.join(screenshotsDir, `${String(screenshotCounter++).padStart(2, '0')}_question_${questionIndex + 1}_answered.png`),
+        path: path.join(
+          screenshotsDir,
+          `${String(screenshotCounter++).padStart(2, "0")}_question_${questionIndex + 1}_answered.png`,
+        ),
         fullPage: true,
       });
 
@@ -225,49 +179,86 @@ async function runQuizAutomation() {
     // Wait for results page and take final screenshot
     console.log("Reached quiz results page");
     await page.waitForTimeout(1000);
-    
+
     // Take screenshot of results page
     // await page.screenshot({
     //   path: path.join(screenshotsDir, `${String(screenshotCounter++).padStart(2, '0')}_quiz_results.png`),
     //   fullPage: true,
     // });
-    
+
     console.log(`All screenshots have been saved to: ${screenshotsDir}`);
-    
+
     // Generate video from screenshots using ffmpeg
     console.log("Converting screenshots to video...");
-    
+
     try {
       const outputVideoPath = path.join(__dirname, "quiz_recording.mp4");
-      
+
       // Check if ffmpeg is installed
       try {
-        execSync("ffmpeg -version", { stdio: 'ignore' });
+        execSync("ffmpeg -version", { stdio: "ignore" });
       } catch (ffmpegError) {
-        throw new Error("ffmpeg is not installed or not in PATH. Please install ffmpeg to create videos.");
+        throw new Error(
+          "ffmpeg is not installed or not in PATH. Please install ffmpeg to create videos.",
+        );
       }
-      
-      // Use ffmpeg to convert the PNG files to an MP4 video
-      // -framerate: Sets frames per second (adjust as needed)
-      // -pattern_type glob -i: Uses glob pattern to match all PNG files
-      // -c:v libx264: Uses H.264 codec for video compression
-      // -pix_fmt yuv420p: Sets pixel format for better compatibility
-      // -vf "fps=2": Sets the output framerate to 2 FPS (adjust as needed)
+
       // execSync(
-      //   `ffmpeg -framerate 0.2 -pattern_type glob -i "${screenshotsDir}/*.png" -c:v libx264 -pix_fmt yuv420p "${outputVideoPath}"`,
-      //   { stdio: 'inherit' }
+      //   `ffmpeg -loop 1 -t 10 -i "${screenshotsDir}/$(ls ${screenshotsDir} | head -n 1)" -framerate 0.5 -pattern_type glob -i "${screenshotsDir}/*.png" -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0" -c:v libx264 -pix_fmt yuv420p "${outputVideoPath}"`,
+      //   { stdio: "inherit" },
       // );
-      
-execSync(
-  `ffmpeg -loop 1 -t 4 -i "${screenshotsDir}/$(ls ${screenshotsDir} | head -n 1)" -framerate 0.25 -pattern_type glob -i "${screenshotsDir}/*.png" -filter_complex "[0:v][1:v]concat=n=2:v=1:a=0" -c:v libx264 -pix_fmt yuv420p "${outputVideoPath}"`,
-  { stdio: 'inherit' }
-);
+
+      const fNames = [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "freepd/a",
+        "freepd/b",
+        "freepd/c",
+        "freepd/d",
+        "freepd/e",
+        "freepd/f",
+        "freepd/g",
+        "freepd/h",
+        "freepd/i",
+        "freepd/j",
+        "freepd/k",
+        "freepd/l",
+        "freepd/m",
+        "freepd/n",
+        "freepd/o",
+        "freepd/p",
+        "freepd/q",
+        "freepd/r",
+        "freepd/s",
+        "freepd/t",
+        "freepd/u",
+        "freepd/v",
+        "freepd/w",
+        "freepd/x",
+        "freepd/y",
+        "freepd/z",
+      ];
+      const audioDir = path.join(__dirname, "yt");
+      const fName = fNames[Math.floor(Math.random() * fNames.length)] + "_59";
+      const audioFilePath = `${audioDir}/${fName}.mp3`;
+      execSync(
+        `ffmpeg -framerate 1/3 -pattern_type glob -i "${screenshotsDir}/*.png"  -i "${audioFilePath}" -c:v libx264 -pix_fmt yuv420p -r 30 "${outputVideoPath}"`,
+        { stdio: "inherit" },
+      );
       console.log(`Video created successfully at: ${outputVideoPath}`);
     } catch (ffmpegError) {
       console.error("Error creating video:", ffmpegError.message);
-      console.log("Screenshots are still available in the screenshots directory.");
+      console.log(
+        "Screenshots are still available in the screenshots directory.",
+      );
     }
-    
   } catch (error) {
     console.error("An error occurred:", error);
   } finally {
