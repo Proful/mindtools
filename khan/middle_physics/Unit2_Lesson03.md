@@ -1,4 +1,4 @@
-## Transcripts
+## Electric Forces
 - Have you ever taken
 a shirt out of a dryer and found a sock stuck to it? If you have, you might have noticed that once you pull the sock off it was still attracted to the shirt even when they weren't touching. What is even happening here? Well, it turns out
 there's an electric force between the shirt and the sock. Electric forces are a
