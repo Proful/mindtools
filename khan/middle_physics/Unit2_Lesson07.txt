@@ -1,0 +1,26 @@
+## Transcripts
+you know what a magnet is but did you,know that some magnets can be turned on,and off one type of temporary magnet is,called an,electromagnet so what is,electromagnetism well the hint is in the,name itself Electro for electrical and,magnet for well magnet let's take a,moment to look at the definition of what,an electromagnet is electromagnets are,materials that become magnets in the,presence of,electricity but how does that even,happen well it turns out that,electrically charged particles in motion,actually have small magnetic fields,around them so if we run electricity,through a wire a magnetic field will be,created around the,wire now we can control the strength of,this magnetic field in a couple of ways,we can move more electric charges,Through the Wire at a faster rate and we,do this by increasing the electrical,current the second way is to increase,the density of the charge,particles and we can do this by looping,the wire into a coil this gives us more,charged particles with magnetic fields,in a small space strengthening the,magnetic force the other thing we can,control with electromagnets is the,direction of the magnetic field and we,can do this by changing the direction of,the,electricity so if we go back to this,wire example from earlier and change the,direction of the electricity running,through that wire well the magnetic,fields will also change,direction this makes electromagnets,quite different from permanent magnets,so let's take a look at that and compare,permanent magnets to,electromagnets electromagnets are,typically made of Loops of wire in a,coil the wire is typically made of metal,like copper and wrapped around pieces of,metal like iron nickel or Cobalt this is,different from a permanent magnet,because permanent magnets don't need,this,wire permanent magnets also have fixed,poles you can't change the North and,South poles on these magnets but as we,now know for electromagnets we can,change these poles by changing the,direction of the electrical current,so if we have an electromagnet with a,North and South Pole that looks like,this and a current flowing in this,direction well we can change the poles,and the direction of the,current permanent magnets have a fixed,strength but we just talked about how we,can change the strength of,electromagnets so electromagnets have,adjustable strength and finally,electromagnets need a power source in,order to generate the electricity,required to produce magnetic fields,permanent magnets do not need a power,source but this means that we can also,turn electromagnets on and off which is,pretty cool when you think about it on,the other hand permanent magnets are,always on now you might be thinking if,electrical charge can affect magnetism,can magnetism affect electrical,charge absolutely let's look at how we,can do that the only way to do this is,by changing magnetic field around the,charg particles this can be done by,moving magnets closer or further away,from the particles or by spinning the,magnets in fact spinning magnets is how,most of the electricity we use in cities,and homes is generated a turbine spins a,magnet inside a coil to produce,electricity and since electromagnets,need a power source this turbine is,powered by wind so you can see why,electromagnetism is an incredibly,important force and this isn't the only,important application of it we use,electromagnets in all sorts of other,applications from Motors to speakers and,even medical scanners
+--- 
+## Key points:
+When electric charges move, they create magnetic fields in the space around them.
+Electric charges moving through a wire create electric current.
+Because electric currents are made up of moving charges, they create magnetic fields. An electromagnet is a coil of wires that becomes a magnet when electric current runs through it.
+Electromagnets only work when the electric current is turned on.
+Increasing the electric current or increasing the number of wire loops increases the strength of the electromagnet.
+Changing the magnetic field around a coil of wire (by moving a magnet nearby) can create electric current in the wire.
+Increasing the speed of the moving magnet, using a stronger magnet, or increasing the number of wire loops produces more electric current.
+Moving the coil of wire around a magnet will also create electric current.
+
+**Electromagnetism**
+
+What if a magnet could turn on and off? That’s **electromagnetism**! It’s a mix of **electric** and **magnetic** forces.
+
+Here’s how it works: Take a wire and pass a **current** through it. A current is just a flow of tiny bits called **electrons**. When the current flows, it makes a **magnetic field** around the wire.
+
+Wrap the wire around a **nail** and pass the current. The nail now acts like a magnet! But when you turn off the current, the magnet turns off too. That’s why it’s called an **electromagnet**.
+
+More turns of the wire and more current make the magnet stronger. You can lift heavy things with it, like in junkyards where they lift cars.
+
+This is also how motors work. The current makes a magnetic field, and the field spins a part inside. That spin can move wheels, fans, and more.
+
+Electromagnetism is used in trains, phones, and even big cranes. It’s like a switchable magnet that can push, pull, and spin things around. Cool, right?

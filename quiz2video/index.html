@@ -8,6 +8,15 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <title>Quiz Application</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
+
     <style>
       * {
         margin: 0;
@@ -20,6 +29,11 @@
         background-color: #f5f5f5;
         color: #333;
         line-height: 1.6;
+      }
+
+      code {
+        font-family: "Victor Mono";
+        font-size: 1.8rem;
       }
 
       .container {
@@ -68,6 +82,10 @@
         margin-top: 20px;
         margin-bottom: 40px;
         font-size: 3rem;
+      }
+
+      .sub-title-1 {
+        font-size: 2.5rem;
       }
 
       .sub-title-2 {
@@ -373,6 +391,8 @@
 
         renderQuiz(state, quizData);
 
+        // hljs.highlightAll();
+
         // Add event listeners for buttons
         document.addEventListener("click", function (e) {
           if (e.target.classList.contains("btn-prev")) {
@@ -426,10 +446,14 @@
                     </div>
                 `;
         });
-
         const progress =
           ((state.currentQuestion + 1) / state.totalQuestions) * 100;
+        const originalContent = ` <div class="question">${question.question}</div> `;
 
+        const convertedContent = convertMarkdownCodeToHtml(originalContent);
+        // const highlightedCode = hljs.highlight(convertedContent, {
+        //   language: "javascript",
+        // }).value;
         appElement.innerHTML = `
                 <div class="container">
                     <div class="progress-bar">
@@ -442,13 +466,12 @@
                     </div>
                     
                     <div class="title">
-                        <div class="sub-title-1">ICSE SCIENCE (Class 5)</div>
-                        <div class="sub-title-2">The Circulatory System</div>
+                        <div class="sub-title-1">JavaScript Interview Questions</div>
                         <div class="sub-title-3">(@proful)</div>
                     </div>
                     
                     <div class="quiz-container">
-                        <div class="question">${question.question}</div>
+                        <div>${convertedContent}</div>
                         <div class="options">${optionsHtml}</div>
                         
                         <div class="explanation" ${showFeedback ? 'style="display:block"' : ""}>
@@ -555,6 +578,86 @@
 
         // Re-render
         renderQuiz(state, quizData);
+      }
+      function convertMarkdownCodeBlocksToHtmlSingle(content) {
+        // Pattern to match markdown code blocks with optional language specification
+        // Using a regex that matches: ```language\ncode\n```
+        // const codeBlockRegex = /`([a-zA-Z]*)\s*\n([\s\S]*?)`/g;
+        const codeBlockRegex = /`([^`]+)`/g;
+
+        // Replace each code block with HTML pre/code tags
+        return content.replace(
+          codeBlockRegex,
+          function (match, language, code) {
+            // Trim the code to remove any leading/trailing whitespace
+            // code = code.trim();
+            const highlightedCode = hljs.highlight(code, {
+              language: "javascript",
+            }).value;
+            return `<pre> <code>${highlightedCode}</code> </pre>`;
+            // Build HTML replacement with proper class for language
+            // return `<pre><code class="language-javascript">\n${code}\n</code></pre>`;
+          },
+        );
+      }
+      function convertMarkdownCodeBlocksToHtml(content) {
+        // Pattern to match markdown code blocks with optional language specification
+        // Using a regex that matches: ```language\ncode\n```
+        const codeBlockRegex = /```([a-zA-Z]*)\s*\n([\s\S]*?)```/g;
+
+        // Replace each code block with HTML pre/code tags
+        return content.replace(
+          codeBlockRegex,
+          function (match, language, code) {
+            // Trim the code to remove any leading/trailing whitespace
+            // code = code.trim();
+            const highlightedCode = hljs.highlight(code, {
+              language: "javascript",
+            }).value;
+            return `<pre> <code>${highlightedCode}</code> </pre>`;
+            // Build HTML replacement with proper class for language
+            // return `<pre><code class="language-javascript">\n${code}\n</code></pre>`;
+          },
+        );
+      }
+
+      function convertMarkdownCodeToHtml(content) {
+        // Step 1: Handle block code (triple backticks)
+        // Pattern to match markdown code blocks with optional language specification
+        const codeBlockRegex = /```([a-zA-Z]*)\s*\n([\s\S]*?)```/g;
+
+        // Replace each code block with HTML pre/code tags
+        let result = content.replace(
+          codeBlockRegex,
+          function (match, language, code) {
+            // Trim the code to remove any leading/trailing whitespace
+            // code = code.trim();
+
+            const highlightedCode = hljs.highlight(code, {
+              language: "javascript",
+            }).value;
+            return `<pre> <code>${highlightedCode}</code> </pre>`;
+            // Build HTML replacement with proper class for language
+            // return `<pre><code class="language-${language}">\n${code}\n</code></pre>`;
+          },
+        );
+
+        // Step 2: Handle inline code (single backticks)
+        // Pattern to match inline code: `code` (but avoid matching HTML attributes)
+        const inlineCodeRegex = /(?<!<[^>]*)(`)((?!\s)[^`]+(?<!\s))(`)/g;
+
+        // Replace inline code with HTML code tags
+        result = result.replace(
+          inlineCodeRegex,
+          function (match, openTick, code, closeTick) {
+            const highlightedCode = hljs.highlight(code, {
+              language: "javascript",
+            }).value;
+            return `<code>${highlightedCode}</code>`;
+          },
+        );
+
+        return result;
       }
     </script>
   </body>

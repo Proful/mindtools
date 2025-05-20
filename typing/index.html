@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: #f7fafc;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            min-width: 100px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .text-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            line-height: 1.6;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text-to-type {
+            font-family: 'Courier New', monospace;
+        }
+
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .current {
+            background-color: #fff3cd;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .input-container {
+            margin-bottom: 30px;
+        }
+
+        .typing-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .typing-input:focus {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .typing-input:disabled {
+            background-color: #f7fafc;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4299e1, #667eea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .difficulty-selector {
+            margin-bottom: 20px;
+        }
+
+        .difficulty-selector select {
+            padding: 8px 15px;
+            font-size: 1em;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .game-over {
+            background: #f0fff4;
+            border: 2px solid #9ae6b4;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .game-over h2 {
+            color: #2f855a;
+            margin-bottom: 15px;
+        }
+
+        .game-history {
+            background: #f7fafc;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .game-history h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-history h3 {
+            color: #4a5568;
+            margin: 20px 0 15px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .best-stats {
+            margin-bottom: 30px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .history-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .history-item:hover {
+            background: #f8fafc;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-info {
+            flex-grow: 1;
+        }
+
+        .history-date {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .history-stat {
+            font-size: 0.9em;
+            color: #2d3748;
+        }
+
+        .history-stat strong {
+            color: #4299e1;
+        }
+
+        .new-record {
+            background: #e6fffa !important;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .new-record-badge {
+            background: #38b2ac;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .final-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .final-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #c6f6d5;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                justify-content: center;
+            }
+            
+            .stat-item {
+                min-width: 80px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>⌨️ Typing Speed Challenge</h1>
+            <div class="difficulty-selector">
+                <label for="difficulty">Difficulty: </label>
+                <select id="difficulty">
+                    <option value="easy">Easy (30 seconds)</option>
+                    <option value="medium" selected>Medium (60 seconds)</option>
+                    <option value="hard">Hard (90 seconds)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Time Left</div>
+                <div class="stat-value" id="timeLeft">60</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">WPM</div>
+                <div class="stat-value" id="wpm">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value" id="accuracy">100%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Characters</div>
+                <div class="stat-value" id="characters">0/0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Best WPM</div>
+                <div class="stat-value" id="bestWPM">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Games Played</div>
+                <div class="stat-value" id="gamesPlayed">0</div>
+            </div>
+        </div>
+
+        <div class="text-display">
+            <div class="text-to-type" id="textToType">
+                Click "Start Game" to begin your typing challenge!
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input 
+                type="text" 
+                class="typing-input" 
+                id="typingInput" 
+                placeholder="Text will appear above when you start the game..."
+                disabled
+            >
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn" onclick="startGame()">
+                Start Game
+            </button>
+            <button class="btn btn-secondary" id="resetBtn" onclick="resetGame()">
+                Reset
+            </button>
+            <button class="btn btn-secondary" id="historyBtn" onclick="toggleHistory()">
+                View History
+            </button>
+            <button class="btn btn-secondary" id="clearDataBtn" onclick="clearAllData()">
+                Clear Data
+            </button>
+        </div>
+
+        <div class="game-over" id="gameOver" style="display: none;">
+            <h2>🎉 Game Complete!</h2>
+            <div class="final-stats" id="finalStats"></div>
+        </div>
+
+        <div class="game-history" id="gameHistory" style="display: none;">
+            <h2>📊 Game History</h2>
+            <div class="history-controls">
+                <button class="btn btn-secondary" onclick="toggleHistory()" style="margin-bottom: 15px;">
+                    Hide History
+                </button>
+            </div>
+            <div class="best-stats">
+                <h3>Personal Best Records</h3>
+                <div class="final-stats" id="bestStatsDisplay"></div>
+            </div>
+            <div class="recent-games">
+                <h3>Recent Games (Last 10)</h3>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameActive = false;
+        let startTime = null;
+        let timer = null;
+        let currentText = '';
+        let currentIndex = 0;
+        let correctChars = 0;
+        let totalTypedChars = 0;
+        let gameTime = 60; // seconds
+
+        // Local storage for game data
+        const STORAGE_KEY = 'typingGameData';
+        let gameHistory = [];
+        let bestStats = {
+            highestWPM: 0,
+            bestAccuracy: 0,
+            totalGames: 0,
+            averageWPM: 0,
+            averageAccuracy: 0
+        };
+
+        // Text samples for different difficulties
+        const textSamples = {
+            easy: [
+                "The quick brown fox jumps over the lazy dog in the garden.",
+                "She sells seashells by the seashore during summer days.",
+                "A journey of a thousand miles begins with a single step.",
+                "Practice makes perfect when you keep trying every day.",
+                "The early bird catches the worm before sunrise comes."
+            ],
+            medium: [
+                "Technology has revolutionized the way we communicate and interact with each other in modern society.",
+                "Artificial intelligence and machine learning are transforming industries across the globe at an unprecedented pace.",
+                "Sustainable development requires balancing economic growth with environmental conservation and social responsibility.",
+                "The internet has created new opportunities for education, business, and social connections worldwide.",
+                "Climate change poses significant challenges that require immediate action and international cooperation."
+            ],
+            hard: [
+                "Quantum computing represents a paradigm shift in computational capabilities, leveraging quantum mechanical phenomena such as superposition and entanglement to process information in fundamentally new ways.",
+                "Bioengineering and synthetic biology are emerging fields that combine engineering principles with biological systems to create novel organisms and materials for medical, industrial, and environmental applications.",
+                "The interconnected nature of global financial markets means that economic events in one region can have far-reaching consequences, creating both opportunities and risks for investors and policymakers.",
+                "Neuroscience research continues to unravel the mysteries of the human brain, providing insights into consciousness, memory, learning, and the biological basis of mental health disorders.",
+                "Advanced materials science is enabling the development of stronger, lighter, and more functional materials with applications ranging from aerospace engineering to medical implants and renewable energy systems."
+            ]
+        };
+
+        // DOM elements
+        const textDisplay = document.getElementById('textToType');
+        const typingInput = document.getElementById('typingInput');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const timeLeftEl = document.getElementById('timeLeft');
+        const wpmEl = document.getElementById('wpm');
+        const accuracyEl = document.getElementById('accuracy');
+        const charactersEl = document.getElementById('characters');
+        const gameOverEl = document.getElementById('gameOver');
+        const finalStatsEl = document.getElementById('finalStats');
+        const difficultySelect = document.getElementById('difficulty');
+        const progressFill = document.getElementById('progressFill');
+        const gameHistoryEl = document.getElementById('gameHistory');
+        const historyListEl = document.getElementById('historyList');
+        const bestStatsEl = document.getElementById('bestStatsDisplay');
+        const bestWPMEl = document.getElementById('bestWPM');
+        const gamesPlayedEl = document.getElementById('gamesPlayed');
+
+        // Event listeners
+        typingInput.addEventListener('input', handleTyping);
+        difficultySelect.addEventListener('change', updateGameTime);
+
+        // Load saved data on page load
+        window.addEventListener('load', loadGameData);
+
+        function updateGameTime() {
+            const difficulty = difficultySelect.value;
+            switch(difficulty) {
+                case 'easy': gameTime = 30; break;
+                case 'medium': gameTime = 60; break;
+                case 'hard': gameTime = 90; break;
+            }
+            if (!gameActive) {
+                timeLeftEl.textContent = gameTime;
+            }
+        }
+
+        function getRandomText() {
+            const difficulty = difficultySelect.value;
+            const texts = textSamples[difficulty];
+            return texts[Math.floor(Math.random() * texts.length)];
+        }
+
+        function startGame() {
+            gameActive = true;
+            currentText = getRandomText();
+            currentIndex = 0;
+            correctChars = 0;
+            totalTypedChars = 0;
+            startTime = new Date().getTime();
+            
+            // UI updates
+            startBtn.disabled = true;
+            typingInput.disabled = false;
+            typingInput.value = '';
+            typingInput.focus();
+            gameOverEl.style.display = 'none';
+            
+            // Display text
+            displayText();
+            
+            // Start timer
+            let timeLeft = gameTime;
+            timeLeftEl.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timeLeftEl.textContent = timeLeft;
+                
+                // Update progress bar
+                const progress = ((gameTime - timeLeft) / gameTime) * 100;
+                progressFill.style.width = progress + '%';
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function displayText() {
+            let html = '';
+            for (let i = 0; i < currentText.length; i++) {
+                let className = '';
+                if (i < currentIndex) {
+                    className = 'correct';
+                } else if (i === currentIndex) {
+                    className = 'current';
+                }
+                html += `<span class="${className}">${currentText[i]}</span>`;
+            }
+            textDisplay.innerHTML = html;
+        }
+
+        function handleTyping(e) {
+            if (!gameActive) return;
+            
+            const typedText = e.target.value;
+            const typedChar = typedText[typedText.length - 1];
+            
+            if (currentIndex < currentText.length) {
+                totalTypedChars++;
+                
+                if (typedChar === currentText[currentIndex]) {
+                    correctChars++;
+                    currentIndex++;
+                } else {
+                    // Handle incorrect characters
+                    currentIndex++;
+                }
+                
+                displayText();
+                updateStats();
+                
+                // Check if text is complete
+                if (currentIndex >= currentText.length) {
+                    endGame();
+                }
+            }
+        }
+
+        function updateStats() {
+            // Calculate WPM
+            const timeElapsed = (new Date().getTime() - startTime) / 1000 / 60;
+            const wordsTyped = correctChars / 5; // Standard: 5 characters per word
+            const wpm = timeElapsed > 0 ? Math.round(wordsTyped / timeElapsed) : 0;
+            wpmEl.textContent = wpm;
+            
+            // Calculate accuracy
+            const accuracy = totalTypedChars > 0 ? Math.round((correctChars / totalTypedChars) * 100) : 100;
+            accuracyEl.textContent = accuracy + '%';
+            
+            // Update characters count
+            charactersEl.textContent = `${correctChars}/${currentText.length}`;
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            // Final calculations
+            const timeElapsed = (new Date().getTime() - startTime) / 1000 / 60;
+            const wordsTyped = correctChars / 5;
+            const finalWPM = timeElapsed > 0 ? Math.round(wordsTyped / timeElapsed) : 0;
+            const finalAccuracy = totalTypedChars > 0 ? Math.round((correctChars / totalTypedChars) * 100) : 100;
+            const completionPercentage = Math.round((correctChars / currentText.length) * 100);
+            
+            // Save game to history
+            const gameResult = {
+                date: new Date().toLocaleString(),
+                timestamp: new Date().getTime(),
+                wpm: finalWPM,
+                accuracy: finalAccuracy,
+                characters: correctChars,
+                totalCharacters: currentText.length,
+                completion: completionPercentage,
+                difficulty: difficultySelect.value,
+                gameTime: gameTime
+            };
+            
+            saveGameResult(gameResult);
+            
+            // Check for new records
+            const isNewRecord = checkForNewRecords(gameResult);
+            
+            // UI updates
+            startBtn.disabled = false;
+            typingInput.disabled = true;
+            progressFill.style.width = '100%';
+            
+            // Show final stats
+            finalStatsEl.innerHTML = `
+                <div class="final-stat ${isNewRecord.wpm ? 'new-record' : ''}">
+                    <h3>Final WPM ${isNewRecord.wpm ? '<span class="new-record-badge">NEW RECORD!</span>' : ''}</h3>
+                    <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${finalWPM}</p>
+                </div>
+                <div class="final-stat ${isNewRecord.accuracy ? 'new-record' : ''}">
+                    <h3>Accuracy ${isNewRecord.accuracy ? '<span class="new-record-badge">NEW RECORD!</span>' : ''}</h3>
+                    <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${finalAccuracy}%</p>
+                </div>
+                <div class="final-stat">
+                    <h3>Characters Typed</h3>
+                    <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${correctChars}/${currentText.length}</p>
+                </div>
+                <div class="final-stat">
+                    <h3>Completion</h3>
+                    <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${completionPercentage}%</p>
+                </div>
+            `;
+            
+            gameOverEl.style.display = 'block';
+            updateBestStatsDisplay();
+        }
+
+        function resetGame() {
+            // Stop any running game
+            gameActive = false;
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            // Reset state
+            currentText = '';
+            currentIndex = 0;
+            correctChars = 0;
+            totalTypedChars = 0;
+            startTime = null;
+            
+            // Reset UI
+            startBtn.disabled = false;
+            typingInput.disabled = true;
+            typingInput.value = '';
+            gameOverEl.style.display = 'none';
+            progressFill.style.width = '0%';
+            
+            // Reset stats display
+            updateGameTime();
+            wpmEl.textContent = '0';
+            accuracyEl.textContent = '100%';
+            charactersEl.textContent = '0/0';
+            
+            // Reset text display
+            textDisplay.innerHTML = 'Click "Start Game" to begin your typing challenge!';
+        }
+
+        // Initialize game time on load
+        updateGameTime();
+
+        // Local Storage Functions
+        function loadGameData() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    gameHistory = data.history || [];
+                    bestStats = data.bestStats || bestStats;
+                    updateBestStatsDisplay();
+                }
+            } catch (error) {
+                console.error('Error loading game data:', error);
+                gameHistory = [];
+                bestStats = {
+                    highestWPM: 0,
+                    bestAccuracy: 0,
+                    totalGames: 0,
+                    averageWPM: 0,
+                    averageAccuracy: 0
+                };
+            }
+        }
+
+        function saveGameData() {
+            try {
+                const dataToSave = {
+                    history: gameHistory,
+                    bestStats: bestStats
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            } catch (error) {
+                console.error('Error saving game data:', error);
+            }
+        }
+
+        function saveGameResult(result) {
+            // Add to history
+            gameHistory.unshift(result);
+            
+            // Keep only last 50 games
+            if (gameHistory.length > 50) {
+                gameHistory = gameHistory.slice(0, 50);
+            }
+            
+            // Update best stats
+            bestStats.totalGames++;
+            if (result.wpm > bestStats.highestWPM) {
+                bestStats.highestWPM = result.wpm;
+            }
+            if (result.accuracy > bestStats.bestAccuracy) {
+                bestStats.bestAccuracy = result.accuracy;
+            }
+            
+            // Calculate averages
+            const totalWPM = gameHistory.reduce((sum, game) => sum + game.wpm, 0);
+            const totalAccuracy = gameHistory.reduce((sum, game) => sum + game.accuracy, 0);
+            bestStats.averageWPM = Math.round(totalWPM / gameHistory.length);
+            bestStats.averageAccuracy = Math.round(totalAccuracy / gameHistory.length);
+            
+            saveGameData();
+        }
+
+        function checkForNewRecords(result) {
+            const records = {
+                wpm: false,
+                accuracy: false
+            };
+            
+            // Only check for records if not the first game
+            if (bestStats.totalGames > 1) {
+                records.wpm = result.wpm > (bestStats.highestWPM - result.wpm);
+                records.accuracy = result.accuracy > (bestStats.bestAccuracy - result.accuracy);
+            }
+            
+            return records;
+        }
+
+        function updateBestStatsDisplay() {
+            bestWPMEl.textContent = bestStats.highestWPM;
+            gamesPlayedEl.textContent = bestStats.totalGames;
+            
+            if (bestStatsEl) {
+                bestStatsEl.innerHTML = `
+                    <div class="final-stat">
+                        <h3>Highest WPM</h3>
+                        <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${bestStats.highestWPM}</p>
+                    </div>
+                    <div class="final-stat">
+                        <h3>Best Accuracy</h3>
+                        <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${bestStats.bestAccuracy}%</p>
+                    </div>
+                    <div class="final-stat">
+                        <h3>Average WPM</h3>
+                        <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${bestStats.averageWPM}</p>
+                    </div>
+                    <div class="final-stat">
+                        <h3>Average Accuracy</h3>
+                        <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${bestStats.averageAccuracy}%</p>
+                    </div>
+                    <div class="final-stat">
+                        <h3>Total Games</h3>
+                        <p style="font-size: 1.5em; font-weight: bold; color: #2d3748;">${bestStats.totalGames}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayGameHistory() {
+            if (gameHistory.length === 0) {
+                historyListEl.innerHTML = '<p style="text-align: center; color: #718096; padding: 20px;">No games played yet. Start your first game!</p>';
+                return;
+            }
+            
+            const recentGames = gameHistory.slice(0, 10);
+            historyListEl.innerHTML = recentGames.map(game => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-date">${game.date}</div>
+                        <div class="history-stats">
+                            <span class="history-stat"><strong>WPM:</strong> ${game.wpm}</span>
+                            <span class="history-stat"><strong>Accuracy:</strong> ${game.accuracy}%</span>
+                            <span class="history-stat"><strong>Completion:</strong> ${game.completion}%</span>
+                            <span class="history-stat"><strong>Difficulty:</strong> ${game.difficulty}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleHistory() {
+            const isVisible = gameHistoryEl.style.display !== 'none';
+            
+            if (isVisible) {
+                gameHistoryEl.style.display = 'none';
+            } else {
+                displayGameHistory();
+                gameHistoryEl.style.display = 'block';
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all your game data? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                gameHistory = [];
+                bestStats = {
+                    highestWPM: 0,
+                    bestAccuracy: 0,
+                    totalGames: 0,
+                    averageWPM: 0,
+                    averageAccuracy: 0
+                };
+                updateBestStatsDisplay();
+                historyListEl.innerHTML = '<p style="text-align: center; color: #718096; padding: 20px;">No games played yet. Start your first game!</p>';
+                alert('All game data has been cleared!');
+            }
+        }
+    </script>
+</body>
+</html>
