@@ -470,13 +470,33 @@
 
         loadHabits() {
           const stored = localStorage.getItem("habitTrackerHabits");
-          return stored ? JSON.parse(stored) : {};
+          const habits = stored ? JSON.parse(stored) : {};
+
+          // Convert dates arrays back to Sets for each habit
+          Object.values(habits).forEach((habit) => {
+            if (habit.dates && Array.isArray(habit.dates)) {
+              habit.dates = new Set(habit.dates);
+            } else if (!habit.dates) {
+              habit.dates = new Set();
+            }
+          });
+
+          return habits;
         }
 
         saveHabits() {
+          // Convert Sets to arrays for JSON serialization
+          const habitsToSave = {};
+          Object.keys(this.habits).forEach((id) => {
+            habitsToSave[id] = {
+              ...this.habits[id],
+              dates: Array.from(this.habits[id].dates),
+            };
+          });
+
           localStorage.setItem(
             "habitTrackerHabits",
-            JSON.stringify(this.habits),
+            JSON.stringify(habitsToSave),
           );
         }
 
@@ -525,9 +545,15 @@
           });
 
           document.getElementById("resetBtn").addEventListener("click", () => {
-            localStorage.removeItem("habitTrackerCurrentHabit");
-            localStorage.removeItem("habitTrackerHabits");
-            localStorage.removeItem("habitTrackerDates");
+            if (
+              confirm(
+                "Are you sure you want to reset all data? This cannot be undone.",
+              )
+            ) {
+              localStorage.removeItem("habitTrackerCurrentHabit");
+              localStorage.removeItem("habitTrackerHabits");
+              location.reload();
+            }
           });
 
           document
@@ -691,11 +717,20 @@
           );
         }
 
+        // Helper function to check if dates Set is empty
+        isDatesEmpty(dates) {
+          return !dates || dates.size === 0;
+        }
+
         toggleDate(dateStr) {
           if (!this.currentHabitId) return;
 
           const habit = this.habits[this.currentHabitId];
-          if (!habit.dates) habit.dates = new Set();
+
+          // Ensure dates is initialized as a Set
+          if (!habit.dates) {
+            habit.dates = new Set();
+          }
 
           if (habit.dates.has(dateStr)) {
             habit.dates.delete(dateStr);
@@ -772,11 +807,7 @@
           const habit = this.currentHabitId
             ? this.habits[this.currentHabitId]
             : null;
-          const isMarked =
-            habit &&
-            habit.dates &&
-            Object.keys(habit.dates).length !== 0 &&
-            habit.dates.has(dateStr);
+          const isMarked = habit && habit.dates && habit.dates.has(dateStr);
 
           if (!isCurrentMonth) {
             dayElement.classList.add("other-month");
@@ -815,12 +846,12 @@
         }
 
         calculateCurrentStreak(markedDates) {
-          let streak = 0;
-          const today = new Date();
-
-          if (Object.keys(markedDates).length === 0) {
+          if (this.isDatesEmpty(markedDates)) {
             return 0;
           }
+
+          let streak = 0;
+          const today = new Date();
 
           // Check if today is marked
           if (!markedDates.has(this.formatDate(today))) {
