@@ -772,7 +772,11 @@
           const habit = this.currentHabitId
             ? this.habits[this.currentHabitId]
             : null;
-          const isMarked = habit && habit.dates && habit.dates.has(dateStr);
+          const isMarked =
+            habit &&
+            habit.dates &&
+            Object.keys(habit.dates).length !== 0 &&
+            habit.dates.has(dateStr);
 
           if (!isCurrentMonth) {
             dayElement.classList.add("other-month");
@@ -813,6 +817,10 @@
         calculateCurrentStreak(markedDates) {
           let streak = 0;
           const today = new Date();
+
+          if (Object.keys(markedDates).length === 0) {
+            return 0;
+          }
 
           // Check if today is marked
           if (!markedDates.has(this.formatDate(today))) {
