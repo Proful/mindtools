@@ -236,6 +236,11 @@
         background: #e0e0e0;
       }
 
+      .modal-btn.reset {
+        background: tomato;
+        color: white;
+      }
+
       .calendar-nav {
         display: flex;
         justify-content: space-between;
@@ -441,6 +446,10 @@
           <button class="modal-btn secondary" id="cancelBtn">Cancel</button>
           <button class="modal-btn primary" id="saveBtn">Save</button>
         </div>
+        <br />
+        <div class="modal-actions">
+          <button class="modal-btn reset" id="resetBtn">Reset All Data</button>
+        </div>
       </div>
     </div>
 
@@ -513,6 +522,12 @@
 
           document.getElementById("saveBtn").addEventListener("click", () => {
             this.saveHabit();
+          });
+
+          document.getElementById("resetBtn").addEventListener("click", () => {
+            localStorage.removeItem("habitTrackerCurrentHabit");
+            localStorage.removeItem("habitTrackerHabits");
+            localStorage.removeItem("habitTrackerDates");
           });
 
           document
