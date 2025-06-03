@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Times Table Practice</title>
+    <style>
+      :root {
+        --primary-color: #4361ee;
+        --secondary-color: #7209b7;
+        --light-bg: #f8f9fa;
+        --dark-text: #343a40;
+        --light-text: #f8f9fa;
+        --transition-speed: 0.3s;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      }
+
+      body {
+        background-color: var(--light-bg);
+        color: var(--dark-text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: var(--light-text);
+        padding: 1rem;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin: 0;
+      }
+
+      .settings-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--light-text);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform var(--transition-speed);
+      }
+
+      .settings-icon:hover {
+        transform: translateY(-50%) rotate(30deg);
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .times-table-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 350px;
+        transition: transform var(--transition-speed);
+      }
+
+      .times-table-container:hover {
+        transform: translateY(-5px);
+      }
+
+      .equation {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        min-height: 4rem;
+      }
+
+      .question-mark {
+        color: var(--primary-color);
+        font-weight: bold;
+      }
+
+      .result {
+        font-size: 2rem;
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-top: 1rem;
+        min-height: 3rem;
+        opacity: 0;
+        transition: opacity var(--transition-speed);
+      }
+
+      .result.show {
+        opacity: 1;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--transition-speed);
+      }
+
+      .modal-backdrop.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal {
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        transition: transform var(--transition-speed);
+      }
+
+      .modal-backdrop.open .modal {
+        transform: translateY(0);
+      }
+
+      .modal h2 {
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+      }
+
+      .setting-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .setting-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .range-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .range-container input[type="range"] {
+        flex: 1;
+      }
+
+      .range-value {
+        font-weight: bold;
+        color: var(--primary-color);
+        width: 2rem;
+        text-align: center;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      button {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background-color var(--transition-speed),
+          transform var(--transition-speed);
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      .cancel-button {
+        background-color: #e9ecef;
+        color: var(--dark-text);
+      }
+
+      .save-button {
+        background-color: var(--primary-color);
+        color: var(--light-text);
+      }
+
+      .cancel-button:hover {
+        background-color: #dee2e6;
+      }
+
+      .save-button:hover {
+        background-color: #3a56d4;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+      }
+
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .times-table-container {
+          padding: 3rem;
+          max-width: 450px;
+        }
+
+        .equation {
+          font-size: 3rem;
+        }
+
+        .result {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Times Table Practice</h1>
+      <button class="settings-icon" id="settingsButton">⚙️</button>
+    </header>
+
+    <main>
+      <div class="times-table-container">
+        <div class="equation" id="equation">
+          2 × 5 = <span class="question-mark">?</span>
+        </div>
+        <div class="result" id="result">10</div>
+      </div>
+    </main>
+
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal">
+        <h2>Settings</h2>
+
+        <div class="setting-group">
+          <label for="minRange">Minimum Number:</label>
+          <div class="range-container">
+            <input type="range" id="minRange" min="2" max="20" value="2" />
+            <span class="range-value" id="minValue">2</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label for="maxRange">Maximum Number:</label>
+          <div class="range-container">
+            <input type="range" id="maxRange" min="2" max="20" value="10" />
+            <span class="range-value" id="maxValue">10</span>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="cancel-button" id="cancelButton">Cancel</button>
+          <button class="save-button" id="saveButton">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>Practice your multiplication skills</footer>
+
+    <script>
+      // DOM Elements
+      const settingsButton = document.getElementById("settingsButton");
+      const settingsModal = document.getElementById("settingsModal");
+      const cancelButton = document.getElementById("cancelButton");
+      const saveButton = document.getElementById("saveButton");
+      const minRange = document.getElementById("minRange");
+      const maxRange = document.getElementById("maxRange");
+      const minValue = document.getElementById("minValue");
+      const maxValue = document.getElementById("maxValue");
+      const equation = document.getElementById("equation");
+      const result = document.getElementById("result");
+
+      // App State
+      let settings = {
+        min: 2,
+        max: 10,
+      };
+
+      // Initialize the app
+      function init() {
+        loadSettings();
+        updateSettingsUI();
+        generateNewQuestion();
+
+        // Event Listeners
+        settingsButton.addEventListener("click", openSettings);
+        cancelButton.addEventListener("click", closeSettings);
+        saveButton.addEventListener("click", saveSettings);
+        minRange.addEventListener("input", updateMinValue);
+        maxRange.addEventListener("input", updateMaxValue);
+      }
+
+      // Settings Functions
+      function loadSettings() {
+        const savedSettings = localStorage.getItem("timesTableSettings");
+        if (savedSettings) {
+          settings = JSON.parse(savedSettings);
+        }
+      }
+
+      function saveSettings() {
+        settings.min = parseInt(minRange.value);
+        settings.max = parseInt(maxRange.value);
+
+        localStorage.setItem("timesTableSettings", JSON.stringify(settings));
+        closeSettings();
+        generateNewQuestion();
+      }
+
+      function updateSettingsUI() {
+        minRange.value = settings.min;
+        maxRange.value = settings.max;
+        minValue.textContent = settings.min;
+        maxValue.textContent = settings.max;
+
+        // Ensure min can't go above max
+        minRange.max = settings.max;
+        // Ensure max can't go below min
+        maxRange.min = settings.min;
+      }
+
+      function updateMinValue() {
+        minValue.textContent = minRange.value;
+        // Update max range's min value to prevent min > max
+        maxRange.min = minRange.value;
+
+        if (parseInt(maxRange.value) < parseInt(minRange.value)) {
+          maxRange.value = minRange.value;
+          maxValue.textContent = minRange.value;
+        }
+      }
+
+      function updateMaxValue() {
+        maxValue.textContent = maxRange.value;
+        // Update min range's max value to prevent max < min
+        minRange.max = maxRange.value;
+
+        if (parseInt(minRange.value) > parseInt(maxRange.value)) {
+          minRange.value = maxRange.value;
+          minValue.textContent = maxRange.value;
+        }
+      }
+
+      function openSettings() {
+        settingsModal.classList.add("open");
+        updateSettingsUI();
+      }
+
+      function closeSettings() {
+        settingsModal.classList.remove("open");
+      }
+
+      // Times Table Functions
+      function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function generateNewQuestion() {
+        // Hide previous result
+        result.classList.remove("show");
+
+        // Generate random numbers between the set ranges
+        const baseNumber = getRandomNumber(settings.min, settings.max);
+        const multiplier = getRandomNumber(1, 10);
+
+        // Set the equation
+        equation.innerHTML = `${baseNumber} × ${multiplier} = <span class="question-mark">?</span>`;
+
+        // Calculate and set the result
+        const answer = baseNumber * multiplier;
+        result.textContent = answer;
+
+        // Show the result after a delay
+        setTimeout(() => {
+          result.classList.add("show");
+
+          // Generate a new question after showing the result
+          setTimeout(generateNewQuestion, 2000);
+        }, 2000);
+      }
+
+      // Initialize the app when the page loads
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
