@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vim Motion Challenge</title>
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Courier New', monospace;
+          background: #1a1a1a;
+          color: #e0e0e0;
+          min-height: 100vh;
+          padding: 20px;
+          line-height: 1.6;
+      }
+
+      .container {
+          max-width: 1000px;
+          margin: 0 auto;
+      }
+
+      h1 {
+          text-align: center;
+          color: #61dafb;
+          margin-bottom: 30px;
+          font-size: 2rem;
+      }
+
+      .stats {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          background: #2d2d2d;
+          padding: 15px;
+          border-radius: 8px;
+          flex-wrap: wrap;
+          gap: 10px;
+      }
+
+      .stat {
+          text-align: center;
+          flex: 1;
+          min-width: 100px;
+      }
+
+      .stat-value {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #61dafb;
+      }
+
+      .stat-label {
+          font-size: 0.9rem;
+          color: #888;
+      }
+
+      .challenge-info {
+          background: #2d2d2d;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          border-left: 4px solid #61dafb;
+      }
+
+      .objective {
+          font-size: 1.2rem;
+          color: #61dafb;
+          margin-bottom: 10px;
+          font-weight: bold;
+      }
+
+      .hint {
+          color: #ccc;
+          font-size: 0.95rem;
+      }
+
+      .editor-container {
+          background: #2d2d2d;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 20px;
+          position: relative;
+      }
+
+      .editor {
+          background: #1a1a1a;
+          border: 2px solid #444;
+          border-radius: 6px;
+          padding: 15px;
+          font-family: 'Courier New', monospace;
+          font-size: 1.1rem;
+          line-height: 1.4;
+          color: #e0e0e0;
+          white-space: pre;
+          overflow-x: auto;
+          min-height: 300px;
+          position: relative;
+          outline: none;
+          cursor: text;
+      }
+
+      .editor:focus {
+          border-color: #61dafb;
+      }
+
+      .cursor-char {
+          background: #ff1493;
+          color: #ffffff;
+          box-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493aa;
+          animation: cursorBlink 1s infinite;
+          border-radius: 2px;
+          font-weight: bold;
+          transition: all 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .cursor-char.moving {
+          animation: none;
+          background: #ff69b4;
+          box-shadow: 0 0 15px #ff69b4, 0 0 30px #ff69b4aa;
+          transform: scale(1.1);
+      }
+
+      @keyframes cursorBlink {
+          0%, 50% {
+              background: #ff1493;
+              box-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493aa;
+          }
+          51%, 100% {
+              background: #ff1493aa;
+              box-shadow: 0 0 5px #ff1493aa;
+          }
+      }
+      }
+
+      .target {
+          background: #fbbf24;
+          color: #1a1a1a;
+          padding: 2px 4px;
+          border-radius: 3px;
+          font-weight: bold;
+      }
+
+      .highlight {
+          background: #ef4444;
+          color: white;
+          padding: 2px 4px;
+          border-radius: 3px;
+      }
+
+      .controls {
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin-bottom: 20px;
+      }
+
+      button {
+          padding: 12px 24px;
+          font-size: 1rem;
+          border: none;
+          border-radius: 6px;
+          background: #61dafb;
+          color: #1a1a1a;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.3s;
+      }
+
+      button:hover {
+          background: #4fa8c5;
+      }
+
+      button:disabled {
+          background: #444;
+          color: #888;
+          cursor: not-allowed;
+      }
+
+      .feedback {
+          text-align: center;
+          font-size: 1.2rem;
+          min-height: 30px;
+          margin-bottom: 20px;
+      }
+
+      .correct {
+          color: #4ade80;
+      }
+
+      .incorrect {
+          color: #ef4444;
+      }
+
+      .level-selector {
+          background: #2d2d2d;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+      }
+
+      .level-selector h3 {
+          margin-bottom: 10px;
+          color: #61dafb;
+      }
+
+      select {
+          width: 100%;
+          padding: 10px;
+          font-size: 1rem;
+          background: #1a1a1a;
+          border: 2px solid #444;
+          border-radius: 6px;
+          color: #e0e0e0;
+      }
+
+      .command-display {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          background: #444;
+          padding: 5px 10px;
+          border-radius: 4px;
+          font-size: 0.9rem;
+          color: #61dafb;
+      }
+
+      @media (max-width: 768px) {
+          .container {
+              padding: 10px;
+          }
+
+          h1 {
+              font-size: 1.5rem;
+          }
+
+          .editor {
+              font-size: 0.9rem;
+              padding: 10px;
+              min-height: 250px;
+          }
+
+          .stats {
+              flex-direction: column;
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Vim Motion Challenge</h1>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="score">0</div>
+          <div class="stat-label">Score</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="streak">0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="level">1</div>
+          <div class="stat-label">Level</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="moves">0</div>
+          <div class="stat-label">Moves</div>
+        </div>
+      </div>
+
+      <div class="level-selector">
+        <h3>Difficulty</h3>
+        <select id="difficultySelect">
+          <option value="beginner">Beginner (h,j,k,l,w,b)</option>
+          <option value="intermediate">Intermediate (+e,0,$,f,t)</option>
+          <option value="advanced">Advanced (+G,gg,%,F,T)</option>
+          <option value="expert">Expert (All motions)</option>
+        </select>
+      </div>
+
+      <div class="challenge-info">
+        <div class="objective" id="objective">
+          Click Start to begin your Vim journey!
+        </div>
+        <div class="hint" id="hint">
+          Navigate using Vim motions to reach your target
+        </div>
+      </div>
+
+      <div class="editor-container">
+        <div class="command-display" id="commandDisplay"></div>
+        <div class="editor" id="editor" tabindex="0">
+          <div class="cursor" id="cursor"></div>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button id="startBtn">Start Challenge</button>
+        <button id="nextBtn" disabled>Next Challenge</button>
+        <button id="hintBtn" disabled>Show Hint</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </div>
+
+    <script>
+      class VimChallenge {
+        constructor() {
+          this.difficulty = "beginner";
+          this.currentLevel = 1;
+          this.score = 0;
+          this.streak = 0;
+          this.moves = 0;
+          this.isActive = false;
+          this.cursorPos = { row: 0, col: 0 };
+          this.textLines = [];
+          this.currentChallenge = null;
+          this.commandHistory = [];
+
+          this.challenges = {
+            beginner: [
+              {
+                text: "Hello world\nVim is powerful\nLearn the basics",
+                target: { row: 1, col: 0 },
+                objective: "Move to start of 'Vim'",
+                hint: "Use j to go down, then 0 to go to line start",
+              },
+              {
+                text: "cat dog bird\nfish elephant\nmouse tiger",
+                target: { row: 0, col: 8 },
+                objective: "Move to 'bird'",
+                hint: "Use w to jump between words",
+              },
+              {
+                text: "Programming\nis fun and\nrewarding work",
+                target: { row: 2, col: 10 },
+                objective: "Move to 'work'",
+                hint: "Use j twice, then w twice",
+              },
+              {
+                text: "apple banana cherry\ngrape orange mango\nkiwi pear plum",
+                target: { row: 1, col: 13 },
+                objective: "Move to 'mango'",
+                hint: "Down then word jumps",
+              },
+            ],
+            intermediate: [
+              {
+                text: "function calculateSum(a, b) {\n  return a + b;\n}",
+                target: { row: 0, col: 26 },
+                objective: "Move to the closing parenthesis",
+                hint: "Use f) to find the character",
+              },
+              {
+                text: "The quick brown fox\njumps over the lazy dog\nPack my box with gems",
+                target: { row: 1, col: 23 },
+                objective: "Move to end of 'dog'",
+                hint: "Use j, then $ to go to line end, then b to go back one word",
+              },
+              {
+                text: "if (condition) {\n  doSomething();\n  return true;\n}",
+                target: { row: 2, col: 0 },
+                objective: "Move to start of 'return'",
+                hint: "Navigate down and use 0 for line start",
+              },
+              {
+                text: "array[0] = value;\narray[1] = data;\narray[2] = result;",
+                target: { row: 1, col: 6 },
+                objective: "Move to the '1' in array[1]",
+                hint: "Use f[ then t] or navigate with w/e",
+              },
+            ],
+            advanced: [
+              {
+                text: "class MyClass {\n  constructor() {\n    this.value = 0;\n  }\n  \n  method() {\n    return this.value;\n  }\n}",
+                target: { row: 6, col: 11 },
+                objective: "Move to 'this' in return statement",
+                hint: "Use G to go to end, then navigate up or use line numbers",
+              },
+              {
+                text: "import { useState } from 'react';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n  \n  return (\n    <div>Count: {count}</div>\n  );\n}",
+                target: { row: 3, col: 32 },
+                objective: "Move to 'useState'",
+                hint: "Navigate to the line and use word motions",
+              },
+              {
+                text: "const data = [\n  { id: 1, name: 'Alice' },\n  { id: 2, name: 'Bob' },\n  { id: 3, name: 'Charlie' }\n];",
+                target: { row: 3, col: 18 },
+                objective: "Move to 'Charlie'",
+                hint: "Use G to go to end, then navigate to the word",
+              },
+            ],
+            expert: [
+              {
+                text: "// TODO: Implement feature\nfunction processData(input) {\n  if (!input || input.length === 0) {\n    throw new Error('Invalid input');\n  }\n  \n  const result = input\n    .filter(item => item.active)\n    .map(item => {\n      return {\n        id: item.id,\n        processed: true\n      };\n    })\n    .sort((a, b) => a.id - b.id);\n    \n  return result;\n}",
+                target: { row: 11, col: 8 },
+                objective: "Move to 'processed: true'",
+                hint: "Multiple ways to reach this - try combining G, gg, /, f, or t commands",
+              },
+            ],
+          };
+
+          this.allowedCommands = {
+            beginner: ["h", "j", "k", "l", "w", "b"],
+            intermediate: [
+              "h",
+              "j",
+              "k",
+              "l",
+              "w",
+              "b",
+              "e",
+              "0",
+              "$",
+              "f",
+              "t",
+            ],
+            advanced: [
+              "h",
+              "j",
+              "k",
+              "l",
+              "w",
+              "b",
+              "e",
+              "0",
+              "$",
+              "f",
+              "t",
+              "G",
+              "gg",
+              "%",
+              "F",
+              "T",
+            ],
+            expert: [
+              "h",
+              "j",
+              "k",
+              "l",
+              "w",
+              "b",
+              "e",
+              "ge",
+              "0",
+              "$",
+              "f",
+              "t",
+              "F",
+              "T",
+              "G",
+              "gg",
+              "%",
+              "H",
+              "M",
+              "L",
+              "/",
+              "?",
+              "n",
+              "N",
+            ],
+          };
+
+          this.initializeElements();
+          this.bindEvents();
+          this.updateStats();
+        }
+
+        initializeElements() {
+          this.editor = document.getElementById("editor");
+          this.cursor = document.getElementById("cursor");
+          this.objective = document.getElementById("objective");
+          this.hint = document.getElementById("hint");
+          this.feedback = document.getElementById("feedback");
+          this.startBtn = document.getElementById("startBtn");
+          this.nextBtn = document.getElementById("nextBtn");
+          this.hintBtn = document.getElementById("hintBtn");
+          this.resetBtn = document.getElementById("resetBtn");
+          this.difficultySelect = document.getElementById("difficultySelect");
+          this.commandDisplay = document.getElementById("commandDisplay");
+          this.scoreDisplay = document.getElementById("score");
+          this.streakDisplay = document.getElementById("streak");
+          this.levelDisplay = document.getElementById("level");
+          this.movesDisplay = document.getElementById("moves");
+        }
+
+        bindEvents() {
+          this.startBtn.addEventListener("click", () => this.startChallenge());
+          this.nextBtn.addEventListener("click", () => this.nextChallenge());
+          this.hintBtn.addEventListener("click", () => this.showHint());
+          this.resetBtn.addEventListener("click", () => this.reset());
+          this.difficultySelect.addEventListener("change", (e) => {
+            this.difficulty = e.target.value;
+            this.reset();
+          });
+
+          this.editor.addEventListener("keydown", (e) => this.handleKeydown(e));
+          this.editor.addEventListener("focus", () => {
+            this.editor.style.outline = "none";
+          });
+        }
+
+        startChallenge() {
+          this.isActive = true;
+          this.startBtn.disabled = true;
+          this.nextBtn.disabled = true;
+          this.hintBtn.disabled = false;
+          this.loadChallenge();
+          this.editor.focus();
+        }
+
+        loadChallenge() {
+          const challenges = this.challenges[this.difficulty];
+          if (!challenges || this.currentLevel > challenges.length) {
+            this.completeDifficulty();
+            return;
+          }
+
+          this.currentChallenge = challenges[this.currentLevel - 1];
+          this.textLines = this.currentChallenge.text.split("\n");
+          this.cursorPos = { row: 0, col: 0 };
+          this.moves = 0;
+          this.commandHistory = [];
+
+          this.objective.textContent = this.currentChallenge.objective;
+          this.hint.textContent = "Use Vim motions to navigate to the target";
+          this.renderText();
+          this.updateCursor();
+          this.updateStats();
+        }
+
+        renderText() {
+          let html = "";
+          for (let i = 0; i < this.textLines.length; i++) {
+            const line = this.textLines[i];
+            let lineHtml = "";
+
+            for (let j = 0; j < line.length; j++) {
+              const char = line[j];
+              const isCursor =
+                i === this.cursorPos.row && j === this.cursorPos.col;
+              const isTarget =
+                i === this.currentChallenge.target.row &&
+                j === this.currentChallenge.target.col;
+
+              if (isTarget) {
+                // Find the end of the word for highlighting
+                let wordEnd = j;
+                while (wordEnd < line.length && /\S/.test(line[wordEnd])) {
+                  wordEnd++;
+                }
+                const word = line.slice(j, wordEnd);
+                lineHtml += `<span class="target">${word}</span>`;
+                j = wordEnd - 1; // Skip the rest of the word
+              } else if (isCursor) {
+                lineHtml += `<span class="cursor-char">${char === " " ? "&nbsp;" : char}</span>`;
+              } else {
+                lineHtml += char === " " ? "&nbsp;" : char;
+              }
+            }
+
+            html += lineHtml;
+            if (i < this.textLines.length - 1) html += "\n";
+          }
+
+          this.editor.innerHTML = html;
+        }
+
+        updateCursor() {
+          // Add moving animation to cursor character
+          const cursorChar = document.querySelector(".cursor-char");
+          if (cursorChar) {
+            cursorChar.classList.add("moving");
+            setTimeout(() => {
+              cursorChar.classList.remove("moving");
+            }, 150);
+          }
+
+          // Re-render text to update cursor position
+          this.renderText();
+        }
+
+        getTextNodeAtPosition(position) {
+          const walker = document.createTreeWalker(
+            this.editor,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false,
+          );
+
+          let currentPos = 0;
+          let node;
+
+          while ((node = walker.nextNode())) {
+            const nodeLength = node.textContent.length;
+            if (currentPos + nodeLength >= position) {
+              return {
+                node: node,
+                offset: position - currentPos,
+              };
+            }
+            currentPos += nodeLength;
+          }
+
+          return null;
+        }
+
+        handleKeydown(e) {
+          if (!this.isActive) return;
+
+          e.preventDefault();
+
+          const key = e.key;
+          let command = key;
+
+          // Handle special keys
+          if (key === "ArrowLeft") command = "h";
+          else if (key === "ArrowDown") command = "j";
+          else if (key === "ArrowUp") command = "k";
+          else if (key === "ArrowRight") command = "l";
+
+          if (this.executeCommand(command)) {
+            this.moves++;
+            this.commandHistory.push(command);
+            this.commandDisplay.textContent = this.commandHistory
+              .slice(-5)
+              .join(" ");
+            this.updateCursor();
+            this.updateStats();
+            this.checkWin();
+          }
+        }
+
+        executeCommand(command) {
+          const allowed = this.allowedCommands[this.difficulty];
+          if (!allowed.includes(command)) {
+            this.showFeedback(
+              `Command '${command}' not available in ${this.difficulty} mode`,
+              "incorrect",
+            );
+            return false;
+          }
+
+          const oldPos = { ...this.cursorPos };
+
+          switch (command) {
+            case "h":
+              this.cursorPos.col = Math.max(0, this.cursorPos.col - 1);
+              break;
+            case "l":
+              this.cursorPos.col = Math.min(
+                this.textLines[this.cursorPos.row].length - 1,
+                this.cursorPos.col + 1,
+              );
+              break;
+            case "k":
+              if (this.cursorPos.row > 0) {
+                this.cursorPos.row--;
+                this.cursorPos.col = Math.min(
+                  this.cursorPos.col,
+                  this.textLines[this.cursorPos.row].length - 1,
+                );
+              }
+              break;
+            case "j":
+              if (this.cursorPos.row < this.textLines.length - 1) {
+                this.cursorPos.row++;
+                this.cursorPos.col = Math.min(
+                  this.cursorPos.col,
+                  this.textLines[this.cursorPos.row].length - 1,
+                );
+              }
+              break;
+            case "w":
+              this.moveToNextWord();
+              break;
+            case "b":
+              this.moveToPrevWord();
+              break;
+            case "e":
+              this.moveToEndOfWord();
+              break;
+            case "0":
+              this.cursorPos.col = 0;
+              break;
+            case "$":
+              this.cursorPos.col = Math.max(
+                0,
+                this.textLines[this.cursorPos.row].length - 1,
+              );
+              break;
+            case "G":
+              this.cursorPos.row = this.textLines.length - 1;
+              this.cursorPos.col = 0;
+              break;
+            case "g":
+              // Handle gg
+              if (this.commandHistory[this.commandHistory.length - 1] === "g") {
+                this.cursorPos.row = 0;
+                this.cursorPos.col = 0;
+              }
+              break;
+            default:
+              return false;
+          }
+
+          return (
+            oldPos.row !== this.cursorPos.row ||
+            oldPos.col !== this.cursorPos.col
+          );
+        }
+
+        moveToNextWord() {
+          const line = this.textLines[this.cursorPos.row];
+          let col = this.cursorPos.col;
+
+          // Skip current word
+          while (col < line.length && /\S/.test(line[col])) col++;
+          // Skip whitespace
+          while (col < line.length && /\s/.test(line[col])) col++;
+
+          if (
+            col >= line.length &&
+            this.cursorPos.row < this.textLines.length - 1
+          ) {
+            this.cursorPos.row++;
+            this.cursorPos.col = 0;
+          } else {
+            this.cursorPos.col = col;
+          }
+        }
+
+        moveToPrevWord() {
+          if (this.cursorPos.col === 0 && this.cursorPos.row > 0) {
+            this.cursorPos.row--;
+            this.cursorPos.col = this.textLines[this.cursorPos.row].length - 1;
+            return;
+          }
+
+          const line = this.textLines[this.cursorPos.row];
+          let col = this.cursorPos.col - 1;
+
+          // Skip whitespace
+          while (col >= 0 && /\s/.test(line[col])) col--;
+          // Skip to beginning of word
+          while (col >= 0 && /\S/.test(line[col])) col--;
+
+          this.cursorPos.col = Math.max(0, col + 1);
+        }
+
+        moveToEndOfWord() {
+          const line = this.textLines[this.cursorPos.row];
+          let col = this.cursorPos.col;
+
+          // If at end of word, move to next word
+          if (
+            col < line.length - 1 &&
+            /\S/.test(line[col]) &&
+            /\s/.test(line[col + 1])
+          ) {
+            col++;
+            while (col < line.length && /\s/.test(line[col])) col++;
+          }
+
+          // Move to end of current word
+          while (col < line.length - 1 && /\S/.test(line[col + 1])) col++;
+
+          this.cursorPos.col = col;
+        }
+
+        checkWin() {
+          const target = this.currentChallenge.target;
+          if (
+            this.cursorPos.row === target.row &&
+            this.cursorPos.col === target.col
+          ) {
+            this.completeChallenge();
+          }
+        }
+
+        completeChallenge() {
+          this.score += Math.max(1, 10 - this.moves);
+          this.streak++;
+          this.isActive = false;
+          this.nextBtn.disabled = false;
+          this.hintBtn.disabled = true;
+
+          this.showFeedback(
+            `Challenge completed in ${this.moves} moves! +${Math.max(1, 10 - this.moves)} points`,
+            "correct",
+          );
+          this.updateStats();
+        }
+
+        nextChallenge() {
+          this.currentLevel++;
+          this.nextBtn.disabled = true;
+          this.startBtn.disabled = false;
+          this.feedback.textContent = "";
+          this.commandDisplay.textContent = "";
+          this.startChallenge();
+        }
+
+        showHint() {
+          if (this.currentChallenge) {
+            this.hint.textContent = this.currentChallenge.hint;
+          }
+        }
+
+        showFeedback(message, type) {
+          this.feedback.textContent = message;
+          this.feedback.className = `feedback ${type}`;
+          setTimeout(() => {
+            this.feedback.textContent = "";
+            this.feedback.className = "feedback";
+          }, 3000);
+        }
+
+        completeDifficulty() {
+          this.showFeedback(
+            `Congratulations! You completed all ${this.difficulty} challenges!`,
+            "correct",
+          );
+          this.isActive = false;
+          this.startBtn.disabled = false;
+        }
+
+        reset() {
+          this.currentLevel = 1;
+          this.score = 0;
+          this.streak = 0;
+          this.moves = 0;
+          this.isActive = false;
+          this.startBtn.disabled = false;
+          this.nextBtn.disabled = true;
+          this.hintBtn.disabled = true;
+          this.feedback.textContent = "";
+          this.commandDisplay.textContent = "";
+          this.objective.textContent = "Click Start to begin your Vim journey!";
+          this.hint.textContent =
+            "Navigate using Vim motions to reach your target";
+          this.editor.innerHTML = '<span class="cursor-char">&nbsp;</span>';
+          this.updateStats();
+        }
+
+        updateStats() {
+          this.scoreDisplay.textContent = this.score;
+          this.streakDisplay.textContent = this.streak;
+          this.levelDisplay.textContent = this.currentLevel;
+          this.movesDisplay.textContent = this.moves;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        new VimChallenge();
+      });
+    </script>
+  </body>
+</html>
