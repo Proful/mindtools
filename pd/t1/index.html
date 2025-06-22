@@ -274,6 +274,10 @@
             <label for="delay">Delay (seconds):</label>
             <input type="number" id="delay" value="5" min="1" max="300" />
           </div>
+          <div class="form-group">
+            <label for="seqdelay">Seq Delay (seconds):</label>
+            <input type="number" id="seqdelay" value="10" min="1" max="300" />
+          </div>
           <!-- <div class="form-group"> -->
           <!--   <label for="countSound">Count Sound URL (will add numbers):</label> -->
           <!--   <input -->
@@ -298,6 +302,7 @@
         initialSound:
           "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
         delay: 5,
+        seqdelay: 10,
       };
 
       // Text-to-speech for numbers
@@ -319,6 +324,7 @@
         document.getElementById("settingsModal").style.display = "block";
         // Load current settings
         document.getElementById("delay").value = settings.delay;
+        document.getElementById("seqdelay").value = settings.seqdelay;
       }
 
       function closeModal() {
@@ -327,6 +333,7 @@
 
       function saveSettings() {
         settings.delay = parseInt(document.getElementById("delay").value);
+        settings.seqdelay = parseInt(document.getElementById("seqdelay").value);
         closeModal();
         updateStatus("Settings saved");
       }
@@ -387,15 +394,19 @@
 
           // Stop after 10 counts
           if (currentCount >= 10) {
-            stopTimer();
-            document.getElementById("startStopBtn").textContent = "START";
-            document.getElementById("startStopBtn").classList.remove("active");
-            isRunning = false;
-            updateStatus("Sequence completed");
+            currentCount = 0;
+            updateStatus(`Sequence Complete`);
+            sleepSync(settings.seqdelay * 1000);
           }
         }, settings.delay * 1000);
       }
 
+      function sleepSync(milliseconds) {
+        const start = Date.now();
+        while (Date.now() - start < milliseconds) {
+          // Blocking the main thread - not recommended for production
+        }
+      }
       function stopTimer() {
         if (timerInterval) {
           clearInterval(timerInterval);
