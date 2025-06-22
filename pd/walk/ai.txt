@@ -1,0 +1,14 @@
+html, css, javascript
+
+mobile first, clean and simple design
+
+1. Header with title and setting cog icon 
+  1. On clicking setting cog, display a modal box
+
+2. One button for Start or Stop functionality
+
+3. On clicking Start, play a user supplied audio (use any url for sample 1 sec audio), 
+after configured delay (configured in setting modal), play another user supplied sound.
+Use 10 different sound (sound should play one, two, three and so on)
+
+4. on clicking Stop, playing sound should stop
