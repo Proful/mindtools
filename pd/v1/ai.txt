@@ -1,0 +1,15 @@
+html, css, javascript
+
+mobile first, clean and simple design
+
+1. Header with title and setting cog icon 
+  1. On clicking setting cog, display a modal box
+
+2. Home Page
+  1. display 5 button vertically
+  2. each button associated with one hardcoded audio file
+  3. Clicking the above button, open another page
+    1. display One button for Start or Stop functionality
+    2. On clicking Start, play a audio specific to that button in home page (use any url for sample 1 sec audio), 
+      after configured delay (configured in setting modal), play the same audio file.
+    3. on clicking Stop, playing sound should stop
