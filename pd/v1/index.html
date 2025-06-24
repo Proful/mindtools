@@ -1,520 +1,586 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Audio Timer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
 
+      .container {
+        max-width: 400px;
+        margin: 0 auto;
+        background: white;
+        min-height: 100vh;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .header {
+        background: #fff;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .settings-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background 0.2s;
+      }
+
+      .settings-btn:hover {
+        background: #f5f5f5;
+      }
+
+      .settings-icon {
+        width: 24px;
+        height: 24px;
+        fill: #666;
+      }
+
+      .page {
+        display: none;
+        padding: 20px;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      .home-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .audio-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 20px;
+        border-radius: 12px;
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .audio-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .audio-btn:active {
+        transform: translateY(0);
+      }
+
+      .timer-page {
+        text-align: center;
+        padding-top: 60px;
+      }
+
+      .timer-title {
+        font-size: 28px;
+        margin-bottom: 40px;
+        color: #333;
+      }
+
+      .timer-control {
+        background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        border: none;
+        padding: 24px 48px;
+        border-radius: 50px;
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(86, 171, 47, 0.3);
+        min-width: 120px;
+      }
+
+      .timer-control:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
+      }
+
+      .timer-control.stop {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+      }
+
+      .timer-control.stop:hover {
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: background 0.2s;
+      }
+
+      .back-btn:hover {
+        background: #f5f5f5;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+      }
+
+      .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 350px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .modal h2 {
+        margin-bottom: 20px;
+        font-size: 22px;
+        color: #333;
+      }
+
+      .setting-group {
+        margin-bottom: 20px;
+      }
+
+      .setting-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .setting-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.2s;
+      }
+
+      .setting-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+      }
+
+      .modal-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .modal-btn.primary {
+        background: #667eea;
+        color: white;
+      }
+
+      .modal-btn.primary:hover {
+        background: #5a6fd8;
+      }
+
+      .modal-btn.secondary {
+        background: #f5f5f5;
+        color: #666;
+      }
+
+      .modal-btn.secondary:hover {
+        background: #e8e8e8;
+      }
+
+      @media (max-width: 480px) {
         .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
+          max-width: 100%;
         }
 
         .header {
-            background: #fff;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .settings-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-
-        .settings-btn:hover {
-            background: #f5f5f5;
-        }
-
-        .settings-icon {
-            width: 24px;
-            height: 24px;
-            fill: #666;
+          padding: 16px;
         }
 
         .page {
-            display: none;
-            padding: 20px;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .home-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        .audio-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .audio-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .audio-btn:active {
-            transform: translateY(0);
-        }
-
-        .timer-page {
-            text-align: center;
-            padding-top: 60px;
-        }
-
-        .timer-title {
-            font-size: 28px;
-            margin-bottom: 40px;
-            color: #333;
-        }
-
-        .timer-control {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            border: none;
-            padding: 24px 48px;
-            border-radius: 50px;
-            color: white;
-            font-size: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(86, 171, 47, 0.3);
-            min-width: 120px;
-        }
-
-        .timer-control:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
-        }
-
-        .timer-control.stop {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
-        }
-
-        .timer-control.stop:hover {
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-
-        .back-btn:hover {
-            background: #f5f5f5;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+          padding: 16px;
         }
 
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: modalSlideIn 0.3s ease;
+          padding: 24px;
+          width: 95%;
         }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            color: #333;
-        }
-
-        .setting-group {
-            margin-bottom: 20px;
-        }
-
-        .setting-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .setting-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-
-        .setting-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .modal-btn.primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .modal-btn.primary:hover {
-            background: #5a6fd8;
-        }
-
-        .modal-btn.secondary {
-            background: #f5f5f5;
-            color: #666;
-        }
-
-        .modal-btn.secondary:hover {
-            background: #e8e8e8;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                max-width: 100%;
-            }
-            
-            .header {
-                padding: 16px;
-            }
-            
-            .page {
-                padding: 16px;
-            }
-            
-            .modal-content {
-                padding: 24px;
-                width: 95%;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1 onclick="goHome()" style="cursor: pointer;">Audio Timer</h1>
-            <button class="settings-btn" onclick="openSettings()">
-                <svg class="settings-icon" viewBox="0 0 24 24">
-                    <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
-                </svg>
-            </button>
-        </header>
+      <header class="header">
+        <h1 onclick="goHome()" style="cursor: pointer">Audio Timer</h1>
+        <button class="settings-btn" onclick="openSettings()">
+          <svg class="settings-icon" viewBox="0 0 24 24">
+            <path
+              d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+            />
+          </svg>
+        </button>
+      </header>
 
-        <!-- Home Page -->
-        <div class="page active" id="home">
-            <div class="home-buttons">
-                <button class="audio-btn" onclick="openTimer('Bell')">🔔 Bell</button>
-                <button class="audio-btn" onclick="openTimer('Chime')">🎵 Chime</button>
-                <button class="audio-btn" onclick="openTimer('Beep')">🔊 Beep</button>
-                <button class="audio-btn" onclick="openTimer('Ding')">🛎️ Ding</button>
-                <button class="audio-btn" onclick="openTimer('Whistle')">🎯 Whistle</button>
-            </div>
+      <!-- Home Page -->
+      <div class="page active" id="home">
+        <div class="home-buttons">
+          <button class="audio-btn" onclick="openTimer('May')">🔔 May</button>
+          <button class="audio-btn" onclick="openTimer('AAA-1')">
+            🎵 AAA-1
+          </button>
+          <button class="audio-btn" onclick="openTimer('AAA-2')">
+            🔊 AAA-2
+          </button>
+          <button class="audio-btn" onclick="openTimer('One')">🛎️ One</button>
+          <button class="audio-btn" onclick="openTimer('Goo')">🎯 Goo</button>
         </div>
+      </div>
 
-        <!-- Timer Pages -->
-        <div class="page timer-page" id="timer-Bell">
-            <button class="back-btn" onclick="goHome()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h2 class="timer-title">🔔 Bell Timer</h2>
-            <button class="timer-control" onclick="toggleTimer('Bell')" id="control-Bell">Start</button>
-        </div>
+      <!-- Timer Pages -->
+      <div class="page timer-page" id="timer-May">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#666"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h2 class="timer-title">🔔 May Timer</h2>
+        <button
+          class="timer-control"
+          onclick="toggleTimer('May')"
+          id="control-May"
+        >
+          Start
+        </button>
+      </div>
 
-        <div class="page timer-page" id="timer-Chime">
-            <button class="back-btn" onclick="goHome()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h2 class="timer-title">🎵 Chime Timer</h2>
-            <button class="timer-control" onclick="toggleTimer('Chime')" id="control-Chime">Start</button>
-        </div>
+      <div class="page timer-page" id="timer-AAA-1">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#666"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h2 class="timer-title">🎵 AAA-1 Timer</h2>
+        <button
+          class="timer-control"
+          onclick="toggleTimer('AAA-1')"
+          id="control-AAA-1"
+        >
+          Start
+        </button>
+      </div>
 
-        <div class="page timer-page" id="timer-Beep">
-            <button class="back-btn" onclick="goHome()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h2 class="timer-title">🔊 Beep Timer</h2>
-            <button class="timer-control" onclick="toggleTimer('Beep')" id="control-Beep">Start</button>
-        </div>
+      <div class="page timer-page" id="timer-AAA-2">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#666"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h2 class="timer-title">🔊 AAA-2 Timer</h2>
+        <button
+          class="timer-control"
+          onclick="toggleTimer('AAA-2')"
+          id="control-AAA-2"
+        >
+          Start
+        </button>
+      </div>
 
-        <div class="page timer-page" id="timer-Ding">
-            <button class="back-btn" onclick="goHome()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h2 class="timer-title">🛎️ Ding Timer</h2>
-            <button class="timer-control" onclick="toggleTimer('Ding')" id="control-Ding">Start</button>
-        </div>
+      <div class="page timer-page" id="timer-One">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#666"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h2 class="timer-title">🛎️ One Timer</h2>
+        <button
+          class="timer-control"
+          onclick="toggleTimer('One')"
+          id="control-One"
+        >
+          Start
+        </button>
+      </div>
 
-        <div class="page timer-page" id="timer-Whistle">
-            <button class="back-btn" onclick="goHome()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h2 class="timer-title">🎯 Whistle Timer</h2>
-            <button class="timer-control" onclick="toggleTimer('Whistle')" id="control-Whistle">Start</button>
-        </div>
+      <div class="page timer-page" id="timer-Goo">
+        <button class="back-btn" onclick="goHome()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#666"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <h2 class="timer-title">🎯 Goo Timer</h2>
+        <button
+          class="timer-control"
+          onclick="toggleTimer('Goo')"
+          id="control-Goo"
+        >
+          Start
+        </button>
+      </div>
     </div>
 
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h2>Settings</h2>
-            <div class="setting-group">
-                <label for="delayInput">Timer Delay (seconds)</label>
-                <input type="number" id="delayInput" min="1" max="3600" value="5">
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn secondary" onclick="closeSettings()">Cancel</button>
-                <button class="modal-btn primary" onclick="saveSettings()">Save</button>
-            </div>
+      <div class="modal-content">
+        <h2>Settings</h2>
+        <div class="setting-group">
+          <label for="delayInput">Timer Delay (seconds)</label>
+          <input type="number" id="delayInput" min="1" max="3600" value="5" />
         </div>
+        <div class="modal-buttons">
+          <button class="modal-btn secondary" onclick="closeSettings()">
+            Cancel
+          </button>
+          <button class="modal-btn primary" onclick="saveSettings()">
+            Save
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        // App state
-        let currentTimer = null;
-        let timerDelay = 5; // seconds
-        let activeTimers = {};
+      // App state
+      let currentTimer = null;
+      let timerDelay = 5; // seconds
+      let activeTimers = {};
+      let activeAudio = {};
 
-        // Audio URLs (using sample audio files)
-        const audioFiles = {
-            'Bell': 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            'Chime': 'https://www.soundjay.com/misc/sounds/chime-sound.wav',
-            'Beep': 'https://www.soundjay.com/misc/sounds/beep-07a.wav',
-            'Ding': 'https://www.soundjay.com/misc/sounds/ding-sound.wav',
-            'Whistle': 'https://www.soundjay.com/misc/sounds/whistle-sound.wav'
-        };
+      // Audio URLs (using sample audio files)
+      const audioFiles = {
+        May: "https://mindtools.vercel.app/pd/v1/may.mp3",
+        "AAA-1": "https://mindtools.vercel.app/pd/v1/aaa-1.mp3",
+        "AAA-2": "https://mindtools.vercel.app/pd/v1/aaa-2.mp3",
+        One: "https://mindtools.vercel.app/pd/v1/one.mp3",
+        Goo: "https://mindtools.vercel.app/pd/v1/goo.mp3",
+      };
 
-        // Navigation functions
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
+      // Navigation functions
+      function showPage(pageId) {
+        document.querySelectorAll(".page").forEach((page) => {
+          page.classList.remove("active");
+        });
+        document.getElementById(pageId).classList.add("active");
+      }
+
+      function openTimer(soundType) {
+        showPage(`timer-${soundType}`);
+        currentTimer = soundType;
+      }
+
+      function goHome() {
+        // Stop any active timer first
+        if (currentTimer && activeTimers[currentTimer]) {
+          stopTimer(currentTimer);
+        }
+        showPage("home");
+        currentTimer = null;
+      }
+
+      // Settings functions
+      function openSettings() {
+        document.getElementById("delayInput").value = timerDelay;
+        document.getElementById("settingsModal").classList.add("active");
+      }
+
+      function closeSettings() {
+        document.getElementById("settingsModal").classList.remove("active");
+      }
+
+      function saveSettings() {
+        const newDelay = parseInt(document.getElementById("delayInput").value);
+        if (newDelay && newDelay > 0) {
+          timerDelay = newDelay;
+        }
+        closeSettings();
+      }
+
+      // Timer functions
+      function toggleTimer(soundType) {
+        const controlBtn = document.getElementById(`control-${soundType}`);
+
+        if (activeTimers[soundType]) {
+          stopTimer(soundType);
+        } else {
+          startTimer(soundType);
+        }
+      }
+
+      function startTimer(soundType) {
+        const controlBtn = document.getElementById(`control-${soundType}`);
+
+        // Play initial sound
+        playSound(soundType);
+
+        // Set up recurring timer
+        activeTimers[soundType] = setInterval(() => {
+          playSound(soundType);
+        }, timerDelay * 1000);
+
+        // Update button
+        controlBtn.textContent = "Stop";
+        controlBtn.classList.add("stop");
+      }
+
+      function stopTimer(soundType) {
+        const controlBtn = document.getElementById(`control-${soundType}`);
+
+        // Clear timer
+        if (activeTimers[soundType]) {
+          clearInterval(activeTimers[soundType]);
+          delete activeTimers[soundType];
+        }
+        // Stop any currently playing audio
+        if (activeAudio[soundType]) {
+          activeAudio[soundType].pause();
+          activeAudio[soundType].currentTime = 0;
+          delete activeAudio[soundType];
+        }
+        // Update button
+        controlBtn.textContent = "Start";
+        controlBtn.classList.remove("stop");
+      }
+      function playSound(soundType) {
+        // Stop any previously playing audio for this sound type
+        if (activeAudio[soundType]) {
+          activeAudio[soundType].pause();
+          activeAudio[soundType].currentTime = 0;
         }
 
-        function openTimer(soundType) {
-            showPage(`timer-${soundType}`);
-            currentTimer = soundType;
-        }
+        // Create and play new audio
+        const audio = new Audio(audioFiles[soundType]);
+        activeAudio[soundType] = audio;
 
-        function goHome() {
-            // Stop any active timer first
-            if (currentTimer && activeTimers[currentTimer]) {
-                stopTimer(currentTimer);
-            }
-            showPage('home');
-            currentTimer = null;
-        }
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
 
-        // Settings functions
-        function openSettings() {
-            document.getElementById('delayInput').value = timerDelay;
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        function saveSettings() {
-            const newDelay = parseInt(document.getElementById('delayInput').value);
-            if (newDelay && newDelay > 0) {
-                timerDelay = newDelay;
-            }
+        // Clean up when audio ends
+        audio.addEventListener("ended", () => {
+          if (activeAudio[soundType] === audio) {
+            delete activeAudio[soundType];
+          }
+        });
+      }
+      // Close modal when clicking outside
+      document
+        .getElementById("settingsModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
             closeSettings();
-        }
-
-        // Timer functions
-        function toggleTimer(soundType) {
-            const controlBtn = document.getElementById(`control-${soundType}`);
-            
-            if (activeTimers[soundType]) {
-                stopTimer(soundType);
-            } else {
-                startTimer(soundType);
-            }
-        }
-
-        function startTimer(soundType) {
-            const controlBtn = document.getElementById(`control-${soundType}`);
-            
-            // Play initial sound
-            playSound(soundType);
-            
-            // Set up recurring timer
-            activeTimers[soundType] = setInterval(() => {
-                playSound(soundType);
-            }, timerDelay * 1000);
-            
-            // Update button
-            controlBtn.textContent = 'Stop';
-            controlBtn.classList.add('stop');
-        }
-
-        function stopTimer(soundType) {
-            const controlBtn = document.getElementById(`control-${soundType}`);
-            
-            // Clear timer
-            if (activeTimers[soundType]) {
-                clearInterval(activeTimers[soundType]);
-                delete activeTimers[soundType];
-            }
-            
-            // Update button
-            controlBtn.textContent = 'Start';
-            controlBtn.classList.remove('stop');
-        }
-
-        function playSound(soundType) {
-            // Create and play audio
-            const audio = new Audio();
-            
-            // Use Web Audio API to generate simple tones as fallback
-            // since external audio URLs might not work
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            // Different frequencies for different sounds
-            const frequencies = {
-                'Bell': 800,
-                'Chime': 1000,
-                'Beep': 1200,
-                'Ding': 1500,
-                'Whistle': 2000
-            };
-            
-            oscillator.frequency.setValueAtTime(frequencies[soundType] || 1000, audioContext.currentTime);
-            oscillator.type = 'sine';
-            
-            // Fade in and out
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('settingsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeSettings();
-            }
+          }
         });
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Audio Timer App loaded');
-        });
+      // Initialize app
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("Audio Timer App loaded");
+      });
     </script>
-</body>
+  </body>
 </html>
