@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Audio Timer</title>
+    <title>Audio Player</title>
     <style>
       * {
         margin: 0;
@@ -106,24 +106,24 @@
         transform: translateY(0);
       }
 
-      .timer-page {
+      .player-page {
         text-align: center;
         padding-top: 60px;
       }
 
-      .timer-title {
+      .player-title {
         font-size: 28px;
         margin-bottom: 40px;
         color: #333;
       }
 
-      .timer-control {
+      .player-control {
         background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
         border: none;
-        padding: 24px 48px;
+        padding: 50px 100px;
         border-radius: 50px;
         color: white;
-        font-size: 20px;
+        font-size: 32px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -131,17 +131,17 @@
         min-width: 120px;
       }
 
-      .timer-control:hover {
+      .player-control:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(86, 171, 47, 0.4);
       }
 
-      .timer-control.stop {
+      .player-control.stop {
         background: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
         box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
       }
 
-      .timer-control.stop:hover {
+      .player-control.stop:hover {
         box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
       }
 
@@ -289,33 +289,26 @@
   <body>
     <div class="container">
       <header class="header">
-        <h1 onclick="goHome()" style="cursor: pointer">Audio Timer</h1>
-        <!-- <button class="settings-btn" onclick="openSettings()"> -->
-        <!--   <svg class="settings-icon" viewBox="0 0 24 24"> -->
-        <!--     <path -->
-        <!--       d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" -->
-        <!--     /> -->
-        <!--   </svg> -->
-        <!-- </button> -->
+        <h1 onclick="goHome()" style="cursor: pointer">Audio Player</h1>
       </header>
 
       <!-- Home Page -->
       <div class="page active" id="home">
         <div class="home-buttons">
-          <button class="audio-btn" onclick="openTimer('May')">🔔 May</button>
-          <button class="audio-btn" onclick="openTimer('AAA-1')">
+          <button class="audio-btn" onclick="openPlayer('May')">🔔 May</button>
+          <button class="audio-btn" onclick="openPlayer('AAA-1')">
             🎵 AAA-1
           </button>
-          <button class="audio-btn" onclick="openTimer('AAA-2')">
+          <button class="audio-btn" onclick="openPlayer('AAA-2')">
             🔊 AAA-2
           </button>
-          <button class="audio-btn" onclick="openTimer('One')">🛎️ One</button>
-          <button class="audio-btn" onclick="openTimer('Goo')">🎯 Goo</button>
+          <button class="audio-btn" onclick="openPlayer('One')">🛎️ One</button>
+          <button class="audio-btn" onclick="openPlayer('Goo')">🎯 Goo</button>
         </div>
       </div>
 
-      <!-- Timer Pages -->
-      <div class="page timer-page" id="timer-May">
+      <!-- Player Pages -->
+      <div class="page player-page" id="player-May">
         <button class="back-btn" onclick="goHome()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -327,17 +320,17 @@
             />
           </svg>
         </button>
-        <h2 class="timer-title">🔔 May Timer</h2>
+        <h2 class="player-title">🔔 May Player</h2>
         <button
-          class="timer-control"
-          onclick="toggleTimer('May')"
+          class="player-control"
+          onclick="togglePlay('May')"
           id="control-May"
         >
           Start
         </button>
       </div>
 
-      <div class="page timer-page" id="timer-AAA-1">
+      <div class="page player-page" id="player-AAA-1">
         <button class="back-btn" onclick="goHome()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -349,17 +342,17 @@
             />
           </svg>
         </button>
-        <h2 class="timer-title">🎵 AAA-1 Timer</h2>
+        <h2 class="player-title">🎵 AAA-1 Player</h2>
         <button
-          class="timer-control"
-          onclick="toggleTimer('AAA-1')"
+          class="player-control"
+          onclick="togglePlay('AAA-1')"
           id="control-AAA-1"
         >
           Start
         </button>
       </div>
 
-      <div class="page timer-page" id="timer-AAA-2">
+      <div class="page player-page" id="player-AAA-2">
         <button class="back-btn" onclick="goHome()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -371,17 +364,17 @@
             />
           </svg>
         </button>
-        <h2 class="timer-title">🔊 AAA-2 Timer</h2>
+        <h2 class="player-title">🔊 AAA-2 Player</h2>
         <button
-          class="timer-control"
-          onclick="toggleTimer('AAA-2')"
+          class="player-control"
+          onclick="togglePlay('AAA-2')"
           id="control-AAA-2"
         >
           Start
         </button>
       </div>
 
-      <div class="page timer-page" id="timer-One">
+      <div class="page player-page" id="player-One">
         <button class="back-btn" onclick="goHome()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -393,17 +386,17 @@
             />
           </svg>
         </button>
-        <h2 class="timer-title">🛎️ One Timer</h2>
+        <h2 class="player-title">🛎️ One Player</h2>
         <button
-          class="timer-control"
-          onclick="toggleTimer('One')"
+          class="player-control"
+          onclick="togglePlay('One')"
           id="control-One"
         >
           Start
         </button>
       </div>
 
-      <div class="page timer-page" id="timer-Goo">
+      <div class="page player-page" id="player-Goo">
         <button class="back-btn" onclick="goHome()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -415,10 +408,10 @@
             />
           </svg>
         </button>
-        <h2 class="timer-title">🎯 Goo Timer</h2>
+        <h2 class="player-title">🎯 Goo Player</h2>
         <button
-          class="timer-control"
-          onclick="toggleTimer('Goo')"
+          class="player-control"
+          onclick="togglePlay('Goo')"
           id="control-Goo"
         >
           Start
@@ -431,7 +424,7 @@
       <div class="modal-content">
         <h2>Settings</h2>
         <div class="setting-group">
-          <label for="delayInput">Timer Delay (seconds)</label>
+          <label for="delayInput">Player Delay (seconds)</label>
           <input type="number" id="delayInput" min="1" max="3600" value="5" />
         </div>
         <div class="modal-buttons">
@@ -447,9 +440,6 @@
 
     <script>
       // App state
-      let currentTimer = null;
-      let timerDelay = 5; // seconds
-      let activeTimers = {};
       let activeAudio = {};
 
       // Audio URLs (using sample audio files)
@@ -469,23 +459,26 @@
         document.getElementById(pageId).classList.add("active");
       }
 
-      function openTimer(soundType) {
-        showPage(`timer-${soundType}`);
-        currentTimer = soundType;
+      function openPlayer(soundType) {
+        showPage(`player-${soundType}`);
       }
 
       function goHome() {
-        // Stop any active timer first
-        if (currentTimer && activeTimers[currentTimer]) {
-          stopTimer(currentTimer);
-        }
         showPage("home");
-        currentTimer = null;
+        for (const soundType in activeAudio) {
+          activeAudio[soundType].pause();
+          delete activeAudio[soundType];
+
+          const controlBtn = document.getElementById(`control-${soundType}`);
+          controlBtn.textContent = "Start";
+          controlBtn.classList.remove("stop");
+          controlBtn.classList.add("start");
+        }
       }
 
       // Settings functions
       function openSettings() {
-        document.getElementById("delayInput").value = timerDelay;
+        document.getElementById("delayInput").value = playerDelay;
         document.getElementById("settingsModal").classList.add("active");
       }
 
@@ -496,61 +489,24 @@
       function saveSettings() {
         const newDelay = parseInt(document.getElementById("delayInput").value);
         if (newDelay && newDelay > 0) {
-          timerDelay = newDelay;
+          playerDelay = newDelay;
         }
         closeSettings();
       }
 
-      // Timer functions
-      function toggleTimer(soundType) {
+      // Player functions
+      function togglePlay(soundType) {
         const controlBtn = document.getElementById(`control-${soundType}`);
-
-        if (activeTimers[soundType]) {
-          stopTimer(soundType);
-        } else {
-          startTimer(soundType);
-        }
-      }
-
-      function startTimer(soundType) {
-        const controlBtn = document.getElementById(`control-${soundType}`);
-
-        // Play initial sound
-        playSound(soundType);
-
-        // Set up recurring timer
-        activeTimers[soundType] = setInterval(() => {
-          playSound(soundType);
-        }, timerDelay * 1000);
-
-        // Update button
         controlBtn.textContent = "Stop";
         controlBtn.classList.add("stop");
-      }
 
-      function stopTimer(soundType) {
-        const controlBtn = document.getElementById(`control-${soundType}`);
-
-        // Clear timer
-        if (activeTimers[soundType]) {
-          clearInterval(activeTimers[soundType]);
-          delete activeTimers[soundType];
-        }
-        // Stop any currently playing audio
         if (activeAudio[soundType]) {
           activeAudio[soundType].pause();
-          activeAudio[soundType].currentTime = 0;
           delete activeAudio[soundType];
-        }
-        // Update button
-        controlBtn.textContent = "Start";
-        controlBtn.classList.remove("stop");
-      }
-      function playSound(soundType) {
-        // Stop any previously playing audio for this sound type
-        if (activeAudio[soundType]) {
-          activeAudio[soundType].pause();
-          activeAudio[soundType].currentTime = 0;
+          controlBtn.textContent = "Start";
+          controlBtn.classList.remove("stop");
+          controlBtn.classList.add("start");
+          return;
         }
 
         // Create and play new audio
@@ -565,9 +521,13 @@
         audio.addEventListener("ended", () => {
           if (activeAudio[soundType] === audio) {
             delete activeAudio[soundType];
+            controlBtn.textContent = "Start";
+            controlBtn.classList.remove("stop");
+            controlBtn.classList.add("start");
           }
         });
       }
+
       // Close modal when clicking outside
       document
         .getElementById("settingsModal")
@@ -579,7 +539,7 @@
 
       // Initialize app
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("Audio Timer App loaded");
+        console.log("Audio Player App loaded");
       });
     </script>
   </body>
