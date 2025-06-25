@@ -1,20 +1,28 @@
 {
-  "name": "PD Countdown Timer",
-  "short_name": "Timer",
-  "start_url": "https://mindtools.vercel.app/pd/t2",
+  "name": "PD Timer",
+  "short_name": "PDTimer",
+  "description": "A collection of mind tools and utilities",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "./",
   "icons": [
     {
-      "src": "https://mindtools.vercel.app/pd/t2/icon-192x192.png",
+      "src": "./icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     },
     {
-      "src": "https://mindtools.vercel.app/pd/t2/icon-512x512.png",
+      "src": "./icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     }
-  ]
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr"
 }
