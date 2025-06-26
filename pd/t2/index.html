@@ -274,6 +274,9 @@
           <button class="change-delay" onclick="changeDelay(3)">3s</button>
           <button class="change-delay" onclick="changeDelay(4)">4s</button>
         </div>
+        <div class="delay-view" id="delay-view">
+          Delay: <span id="delay-value">5</span>s
+        </div>
       </div>
     </div>
 
@@ -285,14 +288,6 @@
           <button class="close-btn" onclick="closeModal()">×</button>
         </div>
         <form id="settingsForm">
-          <!-- <div class="form-group"> -->
-          <!--   <label for="initialSound">Initial Sound URL:</label> -->
-          <!--   <input -->
-          <!--     type="url" -->
-          <!--     id="initialSound" -->
-          <!--     value="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" -->
-          <!--   /> -->
-          <!-- </div> -->
           <div class="form-group">
             <label for="delay">Delay (seconds):</label>
             <input type="number" id="delay" value="5" min="1" max="300" />
@@ -301,14 +296,6 @@
             <label for="seqdelay">Seq Delay (seconds):</label>
             <input type="number" id="seqdelay" value="10" min="1" max="300" />
           </div>
-          <!-- <div class="form-group"> -->
-          <!--   <label for="countSound">Count Sound URL (will add numbers):</label> -->
-          <!--   <input -->
-          <!--     type="url" -->
-          <!--     id="countSound" -->
-          <!--     value="https://www.soundjay.com/misc/sounds/beep-07a.mp3" -->
-          <!--   /> -->
-          <!-- </div> -->
           <button type="button" class="save-btn" onclick="saveSettings()">
             Save Settings
           </button>
@@ -357,6 +344,7 @@
       function saveSettings() {
         settings.delay = parseInt(document.getElementById("delay").value);
         settings.seqdelay = parseInt(document.getElementById("seqdelay").value);
+        document.getElementById("delay-value").textContent = settings.delay;
         closeModal();
         updateStatus("Settings saved");
       }
@@ -440,6 +428,7 @@
 
       function changeDelay(delay) {
         settings.delay = parseInt(delay);
+        document.getElementById("delay-value").textContent = settings.delay;
       }
       // Close modal when clicking outside
       window.onclick = function (event) {
