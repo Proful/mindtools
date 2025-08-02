@@ -1188,10 +1188,12 @@
               (this.currentWordIndex / this.currentSessionWords.length) * 100,
             );
 
+            // Step 3: Play the word
             await this.speakWord(currentWord);
 
             if (!this.isRunning) break;
 
+            // Step 4: Pause
             await this.delay(
               parseInt(this.pauseDelayInput.value),
               "Preparing to record...",
@@ -1199,18 +1201,23 @@
 
             if (!this.isRunning) break;
 
+            // Step 5: Record user pronunciation
             await this.recordUserAudio();
 
             if (!this.isRunning) break;
 
+            // Step 6: Play recorded audio
             await this.playRecordedAudio();
 
             if (!this.isRunning) break;
 
-            await this.delay(
-              parseInt(this.playbackDelayInput.value),
-              "Next word coming up...",
-            );
+            // Step 7: Delay before next word (skip for last word)
+            if (this.currentWordIndex < this.currentSessionWords.length - 1) {
+              await this.delay(
+                parseInt(this.playbackDelayInput.value),
+                "Next word coming up...",
+              );
+            }
 
             this.currentWordIndex++;
           }
