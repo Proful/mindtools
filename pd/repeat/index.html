@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pronunciation Practice</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+      }
+
+      .word-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+        margin: 20px 0;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .start-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 20px 0;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .start-btn:active {
+        transform: translateY(0);
+      }
+
+      .start-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .status {
+        font-size: 1.1rem;
+        margin: 20px 0;
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .listening {
+        color: #e74c3c;
+        animation: pulse 1.5s infinite;
+      }
+
+      .speaking {
+        color: #27ae60;
+      }
+
+      .playing {
+        color: #f39c12;
+      }
+
+      .waiting {
+        color: #3498db;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .progress {
+        background: #ecf0f1;
+        border-radius: 10px;
+        height: 8px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .control-group {
+        text-align: left;
+      }
+
+      .control-group label {
+        display: block;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .control-group input {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+
+      .control-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .word-display {
+          font-size: 2rem;
+        }
+
+        .start-btn {
+          width: 100px;
+          height: 100px;
+          font-size: 1rem;
+        }
+
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎤 Pronunciation Practice</h1>
+
+      <div class="word-display" id="wordDisplay">Ready to start!</div>
+
+      <button class="start-btn" id="startBtn">START</button>
+
+      <div class="status" id="status">Click START to begin</div>
+
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="pauseDelay">Pause Delay (ms)</label>
+          <input
+            type="number"
+            id="pauseDelay"
+            value="2000"
+            min="500"
+            max="5000"
+          />
+        </div>
+        <div class="control-group">
+          <label for="recordTime">Record Time (ms)</label>
+          <input
+            type="number"
+            id="recordTime"
+            value="3000"
+            min="1000"
+            max="8000"
+          />
+        </div>
+        <div class="control-group">
+          <label for="playbackDelay">Playback Delay (ms)</label>
+          <input
+            type="number"
+            id="playbackDelay"
+            value="1500"
+            min="500"
+            max="3000"
+          />
+        </div>
+        <div class="control-group">
+          <label for="speechRate">Speech Rate</label>
+          <input
+            type="range"
+            id="speechRate"
+            min="0.5"
+            max="2"
+            step="0.1"
+            value="0.9"
+          />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      class PronunciationPractice {
+        constructor() {
+          // Array of 10 English words
+          this.words = [
+            "pronunciation",
+            "beautiful",
+            "chocolate",
+            "comfortable",
+            "vegetables",
+            "temperature",
+            "international",
+            "definitely",
+            "beginning",
+            "appreciate",
+          ];
+
+          this.currentWordIndex = 0;
+          this.isRunning = false;
+          this.mediaRecorder = null;
+          this.audioChunks = [];
+          this.recordedAudio = null;
+
+          this.initializeElements();
+          this.setupEventListeners();
+          this.checkBrowserSupport();
+        }
+
+        initializeElements() {
+          this.wordDisplay = document.getElementById("wordDisplay");
+          this.startBtn = document.getElementById("startBtn");
+          this.status = document.getElementById("status");
+          this.progressBar = document.getElementById("progressBar");
+          this.pauseDelayInput = document.getElementById("pauseDelay");
+          this.recordTimeInput = document.getElementById("recordTime");
+          this.playbackDelayInput = document.getElementById("playbackDelay");
+          this.speechRateInput = document.getElementById("speechRate");
+        }
+
+        setupEventListeners() {
+          this.startBtn.addEventListener("click", () => {
+            if (this.isRunning) {
+              this.stopPractice();
+            } else {
+              this.startPractice();
+            }
+          });
+        }
+
+        checkBrowserSupport() {
+          if (!("speechSynthesis" in window)) {
+            this.updateStatus(
+              "Speech synthesis not supported in this browser",
+              "error",
+            );
+            this.startBtn.disabled = true;
+            return;
+          }
+
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.updateStatus(
+              "Microphone access not supported in this browser",
+              "error",
+            );
+            this.startBtn.disabled = true;
+            return;
+          }
+        }
+
+        async startPractice() {
+          if (this.isRunning) return;
+
+          this.isRunning = true;
+          this.currentWordIndex = 0;
+          this.startBtn.textContent = "STOP";
+          this.startBtn.style.background =
+            "linear-gradient(135deg, #e74c3c, #c0392b)";
+          this.updateProgress(0);
+
+          try {
+            await this.requestMicrophonePermission();
+            await this.practiceLoop();
+          } catch (error) {
+            console.error("Practice error:", error);
+            this.updateStatus("Error: " + error.message, "error");
+          } finally {
+            this.resetPractice();
+          }
+        }
+
+        async requestMicrophonePermission() {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              audio: true,
+            });
+            stream.getTracks().forEach((track) => track.stop());
+          } catch (error) {
+            throw new Error("Microphone permission denied or not available");
+          }
+        }
+
+        async practiceLoop() {
+          while (this.currentWordIndex < this.words.length && this.isRunning) {
+            const currentWord = this.words[this.currentWordIndex];
+            this.wordDisplay.textContent = currentWord;
+            this.updateProgress(
+              (this.currentWordIndex / this.words.length) * 100,
+            );
+
+            // Step 3: Play the word
+            await this.speakWord(currentWord);
+
+            if (!this.isRunning) break;
+
+            // Step 4: Pause
+            await this.delay(
+              parseInt(this.pauseDelayInput.value),
+              "Preparing to record...",
+            );
+
+            if (!this.isRunning) break;
+
+            // Step 5: Record user pronunciation
+            await this.recordUserAudio();
+
+            if (!this.isRunning) break;
+
+            // Step 6: Play recorded audio
+            await this.playRecordedAudio();
+
+            if (!this.isRunning) break;
+
+            // Step 7: Delay before next word
+            await this.delay(
+              parseInt(this.playbackDelayInput.value),
+              "Next word coming up...",
+            );
+
+            this.currentWordIndex++;
+          }
+
+          if (this.isRunning) {
+            this.updateStatus("Practice completed! Great job! 🎉", "success");
+            this.wordDisplay.textContent = "Completed!";
+            this.updateProgress(100);
+          }
+        }
+
+        speakWord(word) {
+          return new Promise((resolve) => {
+            this.updateStatus(`🔊 Listen: "${word}"`, "speaking");
+
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = "en-US";
+            utterance.rate = parseFloat(this.speechRateInput.value);
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            utterance.onend = () => resolve();
+            utterance.onerror = () => resolve();
+
+            speechSynthesis.speak(utterance);
+          });
+        }
+
+        async recordUserAudio() {
+          return new Promise(async (resolve, reject) => {
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                  echoCancellation: true,
+                  noiseSuppression: true,
+                  sampleRate: 44100,
+                },
+              });
+
+              this.audioChunks = [];
+              this.mediaRecorder = new MediaRecorder(stream, {
+                mimeType: MediaRecorder.isTypeSupported("audio/webm")
+                  ? "audio/webm"
+                  : "audio/mp4",
+              });
+
+              this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                  this.audioChunks.push(event.data);
+                }
+              };
+
+              this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, {
+                  type: "audio/wav",
+                });
+                this.recordedAudio = new Audio(URL.createObjectURL(audioBlob));
+                stream.getTracks().forEach((track) => track.stop());
+                resolve();
+              };
+
+              this.updateStatus("🎤 Recording... Speak now!", "listening");
+              this.mediaRecorder.start();
+
+              setTimeout(() => {
+                if (
+                  this.mediaRecorder &&
+                  this.mediaRecorder.state === "recording"
+                ) {
+                  this.mediaRecorder.stop();
+                }
+              }, parseInt(this.recordTimeInput.value));
+            } catch (error) {
+              reject(
+                new Error("Failed to access microphone: " + error.message),
+              );
+            }
+          });
+        }
+
+        async playRecordedAudio() {
+          return new Promise((resolve) => {
+            if (!this.recordedAudio) {
+              resolve();
+              return;
+            }
+
+            this.updateStatus("🔊 Playing your recording...", "playing");
+
+            this.recordedAudio.onended = () => resolve();
+            this.recordedAudio.onerror = () => resolve();
+
+            this.recordedAudio.play().catch(() => resolve());
+          });
+        }
+
+        delay(ms, message = "Waiting...") {
+          return new Promise((resolve) => {
+            this.updateStatus(message, "waiting");
+            setTimeout(resolve, ms);
+          });
+        }
+
+        updateStatus(message, type = "") {
+          this.status.textContent = message;
+          this.status.className = `status ${type}`;
+        }
+
+        updateProgress(percentage) {
+          this.progressBar.style.width = percentage + "%";
+        }
+
+        stopPractice() {
+          this.isRunning = false;
+          this.updateStatus("Practice stopped", "waiting");
+
+          // Stop speech synthesis
+          if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+          }
+
+          // Stop recording if active
+          if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+            this.mediaRecorder.stop();
+          }
+
+          // Stop audio playback if active
+          if (this.recordedAudio && !this.recordedAudio.paused) {
+            this.recordedAudio.pause();
+            this.recordedAudio.currentTime = 0;
+          }
+        }
+
+        resetPractice() {
+          this.isRunning = false;
+          this.startBtn.textContent = "START";
+          this.startBtn.style.background =
+            "linear-gradient(135deg, #667eea, #764ba2)";
+          this.currentWordIndex = 0;
+
+          if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+            this.mediaRecorder.stop();
+          }
+
+          // Clean up recorded audio URL
+          if (this.recordedAudio && this.recordedAudio.src) {
+            URL.revokeObjectURL(this.recordedAudio.src);
+          }
+        }
+      }
+
+      // Initialize the app when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        new PronunciationPractice();
+      });
+    </script>
+  </body>
+</html>
