@@ -345,8 +345,6 @@
 
       <div class="word-display" id="wordDisplay">Ready to start!</div>
 
-      <div class="practice-info" id="practiceInfo">Practice 10 random words</div>
-
       <button class="start-btn" id="startBtn">START</button>
 
       <div class="status" id="status">Click START to begin</div>
@@ -453,7 +451,6 @@
 
         initializeElements() {
           this.wordDisplay = document.getElementById("wordDisplay");
-          this.practiceInfo = document.getElementById("practiceInfo");
           this.startBtn = document.getElementById("startBtn");
           this.newWordsBtn = document.getElementById("newWordsBtn");
           this.settingsBtn = document.getElementById("settingsBtn");
@@ -584,14 +581,9 @@
           
           this.practiceWords = shuffled.slice(0, 10);
           this.currentWordIndex = 0;
-          this.updatePracticeInfo();
           this.updateProgress(0);
           this.wordDisplay.textContent = "Ready to start!";
           this.updateStatus("Click START to begin with new words", "waiting");
-        }
-
-        updatePracticeInfo() {
-          this.practiceInfo.textContent = `Practice 10 random words: ${this.practiceWords.join(', ')}`;
         }
 
         async startPractice() {
@@ -621,6 +613,11 @@
                 parseInt(this.initialDelayInput.value),
                 "Starting practice..."
               );
+            }
+
+            // Play ding sound before first word
+            if (this.isRunning) {
+              await this.playDingSound();
             }
             
             await this.practiceLoop();
