@@ -14,54 +14,6 @@
           width: 95%;
         }
 
-        async warmUpSpeechSynthesis() {
-          return new Promise((resolve) => {
-            // Create a silent warm-up utterance to initialize speech synthesis
-            const warmUpUtterance = new SpeechSynthesisUtterance(" ");
-            warmUpUtterance.volume = 0; // Silent
-            warmUpUtterance.rate = 1;
-            warmUpUtterance.pitch = 1;
-
-            // Wait for voices to be loaded
-            const voices = speechSynthesis.getVoices();
-            if (voices.length > 0) {
-              const englishVoice = voices.find(voice => 
-                voice.lang.startsWith('en') && voice.localService
-              ) || voices.find(voice => 
-                voice.lang.startsWith('en')
-              ) || voices[0];
-              
-              warmUpUtterance.voice = englishVoice;
-            }
-
-            warmUpUtterance.onend = () => {
-              setTimeout(resolve, 100);
-            };
-            warmUpUtterance.onerror = () => {
-              setTimeout(resolve, 100);
-            };
-
-            // Cancel any existing speech and start warm-up
-            if (speechSynthesis.speaking) {
-              speechSynthesis.cancel();
-            }
-            
-            setTimeout(() => {
-              speechSynthesis.speak(warmUpUtterance);
-            }, 50);
-          });
-        }
-
-        openModal() {
-          this.settingsModal.classList.add("show");
-          document.body.style.overflow = "hidden"; // Prevent background scrolling
-        }
-
-        closeModal() {
-          this.settingsModal.classList.remove("show");
-          document.body.style.overflow = "auto"; // Restore scrolling
-        }
-
         .modal-header h2 {
           font-size: 1.3rem;
         }
@@ -551,6 +503,54 @@
             if (e.key === "Escape" && this.settingsModal.classList.contains("show")) {
               this.closeModal();
             }
+          });
+        }
+
+        openModal() {
+          this.settingsModal.classList.add("show");
+          document.body.style.overflow = "hidden"; // Prevent background scrolling
+        }
+
+        closeModal() {
+          this.settingsModal.classList.remove("show");
+          document.body.style.overflow = "auto"; // Restore scrolling
+        }
+
+        async warmUpSpeechSynthesis() {
+          return new Promise((resolve) => {
+            // Create a silent warm-up utterance to initialize speech synthesis
+            const warmUpUtterance = new SpeechSynthesisUtterance(" ");
+            warmUpUtterance.volume = 0; // Silent
+            warmUpUtterance.rate = 1;
+            warmUpUtterance.pitch = 1;
+
+            // Wait for voices to be loaded
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+              const englishVoice = voices.find(voice => 
+                voice.lang.startsWith('en') && voice.localService
+              ) || voices.find(voice => 
+                voice.lang.startsWith('en')
+              ) || voices[0];
+              
+              warmUpUtterance.voice = englishVoice;
+            }
+
+            warmUpUtterance.onend = () => {
+              setTimeout(resolve, 100);
+            };
+            warmUpUtterance.onerror = () => {
+              setTimeout(resolve, 100);
+            };
+
+            // Cancel any existing speech and start warm-up
+            if (speechSynthesis.speaking) {
+              speechSynthesis.cancel();
+            }
+            
+            setTimeout(() => {
+              speechSynthesis.speak(warmUpUtterance);
+            }, 50);
           });
         }
 
