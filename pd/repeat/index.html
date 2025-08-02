@@ -48,7 +48,7 @@
         justify-content: center;
       }
 
-      .session-info {
+      .practice-info {
         font-size: 1rem;
         color: #666;
         margin: 15px 0;
@@ -148,8 +148,8 @@
         margin-top: 20px;
       }
 
-      .reset-btn {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      .new-words-btn {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
         border: none;
         border-radius: 8px;
         padding: 10px 15px;
@@ -159,16 +159,16 @@
         cursor: pointer;
         transition: all 0.3s ease;
         margin-top: 15px;
-        box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+        box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
       }
 
-      .reset-btn:hover {
-        background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+      .new-words-btn:hover {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
         transform: translateY(-1px);
-        box-shadow: 0 6px 12px rgba(149, 165, 166, 0.4);
+        box-shadow: 0 6px 12px rgba(39, 174, 96, 0.4);
       }
 
-      .reset-btn:active {
+      .new-words-btn:active {
         transform: translateY(0);
       }
 
@@ -227,7 +227,7 @@
 
       <div class="word-display" id="wordDisplay">Ready to start!</div>
 
-      <div class="session-info" id="sessionInfo">Session 1: Words 1-10</div>
+      <div class="practice-info" id="practiceInfo">Practice 10 random words</div>
 
       <button class="start-btn" id="startBtn">START</button>
 
@@ -281,784 +281,28 @@
         </div>
       </div>
 
-      <button class="reset-btn" id="resetBtn">🔄 Reset Progress</button>
+      <button class="new-words-btn" id="newWordsBtn">🎲 New Random Words</button>
     </div>
 
     <script>
       class PronunciationPractice {
         constructor() {
           // Array of 50 English words
-          this.words = [
-            "pronunciation",
-            "beautiful",
-            "chocolate",
-            "comfortable",
-            "vegetables",
-            "temperature",
-            "international",
-            "definitely",
-            "beginning",
-            "appreciate",
-            "achievement",
-            "adventure",
-            "algorithm",
-            "alliance",
-            "alternative",
-            "ambulance",
-            "analysis",
-            "anniversary",
-            "announcement",
-            "anonymous",
-            "apartment",
-            "appearance",
-            "application",
-            "appointment",
-            "appreciation",
-            "appropriate",
-            "architecture",
-            "arrangement",
-            "assessment",
-            "assignment",
-            "assistance",
-            "atmosphere",
-            "attention",
-            "attraction",
-            "authority",
-            "availability",
-            "background",
-            "bankruptcy",
-            "basketball",
-            "battlefield",
-            "bibliography",
-            "biological",
-            "birthplace",
-            "blackboard",
-            "blueprint",
-            "bookkeeper",
-            "breakthrough",
-            "broadcast",
-            "brotherhood",
-            "butterfly",
-            "calculator",
-            "candidate",
-            "capability",
-            "capitalism",
-            "celebration",
-            "certificate",
-            "championship",
-            "characteristic",
-            "chemistry",
-            "childhood",
-            "chocolate",
-            "Christmas",
-            "cigarette",
-            "civilization",
-            "classroom",
-            "coalition",
-            "collection",
-            "combination",
-            "comfortable",
-            "commander",
-            "commercial",
-            "commission",
-            "commitment",
-            "committee",
-            "communication",
-            "community",
-            "comparison",
-            "competition",
-            "complaint",
-            "complement",
-            "complexity",
-            "component",
-            "composition",
-            "comprehension",
-            "compromise",
-            "computer",
-            "concentration",
-            "conclusion",
-            "condition",
-            "conference",
-            "confidence",
-            "conflict",
-            "confusion",
-            "connection",
-            "conscience",
-            "consequence",
-            "consideration",
-            "consistency",
-            "constitution",
-            "construction",
-            "consultation",
-            "consumption",
-            "container",
-            "contemporary",
-            "content",
-            "contest",
-            "contribution",
-            "controller",
-            "controversy",
-            "convention",
-            "conversation",
-            "cooperation",
-            "corporation",
-            "correction",
-            "corruption",
-            "counselor",
-            "countryside",
-            "creativity",
-            "criticism",
-            "curiosity",
-            "curriculum",
-            "customer",
-            "daughter",
-            "decision",
-            "declaration",
-            "decoration",
-            "definition",
-            "democracy",
-            "demonstration",
-            "department",
-            "dependency",
-            "description",
-            "destination",
-            "destruction",
-            "development",
-            "dictionary",
-            "difference",
-            "difficulty",
-            "dimension",
-            "direction",
-            "directory",
-            "disability",
-            "disappointment",
-            "discipline",
-            "discrimination",
-            "discussion",
-            "distribution",
-            "diversity",
-            "document",
-            "domestic",
-            "donation",
-            "dramatic",
-            "drinking",
-            "economic",
-            "education",
-            "effective",
-            "efficiency",
-            "election",
-            "electronic",
-            "elementary",
-            "elimination",
-            "emergency",
-            "emotion",
-            "emphasis",
-            "employment",
-            "encyclopedia",
-            "engineering",
-            "enhancement",
-            "enjoyment",
-            "enormous",
-            "entertainment",
-            "enthusiasm",
-            "environment",
-            "equipment",
-            "establishment",
-            "evaluation",
-            "evening",
-            "everybody",
-            "everything",
-            "evidence",
-            "examination",
-            "example",
-            "exception",
-            "excitement",
-            "exercise",
-            "exhibition",
-            "existence",
-            "expansion",
-            "expectation",
-            "experience",
-            "experiment",
-            "explanation",
-            "exploration",
-            "expression",
-            "extension",
-            "extreme",
-            "facility",
-            "factory",
-            "familiar",
-            "fantastic",
-            "fashion",
-            "favorite",
-            "feature",
-            "federal",
-            "feedback",
-            "fiction",
-            "financial",
-            "finding",
-            "fishing",
-            "fitness",
-            "flexibility",
-            "football",
-            "foreign",
-            "forest",
-            "formation",
-            "formula",
-            "foundation",
-            "framework",
-            "freedom",
-            "frequency",
-            "friendship",
-            "function",
-            "fundamental",
-            "furniture",
-            "gallery",
-            "gambling",
-            "garden",
-            "gathering",
-            "general",
-            "generation",
-            "geography",
-            "girlfriend",
-            "government",
-            "graduation",
-            "grammar",
-            "grandfather",
-            "grandmother",
-            "graphic",
-            "grocery",
-            "growth",
-            "guarantee",
-            "guidance",
-            "guideline",
-            "habitat",
-            "handful",
-            "happiness",
-            "hardware",
-            "headline",
-            "headquarters",
-            "health",
-            "hearing",
-            "heritage",
-            "highlight",
-            "highway",
-            "historian",
-            "historical",
-            "holiday",
-            "homework",
-            "hospital",
-            "housing",
-            "humanity",
-            "hurricane",
-            "husband",
-            "identity",
-            "imagination",
-            "immigration",
-            "implementation",
-            "importance",
-            "impression",
-            "improvement",
-            "incentive",
-            "incident",
-            "inclusion",
-            "income",
-            "increase",
-            "independence",
-            "indication",
-            "individual",
-            "industry",
-            "infection",
-            "inflation",
-            "influence",
-            "information",
-            "ingredient",
-            "initiative",
-            "injection",
-            "innovation",
-            "inspection",
-            "installation",
-            "instance",
-            "institution",
-            "instruction",
-            "instrument",
-            "insurance",
-            "intelligence",
-            "intention",
-            "interaction",
-            "interest",
-            "interference",
-            "internal",
-            "international",
-            "internet",
-            "interpretation",
-            "interview",
-            "introduction",
-            "invasion",
-            "investigation",
-            "investment",
-            "invitation",
-            "involvement",
-            "island",
-            "jacket",
-            "journey",
-            "judgment",
-            "justice",
-            "keyboard",
-            "kitchen",
-            "knowledge",
-            "laboratory",
-            "landscape",
-            "language",
-            "laughter",
-            "laundry",
-            "leadership",
-            "learning",
-            "leather",
-            "lecture",
-            "legislation",
-            "leisure",
-            "length",
-            "library",
-            "license",
-            "lifestyle",
-            "lighting",
-            "limitation",
-            "literature",
-            "location",
-            "magazine",
-            "maintenance",
-            "majority",
-            "management",
-            "manufacturer",
-            "marketing",
-            "marriage",
-            "material",
-            "mathematics",
-            "maximum",
-            "meaning",
-            "measurement",
-            "mechanism",
-            "medicine",
-            "meeting",
-            "membership",
-            "memory",
-            "mention",
-            "message",
-            "method",
-            "middle",
-            "military",
-            "minimum",
-            "minority",
-            "mission",
-            "mistake",
-            "mixture",
-            "mobile",
-            "model",
-            "modification",
-            "moment",
-            "monitor",
-            "morning",
-            "mortgage",
-            "mother",
-            "motivation",
-            "mountain",
-            "movement",
-            "muscle",
-            "museum",
-            "music",
-            "mystery",
-            "national",
-            "natural",
-            "nature",
-            "navigation",
-            "necessary",
-            "negative",
-            "negotiation",
-            "neighborhood",
-            "network",
-            "newspaper",
-            "nomination",
-            "normal",
-            "northern",
-            "nothing",
-            "notice",
-            "notification",
-            "number",
-            "objective",
-            "obligation",
-            "observation",
-            "occasion",
-            "occupation",
-            "ocean",
-            "office",
-            "operation",
-            "opinion",
-            "opportunity",
-            "opposite",
-            "option",
-            "orange",
-            "order",
-            "organization",
-            "orientation",
-            "original",
-            "outcome",
-            "outline",
-            "output",
-            "outside",
-            "overall",
-            "ownership",
-            "package",
-            "painting",
-            "paper",
-            "paragraph",
-            "parameter",
-            "parent",
-            "parking",
-            "parliament",
-            "participation",
-            "particular",
-            "partnership",
-            "passenger",
-            "passion",
-            "password",
-            "patience",
-            "patient",
-            "pattern",
-            "payment",
-            "penalty",
-            "people",
-            "perception",
-            "performance",
-            "period",
-            "permission",
-            "person",
-            "personality",
-            "perspective",
-            "philosophy",
-            "photograph",
-            "physical",
-            "picture",
-            "piece",
-            "place",
-            "planning",
-            "platform",
-            "player",
-            "pleasure",
-            "pocket",
-            "poetry",
-            "point",
-            "policy",
-            "political",
-            "pollution",
-            "popular",
-            "population",
-            "position",
-            "positive",
-            "possibility",
-            "potential",
-            "poverty",
-            "power",
-            "practice",
-            "prayer",
-            "preference",
-            "pregnancy",
-            "preparation",
-            "presence",
-            "presentation",
-            "preservation",
-            "president",
-            "pressure",
-            "prevention",
-            "price",
-            "pride",
-            "primary",
-            "principle",
-            "priority",
-            "privacy",
-            "private",
-            "probability",
-            "problem",
-            "procedure",
-            "process",
-            "production",
-            "profession",
-            "profile",
-            "profit",
-            "program",
-            "project",
-            "promise",
-            "promotion",
-            "property",
-            "proposal",
-            "protection",
-            "psychology",
-            "public",
-            "publication",
-            "purpose",
-            "quality",
-            "quantity",
-            "quarter",
-            "question",
-            "quick",
-            "radio",
-            "railway",
-            "range",
-            "ratio",
-            "reaction",
-            "reading",
-            "reality",
-            "reason",
-            "receipt",
-            "reception",
-            "recognition",
-            "recommendation",
-            "record",
-            "recovery",
-            "reduction",
-            "reference",
-            "reflection",
-            "reform",
-            "region",
-            "registration",
-            "regulation",
-            "rejection",
-            "relation",
-            "relationship",
-            "release",
-            "religion",
-            "reminder",
-            "removal",
-            "repair",
-            "repeat",
-            "replacement",
-            "report",
-            "representation",
-            "reputation",
-            "request",
-            "requirement",
-            "research",
-            "reservation",
-            "residence",
-            "resolution",
-            "resource",
-            "respect",
-            "response",
-            "responsibility",
-            "restaurant",
-            "result",
-            "retirement",
-            "return",
-            "revenue",
-            "review",
-            "revolution",
-            "reward",
-            "rhythm",
-            "right",
-            "river",
-            "safety",
-            "salary",
-            "sample",
-            "satisfaction",
-            "scale",
-            "schedule",
-            "scheme",
-            "scholarship",
-            "school",
-            "science",
-            "screen",
-            "script",
-            "search",
-            "season",
-            "second",
-            "secret",
-            "section",
-            "security",
-            "selection",
-            "sense",
-            "sentence",
-            "series",
-            "service",
-            "session",
-            "setting",
-            "settlement",
-            "setup",
-            "sharing",
-            "shelter",
-            "shipping",
-            "shopping",
-            "shoulder",
-            "sight",
-            "signal",
-            "signature",
-            "significance",
-            "silence",
-            "silver",
-            "simple",
-            "sister",
-            "situation",
-            "skill",
-            "smoke",
-            "social",
-            "society",
-            "software",
-            "solution",
-            "something",
-            "sound",
-            "source",
-            "southern",
-            "space",
-            "specialist",
-            "specific",
-            "speech",
-            "spirit",
-            "sport",
-            "square",
-            "stage",
-            "standard",
-            "statement",
-            "station",
-            "statistics",
-            "status",
-            "storage",
-            "story",
-            "strategy",
-            "strength",
-            "stress",
-            "structure",
-            "struggle",
-            "student",
-            "study",
-            "style",
-            "subject",
-            "submission",
-            "substance",
-            "success",
-            "suggestion",
-            "summer",
-            "support",
-            "surface",
-            "surgery",
-            "surprise",
-            "survey",
-            "survival",
-            "suspect",
-            "symbol",
-            "sympathy",
-            "system",
-            "table",
-            "target",
-            "task",
-            "teacher",
-            "teaching",
-            "team",
-            "technology",
-            "telephone",
-            "television",
-            "temperature",
-            "tennis",
-            "tension",
-            "territory",
-            "terror",
-            "testing",
-            "theater",
-            "theory",
-            "therapy",
-            "thought",
-            "thread",
-            "threat",
-            "ticket",
-            "timeline",
-            "title",
-            "today",
-            "tomorrow",
-            "tonight",
-            "topic",
-            "total",
-            "touch",
-            "tourist",
-            "tournament",
-            "track",
-            "trade",
-            "tradition",
-            "traffic",
-            "training",
-            "transfer",
-            "transformation",
-            "transition",
-            "translation",
-            "transportation",
-            "travel",
-            "treatment",
-            "trouble",
-            "truck",
-            "trust",
-            "truth",
-            "tunnel",
-            "turkey",
-            "turning",
-            "tutorial",
-            "uncle",
-            "understanding",
-            "union",
-            "unique",
-            "unit",
-            "university",
-            "update",
-            "upgrade",
-            "usage",
-            "user",
-            "utility",
-            "vacation",
-            "valley",
-            "value",
-            "variation",
-            "variety",
-            "vehicle",
-            "venture",
-            "version",
-            "victim",
-            "video",
-            "village",
-            "virus",
-            "vision",
-            "visit",
-            "visual",
-            "voice",
-            "volume",
-            "waiting",
-            "walking",
-            "warning",
-            "waste",
-            "water",
-            "weather",
-            "website",
-            "wedding",
-            "weight",
-            "welcome",
-            "welfare",
-            "western",
-            "window",
-            "winter",
-            "wisdom",
-            "witness",
-            "woman",
-            "wonder",
-            "working",
-            "workshop",
-            "world",
-            "worry",
-            "writing",
-            "yellow",
-            "yesterday",
-            "young",
-            "youth",
+          this.allWords = [
+              'pronunciation', 'beautiful', 'chocolate', 'comfortable', 'vegetables',
+              'temperature', 'international', 'definitely', 'beginning', 'appreciate',
+              'achievement', 'adventure', 'algorithm', 'alliance', 'alternative',
+              'ambulance', 'analysis', 'anniversary', 'announcement', 'anonymous',
+              'apartment', 'appearance', 'application', 'appointment', 'appreciation',
+              'appropriate', 'architecture', 'arrangement', 'assessment', 'assignment',
+              'assistance', 'atmosphere', 'attention', 'attraction', 'authority',
+              'availability', 'background', 'bankruptcy', 'basketball', 'battlefield',
+              'bibliography', 'biological', 'birthplace', 'blackboard', 'blueprint',
+              'bookkeeper', 'breakthrough', 'broadcast', 'brotherhood', 'butterfly'
           ];
 
-          this.wordsPerSession = 10;
+          this.practiceWords = [];
           this.currentWordIndex = 0;
-          this.sessionStartIndex = 0;
-          this.currentSessionWords = [];
           this.isRunning = false;
           this.mediaRecorder = null;
           this.audioChunks = [];
@@ -1067,15 +311,14 @@
           this.initializeElements();
           this.setupEventListeners();
           this.checkBrowserSupport();
-          this.loadProgress();
-          this.updateSessionInfo();
+          this.generateRandomWords();
         }
 
         initializeElements() {
           this.wordDisplay = document.getElementById("wordDisplay");
-          this.sessionInfo = document.getElementById("sessionInfo");
+          this.practiceInfo = document.getElementById("practiceInfo");
           this.startBtn = document.getElementById("startBtn");
-          this.resetBtn = document.getElementById("resetBtn");
+          this.newWordsBtn = document.getElementById("newWordsBtn");
           this.status = document.getElementById("status");
           this.progressBar = document.getElementById("progressBar");
           this.pauseDelayInput = document.getElementById("pauseDelay");
@@ -1093,8 +336,10 @@
             }
           });
 
-          this.resetBtn.addEventListener("click", () => {
-            this.resetProgress();
+          this.newWordsBtn.addEventListener("click", () => {
+            if (!this.isRunning) {
+              this.generateRandomWords();
+            }
           });
         }
 
@@ -1118,65 +363,31 @@
           }
         }
 
-        loadProgress() {
-          try {
-            const savedIndex = parseInt(
-              localStorage.getItem("pronunciationSessionIndex") || "0",
-            );
-            this.sessionStartIndex = savedIndex;
-          } catch (error) {
-            console.log("LocalStorage not available, using memory storage");
-            this.sessionStartIndex = 0;
+        generateRandomWords() {
+          // Fisher-Yates shuffle algorithm to get 10 random words
+          const shuffled = [...this.allWords];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
           }
+          
+          this.practiceWords = shuffled.slice(0, 10);
+          this.currentWordIndex = 0;
+          this.updatePracticeInfo();
+          this.updateProgress(0);
+          this.wordDisplay.textContent = "Ready to start!";
+          this.updateStatus("Click START to begin with new words", "waiting");
         }
 
-        saveProgress() {
-          try {
-            localStorage.setItem(
-              "pronunciationSessionIndex",
-              this.sessionStartIndex.toString(),
-            );
-          } catch (error) {
-            console.log("LocalStorage not available, progress not saved");
-          }
-        }
-
-        updateSessionInfo() {
-          const sessionNumber =
-            Math.floor(this.sessionStartIndex / this.wordsPerSession) + 1;
-          const startWord = this.sessionStartIndex + 1;
-          const endWord = Math.min(
-            this.sessionStartIndex + this.wordsPerSession,
-            this.words.length,
-          );
-          this.sessionInfo.textContent = `Session ${sessionNumber}: Words ${startWord}-${endWord}`;
-
-          if (this.sessionStartIndex >= this.words.length) {
-            this.sessionInfo.textContent =
-              "All words completed! Resetting to start.";
-            this.sessionStartIndex = 0;
-            this.saveProgress();
-            this.updateSessionInfo();
-          }
-        }
-
-        getCurrentSessionWords() {
-          const startIndex = this.sessionStartIndex;
-          const endIndex = Math.min(
-            startIndex + this.wordsPerSession,
-            this.words.length,
-          );
-          return this.words.slice(startIndex, endIndex);
+        updatePracticeInfo() {
+          this.practiceInfo.textContent = `Practice 10 random words: ${this.practiceWords.join(', ')}`;
         }
 
         async startPractice() {
           if (this.isRunning) return;
 
-          this.currentSessionWords = this.getCurrentSessionWords();
-
-          if (this.currentSessionWords.length === 0) {
-            this.updateStatus("All words completed!", "success");
-            return;
+          if (this.practiceWords.length === 0) {
+            this.generateRandomWords();
           }
 
           this.isRunning = true;
@@ -1184,6 +395,7 @@
           this.startBtn.textContent = "STOP";
           this.startBtn.style.background =
             "linear-gradient(135deg, #e74c3c, #c0392b)";
+          this.newWordsBtn.disabled = true;
           this.updateProgress(0);
 
           try {
@@ -1210,21 +422,21 @@
 
         async practiceLoop() {
           while (
-            this.currentWordIndex < this.currentSessionWords.length &&
+            this.currentWordIndex < this.practiceWords.length &&
             this.isRunning
           ) {
-            const currentWord = this.currentSessionWords[this.currentWordIndex];
+            const currentWord = this.practiceWords[this.currentWordIndex];
             this.wordDisplay.textContent = currentWord;
             this.updateProgress(
-              (this.currentWordIndex / this.currentSessionWords.length) * 100,
+              (this.currentWordIndex / this.practiceWords.length) * 100,
             );
 
-            // Step 3: Play the word
+            // Play the word
             await this.speakWord(currentWord);
 
             if (!this.isRunning) break;
 
-            // Step 4: Pause
+            // Pause
             await this.delay(
               parseInt(this.pauseDelayInput.value),
               "Preparing to record...",
@@ -1232,18 +444,18 @@
 
             if (!this.isRunning) break;
 
-            // Step 5: Record user pronunciation
+            // Record user pronunciation
             await this.recordUserAudio();
 
             if (!this.isRunning) break;
 
-            // Step 6: Play recorded audio
+            // Play recorded audio
             await this.playRecordedAudio();
 
             if (!this.isRunning) break;
 
-            // Step 7: Delay before next word (skip for last word)
-            if (this.currentWordIndex < this.currentSessionWords.length - 1) {
+            // Delay before next word (skip for last word)
+            if (this.currentWordIndex < this.practiceWords.length - 1) {
               await this.delay(
                 parseInt(this.playbackDelayInput.value),
                 "Next word coming up...",
@@ -1254,13 +466,9 @@
           }
 
           if (this.isRunning) {
-            this.updateStatus("Session completed! Great job! 🎉", "success");
-            this.wordDisplay.textContent = "Session Complete!";
+            this.updateStatus("Practice completed! Great job! 🎉", "success");
+            this.wordDisplay.textContent = "Practice Complete!";
             this.updateProgress(100);
-
-            this.sessionStartIndex += this.wordsPerSession;
-            this.saveProgress();
-            this.updateSessionInfo();
           }
         }
 
@@ -1268,16 +476,42 @@
           return new Promise((resolve) => {
             this.updateStatus(`🔊 Listen: "${word}"`, "speaking");
 
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = "en-US";
-            utterance.rate = parseFloat(this.speechRateInput.value);
-            utterance.pitch = 1;
-            utterance.volume = 1;
+            // Wait for any previous speech to finish
+            if (speechSynthesis.speaking) {
+              speechSynthesis.cancel();
+            }
 
-            utterance.onend = () => resolve();
-            utterance.onerror = () => resolve();
+            // Small delay to ensure speech synthesis is ready
+            setTimeout(() => {
+              const utterance = new SpeechSynthesisUtterance(word);
+              utterance.lang = "en-US";
+              utterance.rate = parseFloat(this.speechRateInput.value);
+              utterance.pitch = 1;
+              utterance.volume = 1;
 
-            speechSynthesis.speak(utterance);
+              // Wait for voices to be loaded
+              const voices = speechSynthesis.getVoices();
+              if (voices.length > 0) {
+                // Try to find a native English voice
+                const englishVoice = voices.find(voice => 
+                  voice.lang.startsWith('en') && voice.localService
+                ) || voices.find(voice => 
+                  voice.lang.startsWith('en')
+                ) || voices[0];
+                
+                utterance.voice = englishVoice;
+              }
+
+              utterance.onend = () => {
+                setTimeout(resolve, 100); // Small delay after speech ends
+              };
+              utterance.onerror = () => {
+                console.warn("Speech synthesis error for word:", word);
+                setTimeout(resolve, 100);
+              };
+
+              speechSynthesis.speak(utterance);
+            }, 100);
           });
         }
 
@@ -1407,6 +641,7 @@
           this.startBtn.textContent = "START";
           this.startBtn.style.background =
             "linear-gradient(135deg, #667eea, #764ba2)";
+          this.newWordsBtn.disabled = false;
           this.updateStatus("Practice stopped", "waiting");
 
           if (speechSynthesis.speaking) {
@@ -1428,6 +663,7 @@
           this.startBtn.textContent = "START";
           this.startBtn.style.background =
             "linear-gradient(135deg, #667eea, #764ba2)";
+          this.newWordsBtn.disabled = false;
           this.currentWordIndex = 0;
 
           if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
@@ -1438,31 +674,17 @@
             URL.revokeObjectURL(this.recordedAudio.src);
           }
         }
-
-        resetProgress() {
-          // Stop any running practice
-          if (this.isRunning) {
-            this.stopPractice();
-          }
-
-          // Reset session progress to beginning
-          this.sessionStartIndex = 0;
-          this.currentWordIndex = 0;
-          this.saveProgress();
-          this.updateSessionInfo();
-          this.updateProgress(0);
-
-          // Reset display
-          this.wordDisplay.textContent = "Ready to start!";
-          this.updateStatus(
-            "Progress reset! Click START to begin from Session 1",
-            "waiting",
-          );
-        }
       }
 
+      // Wait for voices to be loaded before initializing
       document.addEventListener("DOMContentLoaded", () => {
-        new PronunciationPractice();
+        if (speechSynthesis.getVoices().length > 0) {
+          new PronunciationPractice();
+        } else {
+          speechSynthesis.addEventListener('voiceschanged', () => {
+            new PronunciationPractice();
+          }, { once: true });
+        }
       });
     </script>
   </body>
