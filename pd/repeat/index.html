@@ -9,6 +9,24 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        .modal-content {
+          padding: 20px;
+          width: 95%;
+        }
+
+        openModal() {
+          this.settingsModal.classList.add("show");
+          document.body.style.overflow = "hidden"; // Prevent background scrolling
+        }
+
+        closeModal() {
+          this.settingsModal.classList.remove("show");
+          document.body.style.overflow = "auto"; // Restore scrolling
+        }
+
+        .modal-header h2 {
+          font-size: 1.3rem;
+        }
       }
 
       body {
@@ -31,10 +49,36 @@
         width: 100%;
       }
 
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+
       h1 {
         color: #333;
-        margin-bottom: 30px;
         font-size: 1.8rem;
+        margin: 0;
+      }
+
+      .settings-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #667eea;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .settings-btn:hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: rotate(90deg);
       }
 
       .word-display {
@@ -141,11 +185,120 @@
         transition: width 0.3s ease;
       }
 
-      .controls {
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: auto;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideIn {
+        from { 
+          opacity: 0;
+          transform: translateY(-50px) scale(0.9);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .modal-header h2 {
+        color: #333;
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #999;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+      }
+
+      .close-btn:hover {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+      }
+
+      .modal-controls {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin-top: 20px;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .modal-control-group {
+        text-align: left;
+      }
+
+      .modal-control-group label {
+        display: block;
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .modal-control-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .modal-control-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
 
       .new-words-btn {
@@ -171,32 +324,6 @@
       .new-words-btn:active {
         transform: translateY(0);
       }
-
-      .control-group {
-        text-align: left;
-      }
-
-      .control-group label {
-        display: block;
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 5px;
-      }
-
-      .control-group input {
-        width: 100%;
-        padding: 8px;
-        border: 2px solid #ecf0f1;
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-
-      .control-group input:focus {
-        outline: none;
-        border-color: #667eea;
-      }
-
-      @media (max-width: 480px) {
         .container {
           padding: 20px;
         }
@@ -215,15 +342,16 @@
           font-size: 1rem;
         }
 
-        .controls {
-          grid-template-columns: 1fr;
-        }
+      @media (max-width: 480px) {
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>🎤 Pronunciation Practice</h1>
+      <div class="header">
+        <h1>🎤 Pronunciation Practice</h1>
+        <button class="settings-btn" id="settingsBtn">⚙️</button>
+      </div>
 
       <div class="word-display" id="wordDisplay">Ready to start!</div>
 
@@ -237,51 +365,70 @@
         <div class="progress-bar" id="progressBar"></div>
       </div>
 
-      <div class="controls">
-        <div class="control-group">
-          <label for="pauseDelay">Pause Delay (ms)</label>
-          <input
-            type="number"
-            id="pauseDelay"
-            value="2000"
-            min="500"
-            max="5000"
-          />
+      <button class="new-words-btn" id="newWordsBtn">🎲 New Random Words</button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>⚙️ Settings</h2>
+          <button class="close-btn" id="closeModalBtn">×</button>
         </div>
-        <div class="control-group">
-          <label for="recordTime">Record Time (ms)</label>
-          <input
-            type="number"
-            id="recordTime"
-            value="3000"
-            min="1000"
-            max="8000"
-          />
-        </div>
-        <div class="control-group">
-          <label for="playbackDelay">Playback Delay (ms)</label>
-          <input
-            type="number"
-            id="playbackDelay"
-            value="1500"
-            min="500"
-            max="3000"
-          />
-        </div>
-        <div class="control-group">
-          <label for="speechRate">Speech Rate</label>
-          <input
-            type="range"
-            id="speechRate"
-            min="0.5"
-            max="2"
-            step="0.1"
-            value="0.9"
-          />
+        <div class="modal-controls">
+          <div class="modal-control-group">
+            <label for="pauseDelay">Pause Before Recording (ms)</label>
+            <input
+              type="number"
+              id="pauseDelay"
+              value="2000"
+              min="500"
+              max="5000"
+            />
+          </div>
+          <div class="modal-control-group">
+            <label for="recordTime">Recording Duration (ms)</label>
+            <input
+              type="number"
+              id="recordTime"
+              value="3000"
+              min="1000"
+              max="8000"
+            />
+          </div>
+          <div class="modal-control-group">
+            <label for="playbackDelay">Delay After Playback (ms)</label>
+            <input
+              type="number"
+              id="playbackDelay"
+              value="1500"
+              min="500"
+              max="3000"
+            />
+          </div>
+          <div class="modal-control-group">
+            <label for="speechRate">Speech Rate (0.5 - 2.0)</label>
+            <input
+              type="range"
+              id="speechRate"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value="0.9"
+            />
+          </div>
+          <div class="modal-control-group">
+            <label for="initialDelay">Delay Before First Word (ms)</label>
+            <input
+              type="number"
+              id="initialDelay"
+              value="1000"
+              min="0"
+              max="3000"
+            />
+          </div>
         </div>
       </div>
-
-      <button class="new-words-btn" id="newWordsBtn">🎲 New Random Words</button>
     </div>
 
     <script>
@@ -319,12 +466,16 @@
           this.practiceInfo = document.getElementById("practiceInfo");
           this.startBtn = document.getElementById("startBtn");
           this.newWordsBtn = document.getElementById("newWordsBtn");
+          this.settingsBtn = document.getElementById("settingsBtn");
+          this.settingsModal = document.getElementById("settingsModal");
+          this.closeModalBtn = document.getElementById("closeModalBtn");
           this.status = document.getElementById("status");
           this.progressBar = document.getElementById("progressBar");
           this.pauseDelayInput = document.getElementById("pauseDelay");
           this.recordTimeInput = document.getElementById("recordTime");
           this.playbackDelayInput = document.getElementById("playbackDelay");
           this.speechRateInput = document.getElementById("speechRate");
+          this.initialDelayInput = document.getElementById("initialDelay");
         }
 
         setupEventListeners() {
@@ -339,6 +490,28 @@
           this.newWordsBtn.addEventListener("click", () => {
             if (!this.isRunning) {
               this.generateRandomWords();
+            }
+          });
+
+          this.settingsBtn.addEventListener("click", () => {
+            this.openModal();
+          });
+
+          this.closeModalBtn.addEventListener("click", () => {
+            this.closeModal();
+          });
+
+          // Close modal when clicking outside
+          this.settingsModal.addEventListener("click", (e) => {
+            if (e.target === this.settingsModal) {
+              this.closeModal();
+            }
+          });
+
+          // Close modal with Escape key
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && this.settingsModal.classList.contains("show")) {
+              this.closeModal();
             }
           });
         }
@@ -400,6 +573,15 @@
 
           try {
             await this.requestMicrophonePermission();
+            
+            // Add initial delay before starting the first word
+            if (this.isRunning) {
+              await this.delay(
+                parseInt(this.initialDelayInput.value),
+                "Starting practice..."
+              );
+            }
+            
             await this.practiceLoop();
           } catch (error) {
             console.error("Practice error:", error);
