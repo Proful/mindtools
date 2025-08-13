@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Playlist Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #ff0000;
+        }
+
+        .playlist-id {
+            font-size: 0.9rem;
+            color: #aaa;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .video-player {
+            margin-bottom: 2rem;
+            display: none;
+            position: sticky;
+            top: 1rem;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-player.active {
+            display: block;
+        }
+
+        .video-player iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+        }
+
+        .close-video {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 10;
+            transition: background 0.3s;
+        }
+
+        .close-video:hover {
+            background: rgba(255, 0, 0, 0.8);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .video-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border-color: #ff0000;
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff0000;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-button:hover {
+            background: #ff0000;
+            color: white;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .video-link {
+            color: #aaa;
+            font-size: 0.8rem;
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .video-link:hover {
+            opacity: 1;
+            color: #ff0000;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #aaa;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .video-player iframe {
+                height: 250px;
+            }
+            
+            .video-thumbnail {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-player iframe {
+                height: 200px;
+            }
+            
+            .video-thumbnail {
+                height: 160px;
+            }
+            
+            .play-button {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📺 YouTube Playlist Viewer</h1>
+            <div class="playlist-id" id="playlistId">Loading...</div>
+        </div>
+        
+        <div class="video-player" id="videoPlayer">
+            <button class="close-video" id="closeVideo">×</button>
+            <iframe id="playerFrame" allowfullscreen></iframe>
+        </div>
+        
+        <div class="loading" id="loading">Loading playlist...</div>
+        <div class="error" id="error" style="display: none;"></div>
+        <div class="video-grid" id="videoGrid"></div>
+    </div>
+
+    <script>
+        // Extract playlist ID from URL
+        function getPlaylistId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const playlistParam = urlParams.get('playlist');
+            console.log(playlistParam)
+            return playlistParam || 'PLJ6Y8JfXAV-_5YKNsskXGjBZodAOQosNY'; // Default playlist
+        }
+
+        // Display error message
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = message;
+        }
+
+        // Load and display playlist
+        async function loadPlaylist() {
+            const playlistId = getPlaylistId();
+            document.getElementById('playlistId').textContent = `Playlist ID: ${playlistId}`;
+            
+            try {
+                // For demo purposes, we'll use the provided data
+                // In a real implementation, you'd fetch from: `${playlistId}.json`
+                const playlistData1 = [
+                    {
+                        "videoId": "qpDOWitPKUY",
+                        "title": "Diversity in Plants | Introduction to Biodiversity | Middle School | Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/qpDOWitPKUY/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLBB-zURNXoL-dDSAJgqnUdnAz707A"
+                    },
+                    {
+                        "videoId": "eO_X7JGaOek",
+                        "title": "Root System | Plant Structure and Functions | Middle School Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/eO_X7JGaOek/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLAEYUv9fh_bNhd0sA51AoSMERo0Hg"
+                    },
+                    {
+                        "videoId": "XOYrMXtOYq8",
+                        "title": "All About Leaves | Plant Structure & Functions | Middle school Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/XOYrMXtOYq8/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDysu-WeLmZsZSuc1_kCCMn2h6T_g"
+                    },
+                    {
+                        "videoId": "FYFE8nu0hqc",
+                        "title": "Types of Seeds | Diversity in the Living World | Middle School | Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/FYFE8nu0hqc/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLCjA3EuJ9n_AxlUn3SLTr71MKv2eQ"
+                    },
+                    {
+                        "videoId": "e0kkwDxQJRs",
+                        "title": "Part of Plant as food | Middle School Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/e0kkwDxQJRs/hqdefault.jpg?sqp=-oaymwE8CKgBEF5IWvKriqkDLwgBFQAAAAAYASUAAMhCPQCAokN4AfABAfgB_gmAAtAFigIMCAAQARhKIGUoLDAP&rs=AOn4CLBUQqVwRUiCGtlpBZ37sZFoEgI76A"
+                    },
+                    {
+                        "videoId": "0rN-rSDK73w",
+                        "title": "Plant Nutrition - Introduction | Middle School Science | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/0rN-rSDK73w/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLA_-5ohXigI8TIZa7kf2GdIb7eafQ"
+                    },
+                    {
+                        "videoId": "_BLShUdXbN4",
+                        "title": "Photosynthesis in organisms | Matter and energy in organisms | Middle school biology | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/_BLShUdXbN4/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDDj8TNL9fcd4JkQLaDsZjiEQ4nGw"
+                    },
+                    {
+                        "videoId": "hCloCHwrJdQ",
+                        "title": "Pollination (self & cross) | How do organisms reproduce | Biology | Khan Academy",
+                        "thumbnail": "https://i.ytimg.com/vi/hCloCHwrJdQ/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLCPQuLPeEg8nkLOs-hBMWh_Ojz-KQ"
+                    }
+                ];
+
+                // /* 
+                // Uncomment this for real implementation:
+                const response = await fetch(`${playlistId}.json`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load playlist: ${response.status}`);
+                }
+                const playlistData = await response.json();
+                // */
+
+                displayPlaylist(playlistData);
+                
+            } catch (error) {
+                console.error('Error loading playlist:', error);
+                showError(`Error loading playlist: ${error.message}`);
+            }
+        }
+
+        // Display playlist videos
+        function displayPlaylist(videos) {
+            document.getElementById('loading').style.display = 'none';
+            const videoGrid = document.getElementById('videoGrid');
+            
+            if (!videos || videos.length === 0) {
+                showError('No videos found in playlist');
+                return;
+            }
+
+            videoGrid.innerHTML = videos.map(video => `
+                <div class="video-card" onclick="playVideo('${video.videoId}', '${video.title.replace(/'/g, '&apos;')}')">
+                    <div class="video-thumbnail">
+                        <img src="${video.thumbnail}" alt="${video.title}" loading="lazy">
+                        <button class="play-button">▶</button>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${video.title}</h3>
+                        <a href="https://www.youtube.com/watch?v=${video.videoId}" 
+                           class="video-link" 
+                           target="_blank" 
+                           onclick="event.stopPropagation()">
+                            youtube.com/watch?v=${video.videoId}
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Play video in iframe
+        function playVideo(videoId, title) {
+            const player = document.getElementById('videoPlayer');
+            const iframe = document.getElementById('playerFrame');
+            
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            player.classList.add('active');
+            
+            // Scroll to player
+            player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Close video player
+        function closeVideo() {
+            const player = document.getElementById('videoPlayer');
+            const iframe = document.getElementById('playerFrame');
+            
+            iframe.src = '';
+            player.classList.remove('active');
+        }
+
+        // Event listeners
+        document.getElementById('closeVideo').addEventListener('click', closeVideo);
+
+        // Close video with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideo();
+            }
+        });
+
+        // Load playlist on page load
+        document.addEventListener('DOMContentLoaded', loadPlaylist);
+    </script>
+</body>
+</html>
