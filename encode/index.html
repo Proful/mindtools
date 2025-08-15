@@ -83,9 +83,7 @@
       <h1>JSON to Base64 Encoder</h1>
 
       <label for="jsonInput">Enter your JSON:</label>
-      <textarea id="jsonInput" placeholder="Enter valid JSON here...">
-{ "example": "Your JSON data here" }</textarea
-      >
+      <textarea id="jsonInput" placeholder="Enter valid JSON here..."></textarea>
 
       <button id="encodeBtn" class="btn">Encode to Base64</button>
 
@@ -105,13 +103,19 @@
         const copyBtn = document.getElementById("copyBtn");
         const error = document.getElementById("error");
 
+        function unicodeSafeJSONStringify(obj) {
+          return JSON.stringify(obj).replace(/[\u007F-\uFFFF]/g, function(ch) {
+            return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
+          });
+        }
         encodeBtn.addEventListener("click", function () {
           try {
             // Parse the JSON first to validate it
             const jsonData = JSON.parse(jsonInput.value);
 
             // Convert JSON to string and then to Base64
-            const jsonString = JSON.stringify(jsonData);
+            // const jsonString = JSON.stringify(jsonData);
+            const jsonString = unicodeSafeJSONStringify(jsonData);
             // Use this function to handle Unicode characters
             const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
 
