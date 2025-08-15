@@ -92,6 +92,7 @@
       <div id="resultLabel" class="result-label">Base64 Encoded Result:</div>
       <div id="result" class="result"></div>
       <button id="copyBtn" class="btn copy-btn">Copy to Clipboard</button>
+      <button id="quizBtn" class="btn copy-btn">Open Quiz</button>
     </div>
 
     <script>
@@ -101,6 +102,7 @@
         const result = document.getElementById("result");
         const resultLabel = document.getElementById("resultLabel");
         const copyBtn = document.getElementById("copyBtn");
+        const quizBtn = document.getElementById("quizBtn");
         const error = document.getElementById("error");
 
         function unicodeSafeJSONStringify(obj) {
@@ -124,6 +126,7 @@
             result.style.display = "block";
             resultLabel.style.display = "block";
             copyBtn.style.display = "block";
+            quizBtn.style.display = "block";
             error.style.display = "none";
           } catch (e) {
             // Show error if JSON is invalid
@@ -149,6 +152,10 @@
             .catch((err) => {
               console.error("Failed to copy: ", err);
             });
+        });
+
+        quizBtn.addEventListener("click", function () {
+          window.open("https://mindtools.vercel.app/quiz?data="+result.textContent, "_blank");
         });
       });
     </script>
