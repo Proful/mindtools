@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/anki/favicon-48x48.png" type="image/png" />
+    <link rel="manifest" href="/anki/manifest.json" />
     <title>Anki Flashcards</title>
     <style>
         * {
@@ -343,6 +345,117 @@
             padding: 40px 20px;
         }
 
+        .create-modal {
+            width: 600px;
+            max-width: 95%;
+        }
+
+        .create-instructions {
+            margin-bottom: 20px;
+        }
+
+        .create-instructions p {
+            margin: 0 0 10px 0;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .json-example {
+            display: block;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #2d3748;
+            white-space: pre-line;
+            margin: 10px 0;
+        }
+
+        #jsonInput {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        #jsonInput:focus {
+            outline: none;
+            border-color: #4c51bf;
+            box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.1);
+        }
+
+        .create-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .url-output {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .url-output label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        .url-output input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .btn-copy {
+            background: #4c51bf;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-copy:hover {
+            background: #3c366b;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 15px;
@@ -410,6 +523,7 @@
         <div class="buttons" id="storageButtons" style="margin-top: 10px;">
             <button class="btn btn-secondary" id="saveSetBtn">Save Card Set</button>
             <button class="btn btn-secondary" id="loadSetBtn">Load Saved Sets</button>
+            <button class="btn btn-secondary" id="createSetBtn">Create Card Set</button>
         </div>
 
         <div class="difficulty-buttons hidden" id="difficultyButtons">
@@ -426,6 +540,44 @@
                     <button class="close-btn" id="closeModal">&times;</button>
                 </div>
                 <div class="modal-body" id="savedSetsList">
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for creating card sets -->
+        <div class="modal hidden" id="createModal">
+            <div class="modal-content create-modal">
+                <div class="modal-header">
+                    <h3>Create Card Set</h3>
+                    <button class="close-btn" id="closeCreateModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="create-instructions">
+                        <p>Enter your flashcard data as JSON:</p>
+                        <code class="json-example">
+{
+  "cards": [
+    {"front": "Question 1", "back": "Answer 1"},
+    {"front": "Question 2", "back": "Answer 2"}
+  ]
+}
+                        </code>
+                        <p><small>Tip: Use *asterisks* around words for <em>italic</em> formatting</small></p>
+                    </div>
+                    <textarea 
+                        id="jsonInput" 
+                        placeholder='{"cards": [{"front": "What is the capital of France?", "back": "The capital is *Paris*"}]}'
+                        rows="12"
+                    ></textarea>
+                    <div class="create-actions">
+                        <button class="btn btn-primary" id="loadFromJsonBtn">Load Cards</button>
+                        <button class="btn btn-secondary" id="generateUrlBtn">Generate URL</button>
+                    </div>
+                    <div class="url-output hidden" id="urlOutput">
+                        <label>Generated URL:</label>
+                        <input type="text" id="generatedUrl" readonly>
+                        <button class="btn-copy" id="copyUrlBtn">📋 Copy</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -512,12 +664,33 @@
                     this.showLoadModal();
                 });
 
+                document.getElementById('createSetBtn').addEventListener('click', () => {
+                    this.showCreateModal();
+                });
+
                 document.getElementById('closeModal').addEventListener('click', () => {
                     this.hideLoadModal();
                 });
 
+                document.getElementById('closeCreateModal').addEventListener('click', () => {
+                    this.hideCreateModal();
+                });
+
+                document.getElementById('loadFromJsonBtn').addEventListener('click', () => {
+                    this.loadFromJson();
+                });
+
+                document.getElementById('generateUrlBtn').addEventListener('click', () => {
+                    this.generateUrl();
+                });
+
+                document.getElementById('copyUrlBtn').addEventListener('click', () => {
+                    this.copyUrl();
+                });
+
                 document.getElementById('modalOverlay').addEventListener('click', () => {
                     this.hideLoadModal();
+                    this.hideCreateModal();
                 });
 
                 document.getElementById('flashcard').addEventListener('click', () => {
@@ -541,6 +714,7 @@
                         this.rateCard('hard');
                     } else if (e.key === 'Escape') {
                         this.hideLoadModal();
+                        this.hideCreateModal();
                     }
                 });
             }
@@ -874,6 +1048,166 @@
                 } catch (error) {
                     alert('Failed to delete card set: ' + error.message);
                 }
+            }
+
+            showCreateModal() {
+                const modal = document.getElementById('createModal');
+                const overlay = document.getElementById('modalOverlay');
+                const urlOutput = document.getElementById('urlOutput');
+                
+                // Reset form
+                document.getElementById('jsonInput').value = '';
+                urlOutput.classList.add('hidden');
+                this.clearMessages();
+                
+                modal.classList.remove('hidden');
+                overlay.classList.remove('hidden');
+                
+                // Focus on textarea
+                setTimeout(() => {
+                    document.getElementById('jsonInput').focus();
+                }, 100);
+            }
+
+            hideCreateModal() {
+                document.getElementById('createModal').classList.add('hidden');
+                document.getElementById('modalOverlay').classList.add('hidden');
+            }
+
+            loadFromJson() {
+                const jsonInput = document.getElementById('jsonInput').value.trim();
+                
+                if (!jsonInput) {
+                    this.showMessage('Please enter JSON data.', 'error');
+                    return;
+                }
+
+                try {
+                    const jsonData = JSON.parse(jsonInput);
+                    
+                    if (!jsonData.cards || !Array.isArray(jsonData.cards)) {
+                        this.showMessage('JSON must contain a "cards" array.', 'error');
+                        return;
+                    }
+
+                    if (jsonData.cards.length === 0) {
+                        this.showMessage('Cards array cannot be empty.', 'error');
+                        return;
+                    }
+
+                    // Validate cards
+                    const invalidCards = jsonData.cards.filter((card, index) => {
+                        const front = card.front || card.question || '';
+                        const back = card.back || card.answer || '';
+                        return !front.trim() || !back.trim();
+                    });
+
+                    if (invalidCards.length > 0) {
+                        this.showMessage(`Found ${invalidCards.length} cards with empty front or back content.`, 'error');
+                        return;
+                    }
+
+                    // Load the cards
+                    this.cards = jsonData.cards
+                        .map((card, index) => ({
+                            id: index,
+                            front: card.front || card.question || '',
+                            back: card.back || card.answer || '',
+                            difficulty: 0,
+                            lastReviewed: null,
+                            nextReview: new Date(),
+                            interval: 1
+                        }))
+                        .filter(card => card.front.trim() !== '' && card.back.trim() !== '');
+
+                    this.resetSession();
+                    this.hideCreateModal();
+                    this.showMessage(`Successfully loaded ${this.cards.length} cards!`, 'success');
+
+                } catch (error) {
+                    this.showMessage('Invalid JSON format: ' + error.message, 'error');
+                }
+            }
+
+            generateUrl() {
+                const jsonInput = document.getElementById('jsonInput').value.trim();
+                
+                if (!jsonInput) {
+                    this.showMessage('Please enter JSON data first.', 'error');
+                    return;
+                }
+
+                try {
+                    const jsonData = JSON.parse(jsonInput);
+                    
+                    if (!jsonData.cards || !Array.isArray(jsonData.cards)) {
+                        this.showMessage('JSON must contain a "cards" array.', 'error');
+                        return;
+                    }
+
+                    // Encode to base64
+                    const base64Data = btoa(jsonInput);
+                    const currentUrl = window.location.href.split('?')[0];
+                    const generatedUrl = `${currentUrl}?data=${base64Data}`;
+                    
+                    // Show URL output
+                    const urlOutput = document.getElementById('urlOutput');
+                    const generatedUrlInput = document.getElementById('generatedUrl');
+                    
+                    generatedUrlInput.value = generatedUrl;
+                    urlOutput.classList.remove('hidden');
+                    
+                    this.showMessage('URL generated successfully!', 'success');
+
+                } catch (error) {
+                    this.showMessage('Invalid JSON format: ' + error.message, 'error');
+                }
+            }
+
+            copyUrl() {
+                const generatedUrlInput = document.getElementById('generatedUrl');
+                
+                try {
+                    generatedUrlInput.select();
+                    generatedUrlInput.setSelectionRange(0, 99999); // For mobile devices
+                    document.execCommand('copy');
+                    
+                    const copyBtn = document.getElementById('copyUrlBtn');
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✅ Copied!';
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                    
+                } catch (error) {
+                    this.showMessage('Failed to copy URL to clipboard', 'error');
+                }
+            }
+
+            showMessage(message, type = 'info') {
+                this.clearMessages();
+                
+                const createModalBody = document.querySelector('#createModal .modal-body');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `${type}-message`;
+                messageDiv.textContent = message;
+                
+                // Insert after instructions
+                const instructions = createModalBody.querySelector('.create-instructions');
+                instructions.after(messageDiv);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            clearMessages() {
+                const messages = document.querySelectorAll('.error-message, .success-message, .info-message');
+                messages.forEach(msg => msg.remove());
             }
 
             showError(message) {
