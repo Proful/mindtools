@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anki Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4c51bf;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .card-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 16px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .flashcard:active {
+            transform: translateY(0);
+        }
+
+        .card-content {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            width: 100%;
+        }
+
+        .card-front {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .card-back {
+            color: #4a5568;
+        }
+
+        .card-indicator {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #4c51bf;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #4c51bf;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3c366b;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #4c51bf;
+            border: 2px solid #4c51bf;
+        }
+
+        .btn-secondary:hover {
+            background: #4c51bf;
+            color: white;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-easy {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-easy:hover {
+            background: #38a169;
+        }
+
+        .btn-medium {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-medium:hover {
+            background: #dd6b20;
+        }
+
+        .btn-hard {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-hard:hover {
+            background: #c53030;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: #48bb78;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .no-cards {
+            text-align: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            max-width: 90%;
+            width: 400px;
+            max-height: 80vh;
+            overflow: hidden;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+            color: #2d3748;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .saved-set-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .saved-set-item:hover {
+            border-color: #4c51bf;
+            background: #f8faff;
+        }
+
+        .saved-set-info {
+            flex: 1;
+        }
+
+        .saved-set-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .saved-set-details {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .delete-set-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .delete-set-btn:hover {
+            background: #c53030;
+        }
+
+        .no-saved-sets {
+            text-align: center;
+            color: #718096;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .flashcard {
+                padding: 25px 20px;
+                min-height: 180px;
+            }
+
+            .card-content {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Anki Flashcards</h1>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCards">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="studiedCards">0</div>
+                <div class="stat-label">Studied</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="remainingCards">0</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="card-container">
+            <div class="flashcard" id="flashcard">
+                <div class="card-content" id="cardContent">
+                    <div class="no-cards">No flashcard data found. Please provide a valid data parameter.</div>
+                </div>
+                <div class="card-indicator hidden" id="cardIndicator">Front</div>
+            </div>
+        </div>
+
+        <div class="buttons" id="actionButtons">
+            <button class="btn btn-primary" id="showAnswerBtn">Show Answer</button>
+            <button class="btn btn-secondary" id="resetBtn">Reset Session</button>
+        </div>
+
+        <div class="buttons" id="storageButtons" style="margin-top: 10px;">
+            <button class="btn btn-secondary" id="saveSetBtn">Save Card Set</button>
+            <button class="btn btn-secondary" id="loadSetBtn">Load Saved Sets</button>
+        </div>
+
+        <div class="difficulty-buttons hidden" id="difficultyButtons">
+            <button class="btn btn-easy" onclick="rateCard('easy')">Easy</button>
+            <button class="btn btn-medium" onclick="rateCard('medium')">Medium</button>
+            <button class="btn btn-hard" onclick="rateCard('hard')">Hard</button>
+        </div>
+
+        <!-- Modal for saved card sets -->
+        <div class="modal hidden" id="loadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Saved Card Sets</h3>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body" id="savedSetsList">
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-overlay hidden" id="modalOverlay"></div>
+    </div>
+
+    <script>
+        class AnkiApp {
+            constructor() {
+                this.cards = [];
+                this.currentCard = null;
+                this.currentIndex = 0;
+                this.showingAnswer = false;
+                this.studiedCards = new Set();
+                this.cardHistory = new Map();
+                this.sessionData = {
+                    totalStudied: 0,
+                    correctAnswers: 0
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.loadDataFromURL();
+                this.bindEvents();
+                this.updateUI();
+            }
+
+            loadDataFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const encodedData = urlParams.get('data');
+                
+                if (encodedData) {
+                    try {
+                        const decodedData = atob(encodedData);
+                        const jsonData = JSON.parse(decodedData);
+                        
+                        if (jsonData.cards && Array.isArray(jsonData.cards)) {
+                            this.cards = jsonData.cards
+                                .map((card, index) => ({
+                                    id: index,
+                                    front: card.front || card.question || '',
+                                    back: card.back || card.answer || '',
+                                    difficulty: 0,
+                                    lastReviewed: null,
+                                    nextReview: new Date(),
+                                    interval: 1
+                                }))
+                                .filter(card => card.front.trim() !== '' && card.back.trim() !== ''); // Filter out empty cards
+                            
+                            // Save this card set to localStorage
+                            this.saveCardSet(jsonData);
+                            this.currentCard = this.getNextCard();
+                        }
+                    } catch (error) {
+                        console.error('Error parsing flashcard data:', error);
+                        this.showError('Invalid data format');
+                        return;
+                    }
+                } 
+                
+                // If no URL data, try to load from localStorage or use demo data
+                if (this.cards.length === 0) {
+                    this.loadFromStorage();
+                }
+            }
+
+            bindEvents() {
+                document.getElementById('showAnswerBtn').addEventListener('click', () => {
+                    this.toggleCard();
+                });
+
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetSession();
+                });
+
+                document.getElementById('saveSetBtn').addEventListener('click', () => {
+                    this.saveCurrentSet();
+                });
+
+                document.getElementById('loadSetBtn').addEventListener('click', () => {
+                    this.showLoadModal();
+                });
+
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    this.hideLoadModal();
+                });
+
+                document.getElementById('modalOverlay').addEventListener('click', () => {
+                    this.hideLoadModal();
+                });
+
+                document.getElementById('flashcard').addEventListener('click', () => {
+                    if (!this.showingAnswer) {
+                        this.toggleCard();
+                    }
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        if (!this.showingAnswer) {
+                            this.toggleCard();
+                        }
+                    } else if (e.key === '1' && this.showingAnswer) {
+                        this.rateCard('easy');
+                    } else if (e.key === '2' && this.showingAnswer) {
+                        this.rateCard('medium');
+                    } else if (e.key === '3' && this.showingAnswer) {
+                        this.rateCard('hard');
+                    } else if (e.key === 'Escape') {
+                        this.hideLoadModal();
+                    }
+                });
+            }
+
+            getNextCard() {
+                if (this.cards.length === 0) return null;
+                
+                // Filter cards that are due for review
+                const dueCards = this.cards.filter(card => 
+                    new Date() >= card.nextReview
+                );
+                
+                if (dueCards.length === 0) {
+                    // If no cards are due, return the first unreviewed card
+                    const unreviewed = this.cards.find(card => !card.lastReviewed);
+                    return unreviewed || this.cards[0];
+                }
+                
+                // Sort by priority (difficulty and time since last review)
+                dueCards.sort((a, b) => {
+                    if (a.difficulty !== b.difficulty) {
+                        return b.difficulty - a.difficulty; // Higher difficulty first
+                    }
+                    if (a.lastReviewed && b.lastReviewed) {
+                        return a.lastReviewed - b.lastReviewed; // Older reviews first
+                    }
+                    return !a.lastReviewed ? -1 : 1; // Unreviewed first
+                });
+                
+                return dueCards[0];
+            }
+
+            toggleCard() {
+                if (!this.currentCard) return;
+
+                this.showingAnswer = !this.showingAnswer;
+                
+                const cardContent = document.getElementById('cardContent');
+                const cardIndicator = document.getElementById('cardIndicator');
+                const showAnswerBtn = document.getElementById('showAnswerBtn');
+                const difficultyButtons = document.getElementById('difficultyButtons');
+                
+                if (this.showingAnswer) {
+                    const formattedBack = this.formatText(this.currentCard.back);
+                    cardContent.innerHTML = `<div class="card-back">${formattedBack}</div>`;
+                    cardIndicator.textContent = 'Back';
+                    showAnswerBtn.textContent = 'Next Card';
+                    difficultyButtons.classList.remove('hidden');
+                } else {
+                    this.nextCard();
+                }
+            }
+
+            rateCard(difficulty) {
+                if (!this.currentCard || !this.showingAnswer) return;
+                
+                const now = new Date();
+                this.currentCard.lastReviewed = now;
+                
+                // Spaced repetition algorithm
+                let multiplier;
+                switch (difficulty) {
+                    case 'easy':
+                        multiplier = 2.5;
+                        this.currentCard.difficulty = Math.max(0, this.currentCard.difficulty - 1);
+                        this.sessionData.correctAnswers++;
+                        break;
+                    case 'medium':
+                        multiplier = 1.5;
+                        break;
+                    case 'hard':
+                        multiplier = 0.5;
+                        this.currentCard.difficulty = Math.min(10, this.currentCard.difficulty + 1);
+                        this.currentCard.interval = 1; // Reset interval for hard cards
+                        break;
+                }
+                
+                // Calculate next review date
+                if (difficulty !== 'hard') {
+                    this.currentCard.interval = Math.max(1, Math.floor(this.currentCard.interval * multiplier));
+                }
+                
+                this.currentCard.nextReview = new Date(now.getTime() + this.currentCard.interval * 24 * 60 * 60 * 1000);
+                
+                this.studiedCards.add(this.currentCard.id);
+                this.sessionData.totalStudied++;
+                
+                // Store in session data (simulating localStorage)
+                this.saveSession();
+                
+                this.nextCard();
+            }
+
+            nextCard() {
+                this.showingAnswer = false;
+                this.currentCard = this.getNextCard();
+                
+                const cardContent = document.getElementById('cardContent');
+                const cardIndicator = document.getElementById('cardIndicator');
+                const showAnswerBtn = document.getElementById('showAnswerBtn');
+                const difficultyButtons = document.getElementById('difficultyButtons');
+                
+                if (this.currentCard) {
+                    const formattedFront = this.formatText(this.currentCard.front);
+                    cardContent.innerHTML = `<div class="card-front">${formattedFront}</div>`;
+                    cardIndicator.textContent = 'Front';
+                    cardIndicator.classList.remove('hidden');
+                    showAnswerBtn.textContent = 'Show Answer';
+                    difficultyButtons.classList.add('hidden');
+                } else {
+                    cardContent.innerHTML = '<div class="no-cards">🎉 All cards reviewed for now!<br><small>Come back later for spaced repetition.</small></div>';
+                    cardIndicator.classList.add('hidden');
+                    showAnswerBtn.textContent = 'Reset Session';
+                    difficultyButtons.classList.add('hidden');
+                }
+                
+                this.updateUI();
+            }
+
+            formatText(text) {
+                // Convert *word* to <em>word</em> for italic formatting
+                return text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            }
+
+            updateUI() {
+                const totalCards = this.cards.length;
+                const studiedCount = this.studiedCards.size;
+                const remainingCount = Math.max(0, totalCards - studiedCount);
+                const progress = totalCards > 0 ? (studiedCount / totalCards) * 100 : 0;
+                
+                document.getElementById('totalCards').textContent = totalCards;
+                document.getElementById('studiedCards').textContent = studiedCount;
+                document.getElementById('remainingCards').textContent = remainingCount;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+            }
+
+            resetSession() {
+                this.studiedCards.clear();
+                this.sessionData = { totalStudied: 0, correctAnswers: 0 };
+                
+                // Reset all cards
+                this.cards.forEach(card => {
+                    card.difficulty = 0;
+                    card.lastReviewed = null;
+                    card.nextReview = new Date();
+                    card.interval = 1;
+                });
+                
+                this.currentCard = this.getNextCard();
+                this.showingAnswer = false;
+                this.nextCard();
+            }
+
+            saveSession() {
+                try {
+                    const sessionData = {
+                        studiedCards: Array.from(this.studiedCards),
+                        sessionData: this.sessionData,
+                        cards: this.cards,
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem('anki-session', JSON.stringify(sessionData));
+                } catch (error) {
+                    console.warn('Could not save to localStorage:', error);
+                }
+            }
+
+            loadFromStorage() {
+                try {
+                    // Try to load the last session
+                    const savedSession = localStorage.getItem('anki-session');
+                    if (savedSession) {
+                        const sessionData = JSON.parse(savedSession);
+                        if (sessionData.cards && sessionData.cards.length > 0) {
+                            this.cards = sessionData.cards;
+                            this.studiedCards = new Set(sessionData.studiedCards || []);
+                            this.sessionData = sessionData.sessionData || { totalStudied: 0, correctAnswers: 0 };
+                            this.currentCard = this.getNextCard();
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Could not load from localStorage:', error);
+                }
+
+                // Fallback to demo data
+                this.cards = [
+                    {
+                        id: 0,
+                        front: "What is the capital of France?",
+                        back: "Paris",
+                        difficulty: 0,
+                        lastReviewed: null,
+                        nextReview: new Date(),
+                        interval: 1
+                    },
+                    {
+                        id: 1,
+                        front: "What is 2 + 2?",
+                        back: "4",
+                        difficulty: 0,
+                        lastReviewed: null,
+                        nextReview: new Date(),
+                        interval: 1
+                    }
+                ];
+                this.currentCard = this.getNextCard();
+            }
+
+            saveCardSet(originalData) {
+                try {
+                    const cardSets = JSON.parse(localStorage.getItem('anki-card-sets') || '[]');
+                    const setName = `Card Set ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+                    
+                    const newSet = {
+                        id: Date.now(),
+                        name: setName,
+                        data: originalData,
+                        cardCount: this.cards.length,
+                        created: new Date().toISOString()
+                    };
+                    
+                    cardSets.push(newSet);
+                    localStorage.setItem('anki-card-sets', JSON.stringify(cardSets));
+                } catch (error) {
+                    console.warn('Could not save card set:', error);
+                }
+            }
+
+            saveCurrentSet() {
+                if (this.cards.length === 0) {
+                    alert('No cards to save!');
+                    return;
+                }
+
+                const setName = prompt('Enter a name for this card set:', `Card Set ${new Date().toLocaleDateString()}`);
+                if (!setName) return;
+
+                try {
+                    const cardSets = JSON.parse(localStorage.getItem('anki-card-sets') || '[]');
+                    
+                    const newSet = {
+                        id: Date.now(),
+                        name: setName,
+                        data: {
+                            cards: this.cards.map(card => ({
+                                front: card.front,
+                                back: card.back
+                            }))
+                        },
+                        cardCount: this.cards.length,
+                        created: new Date().toISOString()
+                    };
+                    
+                    cardSets.push(newSet);
+                    localStorage.setItem('anki-card-sets', JSON.stringify(cardSets));
+                    alert(`Card set "${setName}" saved successfully!`);
+                } catch (error) {
+                    alert('Failed to save card set: ' + error.message);
+                }
+            }
+
+            showLoadModal() {
+                try {
+                    const cardSets = JSON.parse(localStorage.getItem('anki-card-sets') || '[]');
+                    const modal = document.getElementById('loadModal');
+                    const overlay = document.getElementById('modalOverlay');
+                    const listContainer = document.getElementById('savedSetsList');
+
+                    if (cardSets.length === 0) {
+                        listContainer.innerHTML = '<div class="no-saved-sets">No saved card sets found.</div>';
+                    } else {
+                        listContainer.innerHTML = cardSets.map(set => `
+                            <div class="saved-set-item" onclick="window.ankiApp.loadCardSet(${set.id})">
+                                <div class="saved-set-info">
+                                    <div class="saved-set-name">${set.name}</div>
+                                    <div class="saved-set-details">${set.cardCount} cards • ${new Date(set.created).toLocaleDateString()}</div>
+                                </div>
+                                <button class="delete-set-btn" onclick="event.stopPropagation(); window.ankiApp.deleteCardSet(${set.id})">Delete</button>
+                            </div>
+                        `).join('');
+                    }
+
+                    modal.classList.remove('hidden');
+                    overlay.classList.remove('hidden');
+                } catch (error) {
+                    alert('Failed to load saved sets: ' + error.message);
+                }
+            }
+
+            hideLoadModal() {
+                document.getElementById('loadModal').classList.add('hidden');
+                document.getElementById('modalOverlay').classList.add('hidden');
+            }
+
+            loadCardSet(setId) {
+                try {
+                    const cardSets = JSON.parse(localStorage.getItem('anki-card-sets') || '[]');
+                    const cardSet = cardSets.find(set => set.id === setId);
+                    
+                    if (cardSet) {
+                        this.cards = cardSet.data.cards
+                            .map((card, index) => ({
+                                id: index,
+                                front: card.front || card.question || '',
+                                back: card.back || card.answer || '',
+                                difficulty: 0,
+                                lastReviewed: null,
+                                nextReview: new Date(),
+                                interval: 1
+                            }))
+                            .filter(card => card.front.trim() !== '' && card.back.trim() !== '');
+                        
+                        this.resetSession();
+                        this.hideLoadModal();
+                        alert(`Loaded "${cardSet.name}" with ${this.cards.length} cards.`);
+                    }
+                } catch (error) {
+                    alert('Failed to load card set: ' + error.message);
+                }
+            }
+
+            deleteCardSet(setId) {
+                if (!confirm('Are you sure you want to delete this card set?')) return;
+
+                try {
+                    const cardSets = JSON.parse(localStorage.getItem('anki-card-sets') || '[]');
+                    const updatedSets = cardSets.filter(set => set.id !== setId);
+                    localStorage.setItem('anki-card-sets', JSON.stringify(updatedSets));
+                    this.showLoadModal(); // Refresh the modal
+                } catch (error) {
+                    alert('Failed to delete card set: ' + error.message);
+                }
+            }
+
+            showError(message) {
+                const cardContent = document.getElementById('cardContent');
+                cardContent.innerHTML = `<div class="no-cards">❌ Error: ${message}</div>`;
+            }
+        }
+
+        // Global function for rating cards
+        window.rateCard = function(difficulty) {
+            if (window.ankiApp) {
+                window.ankiApp.rateCard(difficulty);
+            }
+        };
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.ankiApp = new AnkiApp();
+        });
+    </script>
+</body>
+</html>
