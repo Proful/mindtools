@@ -48,9 +48,8 @@
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 15px;
+            display: flex;
+            justify-content: space-between;
             backdrop-filter: blur(10px);
         }
 
@@ -68,69 +67,6 @@
         .stat-label {
             font-size: 0.8rem;
             color: #666;
-            margin-top: 2px;
-        }
-
-        .retention-stats {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .retention-header {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #4c51bf;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .retention-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .retention-item {
-            text-align: center;
-            padding: 8px 4px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .retention-again {
-            background: #fed7d7;
-            border-color: #feb2b2;
-            color: #c53030;
-        }
-
-        .retention-hard {
-            background: #feebc8;
-            border-color: #fbd38d;
-            color: #dd6b20;
-        }
-
-        .retention-good {
-            background: #bee3f8;
-            border-color: #90cdf4;
-            color: #3182ce;
-        }
-
-        .retention-easy {
-            background: #c6f6d5;
-            border-color: #9ae6b4;
-            color: #38a169;
-        }
-
-        .retention-count {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .retention-label {
-            font-size: 0.7rem;
             margin-top: 2px;
         }
 
@@ -242,54 +178,31 @@
             margin-bottom: 55px;
         }
 
-        .btn-again {
-            background: #e53e3e;
-            color: white;
-            position: relative;
-        }
-
-        .btn-again:hover {
-            background: #c53030;
-        }
-
-        .btn-hard {
-            background: #ed8936;
-            color: white;
-            position: relative;
-        }
-
-        .btn-hard:hover {
-            background: #dd6b20;
-        }
-
-        .btn-good {
-            background: #4299e1;
-            color: white;
-            position: relative;
-        }
-
-        .btn-good:hover {
-            background: #3182ce;
-        }
-
         .btn-easy {
             background: #48bb78;
             color: white;
-            position: relative;
         }
 
         .btn-easy:hover {
             background: #38a169;
         }
 
-        .interval-text {
-            position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            opacity: 0.9;
-            white-space: nowrap;
+        .btn-medium {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-medium:hover {
+            background: #dd6b20;
+        }
+
+        .btn-hard {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-hard:hover {
+            background: #c53030;
         }
 
         .progress-bar {
@@ -575,6 +488,21 @@
             <h1>🧠 Anki Flashcards</h1>
         </div>
 
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCards">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="studiedCards">0</div>
+                <div class="stat-label">Studied</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="remainingCards">0</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
@@ -593,74 +521,16 @@
             <button class="btn btn-secondary" id="resetBtn">Reset Session</button>
         </div>
 
-        <div class="difficulty-buttons hidden" id="difficultyButtons">
-            <button class="btn btn-again" onclick="rateCard('again')">
-                Again
-                <div class="interval-text" id="againInterval">1m</div>
-            </button>
-            <button class="btn btn-hard" onclick="rateCard('hard')">
-                Hard  
-                <div class="interval-text" id="hardInterval">6m</div>
-            </button>
-            <button class="btn btn-good" onclick="rateCard('good')">
-                Good
-                <div class="interval-text" id="goodInterval">10m</div>
-            </button>
-            <button class="btn btn-easy" onclick="rateCard('easy')">
-                Easy
-                <div class="interval-text" id="easyInterval">4d</div>
-            </button>
-        </div>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-number" id="totalCards">0</div>
-                <div class="stat-label">Total</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="newCards">0</div>
-                <div class="stat-label">New</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="learningCards">0</div>
-                <div class="stat-label">Learning</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="reviewCards">0</div>
-                <div class="stat-label">Review</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="studiedToday">0</div>
-                <div class="stat-label">Today</div>
-            </div>
-        </div>
-
-        <div class="retention-stats">
-            <div class="retention-header">Session Performance</div>
-            <div class="retention-grid">
-                <div class="retention-item retention-again">
-                    <div class="retention-count" id="againCount">0</div>
-                    <div class="retention-label">Again</div>
-                </div>
-                <div class="retention-item retention-hard">
-                    <div class="retention-count" id="hardCount">0</div>
-                    <div class="retention-label">Hard</div>
-                </div>
-                <div class="retention-item retention-good">
-                    <div class="retention-count" id="goodCount">0</div>
-                    <div class="retention-label">Good</div>
-                </div>
-                <div class="retention-item retention-easy">
-                    <div class="retention-count" id="easyCount">0</div>
-                    <div class="retention-label">Easy</div>
-                </div>
-            </div>
-        </div>
-
         <div class="buttons" id="storageButtons" style="margin-top: 10px;">
             <button class="btn btn-secondary" id="saveSetBtn">Save Card Set</button>
             <button class="btn btn-secondary" id="loadSetBtn">Load Saved Sets</button>
             <button class="btn btn-secondary" id="createSetBtn">Create Card Set</button>
+        </div>
+
+        <div class="difficulty-buttons hidden" id="difficultyButtons">
+            <button class="btn btn-easy" onclick="rateCard('easy')">Easy</button>
+            <button class="btn btn-medium" onclick="rateCard('medium')">Medium</button>
+            <button class="btn btn-hard" onclick="rateCard('hard')">Hard</button>
         </div>
 
         <!-- Modal for saved card sets -->
@@ -727,33 +597,7 @@
                 this.cardHistory = new Map();
                 this.sessionData = {
                     totalStudied: 0,
-                    againCount: 0,
-                    hardCount: 0,
-                    goodCount: 0,
-                    easyCount: 0,
-                    startTime: new Date()
-                };
-                
-                // Spaced repetition settings (SM-2 algorithm parameters)
-                this.srSettings = {
-                    // Learning steps in minutes
-                    learningSteps: [1, 10],
-                    // Graduating interval in days  
-                    graduatingInterval: 1,
-                    // Easy interval in days
-                    easyInterval: 4,
-                    // Starting ease factor
-                    startingEase: 2.5,
-                    // Easy bonus multiplier
-                    easyBonus: 1.3,
-                    // Hard interval multiplier
-                    hardInterval: 1.2,
-                    // New interval after lapse
-                    newInterval: 0.0,
-                    // Minimum interval in days
-                    minimumInterval: 1,
-                    // Leech threshold
-                    leechThreshold: 8
+                    correctAnswers: 0
                 };
                 
                 this.init();
@@ -763,7 +607,6 @@
                 this.loadDataFromURL();
                 this.bindEvents();
                 this.updateUI();
-                this.updateIntervalPreviews();
             }
 
             loadDataFromURL() {
@@ -781,22 +624,10 @@
                                     id: index,
                                     front: card.front || card.question || '',
                                     back: card.back || card.answer || '',
-                                    // Spaced repetition properties
-                                    state: 'new', // 'new', 'learning', 'review', 'relearning'
-                                    due: new Date(),
-                                    stability: 0,
                                     difficulty: 0,
-                                    elapsed_days: 0,
-                                    scheduled_days: 0,
-                                    reps: 0,
-                                    lapses: 0,
-                                    last_review: null,
-                                    // SM-2 properties  
-                                    ease_factor: this.srSettings.startingEase,
-                                    interval: 0,
-                                    learning_step: 0,
-                                    // UI properties
-                                    reviews_today: 0
+                                    lastReviewed: null,
+                                    nextReview: new Date(),
+                                    interval: 1
                                 }))
                                 .filter(card => card.front.trim() !== '' && card.back.trim() !== ''); // Filter out empty cards
                             
@@ -877,13 +708,11 @@
                             this.toggleCard();
                         }
                     } else if (e.key === '1' && this.showingAnswer) {
-                        this.rateCard('again');
-                    } else if (e.key === '2' && this.showingAnswer) {
-                        this.rateCard('hard');
-                    } else if (e.key === '3' && this.showingAnswer) {
-                        this.rateCard('good');
-                    } else if (e.key === '4' && this.showingAnswer) {
                         this.rateCard('easy');
+                    } else if (e.key === '2' && this.showingAnswer) {
+                        this.rateCard('medium');
+                    } else if (e.key === '3' && this.showingAnswer) {
+                        this.rateCard('hard');
                     } else if (e.key === 'Escape') {
                         this.hideLoadModal();
                         this.hideCreateModal();
@@ -894,33 +723,26 @@
             getNextCard() {
                 if (this.cards.length === 0) return null;
                 
-                const now = new Date();
-                
-                // Get cards due for review (including new cards)
+                // Filter cards that are due for review
                 const dueCards = this.cards.filter(card => 
-                    card.due <= now
+                    new Date() >= card.nextReview
                 );
                 
                 if (dueCards.length === 0) {
-                    // No cards due - get the next due card for preview
-                    const futureDue = this.cards
-                        .filter(card => card.due > now)
-                        .sort((a, b) => a.due - b.due);
-                    return futureDue.length > 0 ? futureDue[0] : null;
+                    // If no cards are due, return the first unreviewed card
+                    const unreviewed = this.cards.find(card => !card.lastReviewed);
+                    return unreviewed || this.cards[0];
                 }
                 
-                // Sort due cards by priority
+                // Sort by priority (difficulty and time since last review)
                 dueCards.sort((a, b) => {
-                    // New cards first
-                    if (a.state === 'new' && b.state !== 'new') return -1;
-                    if (b.state === 'new' && a.state !== 'new') return 1;
-                    
-                    // Then learning cards
-                    if (a.state === 'learning' && b.state === 'review') return -1;
-                    if (b.state === 'learning' && a.state === 'review') return 1;
-                    
-                    // Sort by due date
-                    return a.due - b.due;
+                    if (a.difficulty !== b.difficulty) {
+                        return b.difficulty - a.difficulty; // Higher difficulty first
+                    }
+                    if (a.lastReviewed && b.lastReviewed) {
+                        return a.lastReviewed - b.lastReviewed; // Older reviews first
+                    }
+                    return !a.lastReviewed ? -1 : 1; // Unreviewed first
                 });
                 
                 return dueCards[0];
@@ -945,159 +767,46 @@
                 } else {
                     this.nextCard();
                 }
-                this.updateIntervalPreviews();
             }
 
-            rateCard(rating) {
+            rateCard(difficulty) {
                 if (!this.currentCard || !this.showingAnswer) return;
                 
                 const now = new Date();
-                this.currentCard.last_review = now;
-                this.currentCard.reps++;
-                this.currentCard.reviews_today++;
+                this.currentCard.lastReviewed = now;
                 
-                // Update session statistics
-                this.sessionData.totalStudied++;
-                this.sessionData[rating + 'Count']++;
+                // Spaced repetition algorithm
+                let multiplier;
+                switch (difficulty) {
+                    case 'easy':
+                        multiplier = 2.5;
+                        this.currentCard.difficulty = Math.max(0, this.currentCard.difficulty - 1);
+                        this.sessionData.correctAnswers++;
+                        break;
+                    case 'medium':
+                        multiplier = 1.5;
+                        break;
+                    case 'hard':
+                        multiplier = 0.5;
+                        this.currentCard.difficulty = Math.min(10, this.currentCard.difficulty + 1);
+                        this.currentCard.interval = 1; // Reset interval for hard cards
+                        break;
+                }
                 
-                // Apply spaced repetition algorithm
-                this.applySRSAlgorithm(this.currentCard, rating);
+                // Calculate next review date
+                if (difficulty !== 'hard') {
+                    this.currentCard.interval = Math.max(1, Math.floor(this.currentCard.interval * multiplier));
+                }
+                
+                this.currentCard.nextReview = new Date(now.getTime() + this.currentCard.interval * 24 * 60 * 60 * 1000);
                 
                 this.studiedCards.add(this.currentCard.id);
+                this.sessionData.totalStudied++;
                 
-                // Store in session data
+                // Store in session data (simulating localStorage)
                 this.saveSession();
                 
                 this.nextCard();
-            }
-
-            applySRSAlgorithm(card, rating) {
-                const now = new Date();
-                
-                if (card.state === 'new') {
-                    // New card
-                    switch (rating) {
-                        case 'again':
-                            card.learning_step = 0;
-                            card.state = 'learning';
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'hard':
-                            card.learning_step = 0;
-                            card.state = 'learning';
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'good':
-                            card.learning_step = 0;
-                            card.state = 'learning';
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'easy':
-                            card.state = 'review';
-                            card.ease_factor = this.srSettings.startingEase;
-                            card.interval = this.srSettings.easyInterval;
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                    }
-                } else if (card.state === 'learning') {
-                    // Learning card
-                    switch (rating) {
-                        case 'again':
-                            card.learning_step = 0;
-                            card.lapses++;
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'hard':
-                            // Stay at current step
-                            const currentStep = Math.min(card.learning_step, this.srSettings.learningSteps.length - 1);
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[currentStep] * 60 * 1000);
-                            break;
-                        case 'good':
-                            card.learning_step++;
-                            if (card.learning_step >= this.srSettings.learningSteps.length) {
-                                // Graduate to review
-                                card.state = 'review';
-                                card.interval = this.srSettings.graduatingInterval;
-                                card.ease_factor = this.srSettings.startingEase;
-                                card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            } else {
-                                card.due = new Date(now.getTime() + this.srSettings.learningSteps[card.learning_step] * 60 * 1000);
-                            }
-                            break;
-                        case 'easy':
-                            // Graduate immediately with easy interval
-                            card.state = 'review';
-                            card.interval = this.srSettings.easyInterval;
-                            card.ease_factor = this.srSettings.startingEase;
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                    }
-                } else if (card.state === 'review') {
-                    // Review card - SM-2 algorithm
-                    const oldInterval = card.interval;
-                    
-                    switch (rating) {
-                        case 'again':
-                            // Lapse
-                            card.lapses++;
-                            card.state = 'relearning';
-                            card.learning_step = 0;
-                            card.ease_factor = Math.max(1.3, card.ease_factor - 0.2);
-                            card.interval = Math.max(1, Math.floor(oldInterval * this.srSettings.newInterval));
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'hard':
-                            card.ease_factor = Math.max(1.3, card.ease_factor - 0.15);
-                            card.interval = Math.max(this.srSettings.minimumInterval, 
-                                Math.floor(oldInterval * this.srSettings.hardInterval));
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                        case 'good':
-                            card.interval = Math.max(this.srSettings.minimumInterval, 
-                                Math.floor(oldInterval * card.ease_factor));
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                        case 'easy':
-                            card.ease_factor += 0.15;
-                            card.interval = Math.max(this.srSettings.minimumInterval, 
-                                Math.floor(oldInterval * card.ease_factor * this.srSettings.easyBonus));
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                    }
-                } else if (card.state === 'relearning') {
-                    // Relearning card (after lapse)
-                    switch (rating) {
-                        case 'again':
-                            card.learning_step = 0;
-                            card.lapses++;
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[0] * 60 * 1000);
-                            break;
-                        case 'hard':
-                            const currentStep = Math.min(card.learning_step, this.srSettings.learningSteps.length - 1);
-                            card.due = new Date(now.getTime() + this.srSettings.learningSteps[currentStep] * 60 * 1000);
-                            break;
-                        case 'good':
-                            card.learning_step++;
-                            if (card.learning_step >= this.srSettings.learningSteps.length) {
-                                // Graduate back to review
-                                card.state = 'review';
-                                card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            } else {
-                                card.due = new Date(now.getTime() + this.srSettings.learningSteps[card.learning_step] * 60 * 1000);
-                            }
-                            break;
-                        case 'easy':
-                            // Graduate immediately back to review
-                            card.state = 'review';
-                            card.due = new Date(now.getTime() + card.interval * 24 * 60 * 60 * 1000);
-                            break;
-                    }
-                }
-                
-                // Check for leech
-                if (card.lapses >= this.srSettings.leechThreshold) {
-                    console.log(`Card "${card.front}" is a leech (${card.lapses} lapses)`);
-                }
             }
 
             nextCard() {
@@ -1123,99 +832,7 @@
                     difficultyButtons.classList.add('hidden');
                 }
                 
-                this.updateIntervalPreviews();
                 this.updateUI();
-            }
-
-            updateIntervalPreviews() {
-                if (!this.currentCard || !this.showingAnswer) return;
-                
-                // Calculate what would happen for each rating
-                const previews = this.calculateIntervalPreviews(this.currentCard);
-                
-                document.getElementById('againInterval').textContent = previews.again;
-                document.getElementById('hardInterval').textContent = previews.hard;
-                document.getElementById('goodInterval').textContent = previews.good;
-                document.getElementById('easyInterval').textContent = previews.easy;
-            }
-
-            calculateIntervalPreviews(card) {
-                const now = new Date();
-                const previews = {};
-                
-                if (card.state === 'new') {
-                    previews.again = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    previews.hard = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    previews.good = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    previews.easy = this.formatInterval(this.srSettings.easyInterval, 'days');
-                } else if (card.state === 'learning') {
-                    previews.again = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    
-                    const currentStep = Math.min(card.learning_step, this.srSettings.learningSteps.length - 1);
-                    previews.hard = this.formatInterval(this.srSettings.learningSteps[currentStep], 'minutes');
-                    
-                    if (card.learning_step + 1 >= this.srSettings.learningSteps.length) {
-                        previews.good = this.formatInterval(this.srSettings.graduatingInterval, 'days');
-                    } else {
-                        previews.good = this.formatInterval(this.srSettings.learningSteps[card.learning_step + 1], 'minutes');
-                    }
-                    
-                    previews.easy = this.formatInterval(this.srSettings.easyInterval, 'days');
-                } else if (card.state === 'review') {
-                    const oldInterval = card.interval;
-                    
-                    previews.again = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    previews.hard = this.formatInterval(Math.max(1, Math.floor(oldInterval * this.srSettings.hardInterval)), 'days');
-                    previews.good = this.formatInterval(Math.max(1, Math.floor(oldInterval * card.ease_factor)), 'days');
-                    previews.easy = this.formatInterval(Math.max(1, Math.floor(oldInterval * card.ease_factor * this.srSettings.easyBonus)), 'days');
-                } else if (card.state === 'relearning') {
-                    previews.again = this.formatInterval(this.srSettings.learningSteps[0], 'minutes');
-                    
-                    const currentStep = Math.min(card.learning_step, this.srSettings.learningSteps.length - 1);
-                    previews.hard = this.formatInterval(this.srSettings.learningSteps[currentStep], 'minutes');
-                    
-                    if (card.learning_step + 1 >= this.srSettings.learningSteps.length) {
-                        previews.good = this.formatInterval(card.interval, 'days');
-                    } else {
-                        previews.good = this.formatInterval(this.srSettings.learningSteps[card.learning_step + 1], 'minutes');
-                    }
-                    
-                    previews.easy = this.formatInterval(card.interval, 'days');
-                }
-                
-                return previews;
-            }
-
-            formatInterval(value, unit) {
-                if (unit === 'minutes') {
-                    if (value < 60) {
-                        return `${value}m`;
-                    } else {
-                        const hours = Math.floor(value / 60);
-                        const minutes = value % 60;
-                        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-                    }
-                } else if (unit === 'days') {
-                    if (value < 30) {
-                        return `${value}d`;
-                    } else if (value < 365) {
-                        const months = Math.floor(value / 30);
-                        const days = value % 30;
-                        return days > 0 ? `${months}mo ${days}d` : `${months}mo`;
-                    } else {
-                        const years = Math.floor(value / 365);
-                        const remainingDays = value % 365;
-                        if (remainingDays === 0) {
-                            return `${years}y`;
-                        } else if (remainingDays < 30) {
-                            return `${years}y ${remainingDays}d`;
-                        } else {
-                            const months = Math.floor(remainingDays / 30);
-                            return `${years}y ${months}mo`;
-                        }
-                    }
-                }
-                return `${value}${unit.charAt(0)}`;
             }
 
             formatText(text) {
@@ -1225,71 +842,26 @@
 
             updateUI() {
                 const totalCards = this.cards.length;
-                const now = new Date();
+                const studiedCount = this.studiedCards.size;
+                const remainingCount = Math.max(0, totalCards - studiedCount);
+                const progress = totalCards > 0 ? (studiedCount / totalCards) * 100 : 0;
                 
-                // Count cards by state
-                const newCards = this.cards.filter(card => card.state === 'new').length;
-                const learningCards = this.cards.filter(card => 
-                    (card.state === 'learning' || card.state === 'relearning') && card.due <= now
-                ).length;
-                const reviewCards = this.cards.filter(card => 
-                    card.state === 'review' && card.due <= now
-                ).length;
-                
-                // Count cards studied today
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const studiedToday = this.cards.filter(card => 
-                    card.last_review && card.last_review >= today
-                ).length;
-                
-                // Calculate progress
-                const totalDue = newCards + learningCards + reviewCards;
-                const progress = totalCards > 0 ? ((studiedToday / totalCards) * 100) : 0;
-                
-                // Update main stats
                 document.getElementById('totalCards').textContent = totalCards;
-                document.getElementById('newCards').textContent = newCards;
-                document.getElementById('learningCards').textContent = learningCards;
-                document.getElementById('reviewCards').textContent = reviewCards;
-                document.getElementById('studiedToday').textContent = studiedToday;
-                
-                // Update session performance stats
-                document.getElementById('againCount').textContent = this.sessionData.againCount;
-                document.getElementById('hardCount').textContent = this.sessionData.hardCount;
-                document.getElementById('goodCount').textContent = this.sessionData.goodCount;
-                document.getElementById('easyCount').textContent = this.sessionData.easyCount;
-                
-                // Update progress bar
+                document.getElementById('studiedCards').textContent = studiedCount;
+                document.getElementById('remainingCards').textContent = remainingCount;
                 document.getElementById('progressFill').style.width = `${progress}%`;
             }
 
             resetSession() {
                 this.studiedCards.clear();
-                this.sessionData = { 
-                    totalStudied: 0, 
-                    againCount: 0, 
-                    hardCount: 0, 
-                    goodCount: 0, 
-                    easyCount: 0,
-                    startTime: new Date()
-                };
+                this.sessionData = { totalStudied: 0, correctAnswers: 0 };
                 
-                // Reset all cards to new state
+                // Reset all cards
                 this.cards.forEach(card => {
-                    card.state = 'new';
-                    card.due = new Date();
-                    card.stability = 0;
                     card.difficulty = 0;
-                    card.elapsed_days = 0;
-                    card.scheduled_days = 0;
-                    card.reps = 0;
-                    card.lapses = 0;
-                    card.last_review = null;
-                    card.ease_factor = this.srSettings.startingEase;
-                    card.interval = 0;
-                    card.learning_step = 0;
-                    card.reviews_today = 0;
+                    card.lastReviewed = null;
+                    card.nextReview = new Date();
+                    card.interval = 1;
                 });
                 
                 this.currentCard = this.getNextCard();
@@ -1320,14 +892,7 @@
                         if (sessionData.cards && sessionData.cards.length > 0) {
                             this.cards = sessionData.cards;
                             this.studiedCards = new Set(sessionData.studiedCards || []);
-                            this.sessionData = sessionData.sessionData || { 
-                                totalStudied: 0, 
-                                againCount: 0, 
-                                hardCount: 0, 
-                                goodCount: 0, 
-                                easyCount: 0,
-                                startTime: new Date()
-                            };
+                            this.sessionData = sessionData.sessionData || { totalStudied: 0, correctAnswers: 0 };
                             this.currentCard = this.getNextCard();
                             return;
                         }
@@ -1336,43 +901,25 @@
                     console.warn('Could not load from localStorage:', error);
                 }
 
-                // Fallback to demo data with proper SRS structure
+                // Fallback to demo data
                 this.cards = [
                     {
                         id: 0,
                         front: "What is the capital of France?",
                         back: "Paris",
-                        state: 'new',
-                        due: new Date(),
-                        stability: 0,
                         difficulty: 0,
-                        elapsed_days: 0,
-                        scheduled_days: 0,
-                        reps: 0,
-                        lapses: 0,
-                        last_review: null,
-                        ease_factor: this.srSettings.startingEase,
-                        interval: 0,
-                        learning_step: 0,
-                        reviews_today: 0
+                        lastReviewed: null,
+                        nextReview: new Date(),
+                        interval: 1
                     },
                     {
                         id: 1,
                         front: "What is 2 + 2?",
                         back: "4",
-                        state: 'new',
-                        due: new Date(),
-                        stability: 0,
                         difficulty: 0,
-                        elapsed_days: 0,
-                        scheduled_days: 0,
-                        reps: 0,
-                        lapses: 0,
-                        last_review: null,
-                        ease_factor: this.srSettings.startingEase,
-                        interval: 0,
-                        learning_step: 0,
-                        reviews_today: 0
+                        lastReviewed: null,
+                        nextReview: new Date(),
+                        interval: 1
                     }
                 ];
                 this.currentCard = this.getNextCard();
@@ -1475,19 +1022,10 @@
                                 id: index,
                                 front: card.front || card.question || '',
                                 back: card.back || card.answer || '',
-                                state: 'new',
-                                due: new Date(),
-                                stability: 0,
                                 difficulty: 0,
-                                elapsed_days: 0,
-                                scheduled_days: 0,
-                                reps: 0,
-                                lapses: 0,
-                                last_review: null,
-                                ease_factor: this.srSettings.startingEase,
-                                interval: 0,
-                                learning_step: 0,
-                                reviews_today: 0
+                                lastReviewed: null,
+                                nextReview: new Date(),
+                                interval: 1
                             }))
                             .filter(card => card.front.trim() !== '' && card.back.trim() !== '');
                         
@@ -1576,19 +1114,10 @@
                             id: index,
                             front: card.front || card.question || '',
                             back: card.back || card.answer || '',
-                            state: 'new',
-                            due: new Date(),
-                            stability: 0,
                             difficulty: 0,
-                            elapsed_days: 0,
-                            scheduled_days: 0,
-                            reps: 0,
-                            lapses: 0,
-                            last_review: null,
-                            ease_factor: this.srSettings.startingEase,
-                            interval: 0,
-                            learning_step: 0,
-                            reviews_today: 0
+                            lastReviewed: null,
+                            nextReview: new Date(),
+                            interval: 1
                         }))
                         .filter(card => card.front.trim() !== '' && card.back.trim() !== '');
 
