@@ -290,11 +290,11 @@
         <form id="settingsForm">
           <div class="form-group">
             <label for="delay">Delay (seconds):</label>
-            <input type="number" id="delay" value="5" min="1" max="300" />
+            <input type="number" id="delay" value="2" min="1" max="300" />
           </div>
           <div class="form-group">
             <label for="seqdelay">Seq Delay (seconds):</label>
-            <input type="number" id="seqdelay" value="10" min="1" max="300" />
+            <input type="number" id="seqdelay" value="5" min="1" max="300" />
           </div>
           <button type="button" class="save-btn" onclick="saveSettings()">
             Save Settings
@@ -311,8 +311,8 @@
       let settings = {
         initialSound:
           "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
-        delay: 5,
-        seqdelay: 10,
+        delay: 2,
+        seqdelay: 5,
       };
 
       // Text-to-speech for numbers
