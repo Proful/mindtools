@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CDN JS Example</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
+</head>
+<body>
+
+  <h1>Lines</h1>
+
+<script>
+  function setup() {
+    createCanvas(400, 400); // Create a 400x400 pixel canvas
+    background(220);         // Light gray background
+  }
+  function draw() {
+    point(300, 20);
+    stroke('purple');
+    strokeWeight(5);
+
+    line(30, 20, 85, 20);
+    stroke('black');
+    strokeWeight(1);
+    text('A', 25, 35);
+    text('B', 80, 35);
+
+    strokeWeight(4);      // thickness of the arrow line
+    stroke('black');
+    fill('black');
+
+    // Arrow shaft (line)
+    line(30, 60, 125, 60);
+
+    // Arrow head (triangle)
+    let x = 135;           // tip x
+    let y = 60;           // tip y
+    triangle(x, y, x-20, y-10, x-20, y+10);
+
+    strokeWeight(1);
+    text('C', 25, 75);
+    text('D', 80, 75);
+
+  }
+</script>
+
+</body>
+</html>
