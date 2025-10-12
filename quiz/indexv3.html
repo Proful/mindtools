@@ -594,13 +594,13 @@
       }
 
       function initP2PConnection(state, quizData) {
-        // const peer = new Peer(state.peerId, {
-        //   host: 'peerjs.com',
-        //   port: 443,
-        //   secure: true,
-        //   path: '/'
-        // });
-        var peer = new Peer();
+        const peer = new Peer(state.peerId, {
+          host: 'peerjs.com',
+          port: 443,
+          secure: true,
+          path: '/'
+        });
+        // var peer = new Peer();
 
         peer.on("open", (id) => {
           console.log("open",peer)
