@@ -389,6 +389,7 @@
         background: white;
         border-radius: 15px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
       }
 
       .setup-box h2 {
@@ -396,7 +397,7 @@
         margin-bottom: 20px;
       }
 
-      .setup-box input {
+      .setup-box input, .setup-box textarea {
         padding: 12px;
         font-size: 1rem;
         border: 2px solid #e0e0e0;
@@ -429,6 +430,18 @@
         margin-bottom: 10px;
       }
 
+      .copy-btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        margin-left: 10px;
+      }
+
+      .copy-btn:hover {
+        background-color: #45a049;
+      }
+
       @media (max-width: 600px) {
         .results-details {
           grid-template-columns: 1fr;
@@ -446,6 +459,10 @@
         button {
           width: 100%;
         }
+
+        .setup-box {
+          margin: 10px;
+        }
       }
     </style>
   </head>
@@ -454,81 +471,17 @@
       <div class="loading">Loading quiz application...</div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.1/simplepeer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
     <script>
-      // Generate room ID from URL or create new one
       function getRoomId() {
         const urlParams = new URLSearchParams(window.location.search);
         let roomId = urlParams.get("room");
         
         if (!roomId) {
           roomId = "quiz-" + Math.random().toString(36).substr(2, 9);
-          window.history.replaceState({}, document.title, 
-            window.location.pathname + "?room=" + roomId + "&data=" + urlParams.get("data"));
         }
         
         return roomId;
-      }
-
-      // Simple signaling via JSON URL encoding (stateless)
-      class SignalingServer {
-        constructor() {
-          this.roomId = getRoomId();
-          this.peerId = Math.random().toString(36).substr(2, 9);
-        }
-
-        async sendOffer(offer) {
-          // Store offer in localStorage as signaling mechanism
-          // In production, use Vercel serverless function
-          localStorage.setItem(`signal-${this.roomId}-offer`, JSON.stringify({
-            peerId: this.peerId,
-            data: offer
-          }));
-          return this.peerId;
-        }
-
-        async getAnswer() {
-          return new Promise((resolve) => {
-            const checkInterval = setInterval(() => {
-              const answer = localStorage.getItem(`signal-${this.roomId}-answer`);
-              if (answer) {
-                clearInterval(checkInterval);
-                localStorage.removeItem(`signal-${this.roomId}-answer`);
-                resolve(JSON.parse(answer));
-              }
-            }, 500);
-
-            setTimeout(() => {
-              clearInterval(checkInterval);
-              resolve(null);
-            }, 30000);
-          });
-        }
-
-        async sendAnswer(answer) {
-          localStorage.setItem(`signal-${this.roomId}-answer`, JSON.stringify({
-            peerId: this.peerId,
-            data: answer
-          }));
-        }
-
-        async getOffer() {
-          return new Promise((resolve) => {
-            const checkInterval = setInterval(() => {
-              const offer = localStorage.getItem(`signal-${this.roomId}-offer`);
-              if (offer) {
-                clearInterval(checkInterval);
-                localStorage.removeItem(`signal-${this.roomId}-offer`);
-                resolve(JSON.parse(offer));
-              }
-            }, 500);
-
-            setTimeout(() => {
-              clearInterval(checkInterval);
-              resolve(null);
-            }, 30000);
-          });
-        }
       }
 
       document.addEventListener("DOMContentLoaded", function () {
@@ -563,7 +516,7 @@
             <div class="setup-box">
               <h2>Multiplayer Quiz</h2>
               <p style="margin-bottom: 20px; color: #666;">Enter quiz data as JSON array or use sample data</p>
-              <textarea id="quizInput" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct_answer":"4","explanation":"2+2 equals 4"}]' style="width:100%; height:200px; padding:10px; border-radius:8px; border:2px solid #e0e0e0; font-family:monospace; resize:vertical; margin-bottom:10px;"></textarea>
+              <textarea id="quizInput" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct_answer":"4","explanation":"2+2 equals 4"}]' style="height:200px; resize:vertical;"></textarea>
               <button class="btn-next" onclick="loadQuiz()">Start Quiz</button>
               <button class="btn-prev" onclick="loadSampleQuiz()" style="margin-top: 10px;">Load Sample Quiz</button>
             </div>
@@ -615,6 +568,7 @@
             <div class="error">
               <h2>Error</h2>
               <p>${message}</p>
+              <button class="btn-next" onclick="location.reload()">Reload</button>
             </div>
           </div>
         `;
@@ -628,88 +582,55 @@
           answers: Array(quizData.length).fill(null),
           quizCompleted: false,
           peer: null,
-          peerData: null,
+          conn: null,
           peerAnswer: null,
-          isInitiator: Math.random() > 0.5,
+          isInitiator: false,
           showOtherSelection: false,
-          roomId: getRoomId()
+          roomId: getRoomId(),
+          peerId: "quiz-" + Math.random().toString(36).substr(2, 9)
         };
 
         initP2PConnection(state, quizData);
       }
 
       function initP2PConnection(state, quizData) {
-        const signaling = new SignalingServer();
+        const peer = new Peer(state.peerId, {
+          host: 'peerjs.com',
+          port: 443,
+          secure: true,
+          path: '/'
+        });
 
-        if (state.isInitiator) {
-          // Initiator creates offer
-          const peer = new SimplePeer({ initiator: true, trickleIce: false });
+        peer.on("open", (id) => {
+          state.peer = peer;
+          renderLoading(state);
+        });
 
-          peer.on("error", (err) => {
-            console.error("Peer error:", err);
-          });
+        peer.on("connection", (conn) => {
+          state.conn = conn;
+          state.isInitiator = false;
+          renderQuiz(state, quizData);
 
-          peer.on("signal", (data) => {
-            signaling.sendOffer(data).then(() => {
-              signaling.getAnswer().then((answer) => {
-                if (answer) {
-                  peer.signal(answer.data);
-                }
-              });
-            });
-          });
-
-          peer.on("connect", () => {
-            state.peer = peer;
-            renderQuiz(state, quizData);
-            peer.on("data", (data) => {
-              try {
-                state.peerAnswer = JSON.parse(data.toString());
-              } catch (e) {
-                console.error("Failed to parse peer data:", e);
-              }
-            });
-          });
-
-          peer.on("close", () => {
-            state.peer = null;
-          });
-        } else {
-          // Non-initiator waits for offer
-          signaling.getOffer().then((offer) => {
-            if (offer) {
-              const peer = new SimplePeer({ initiator: false, trickleIce: false });
-
-              peer.on("error", (err) => {
-                console.error("Peer error:", err);
-              });
-
-              peer.on("signal", (data) => {
-                signaling.sendAnswer(data);
-              });
-
-              peer.on("connect", () => {
-                state.peer = peer;
-                renderQuiz(state, quizData);
-                peer.on("data", (data) => {
-                  try {
-                    state.peerAnswer = JSON.parse(data.toString());
-                  } catch (e) {
-                    console.error("Failed to parse peer data:", e);
-                  }
-                });
-              });
-
-              peer.on("close", () => {
-                state.peer = null;
-              });
-
-              peer.signal(offer.data);
-            } else {
-              showError("Failed to establish P2P connection. Please refresh and try again.");
+          conn.on("data", (data) => {
+            try {
+              const msg = JSON.parse(data);
+              state.peerAnswer = msg;
+              renderQuiz(state, quizData);
+            } catch (e) {
+              console.error("Failed to parse peer data:", e);
             }
           });
-        }
+
+          conn.on("close", () => {
+            state.conn = null;
+            renderQuiz(state, quizData);
+          });
+        });
+
+        peer.on("error", (err) => {
+          console.error("Peer error:", err);
+          showError("Connection error: " + err.type);
+        });
 
         // Event listeners
         document.addEventListener("click", function (e) {
@@ -723,22 +644,37 @@
             restartQuiz(state, quizData);
           } else if (e.target.classList.contains("btn-other")) {
             toggleOtherUserSelection(state);
+          } else if (e.target.classList.contains("copy-btn")) {
+            copyToClipboard(e.target.dataset.url);
           }
         });
+      }
 
-        // Show loading until connection established
-        renderLoading(state);
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert("URL copied to clipboard!");
+        }).catch(() => {
+          alert("Failed to copy URL");
+        });
       }
 
       function renderLoading(state) {
         const appElement = document.getElementById("app");
+        const shareUrl = window.location.href.split('?')[0] + "?room=" + state.roomId + "&data=" + new URLSearchParams(window.location.search).get("data");
+        
         appElement.innerHTML = `
           <div class="container">
             <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-              <div style="text-align: center;">
-                <h2 style="color: #667eea; margin-bottom: 20px;">Connecting to peer...</h2>
-                <p>Room ID: <code style="background: #f5f5f5; padding: 5px 10px; border-radius: 4px;">${state.roomId}</code></p>
-                <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">Share this URL with another player to play together</p>
+              <div style="text-align: center; max-width: 500px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Waiting for opponent...</h2>
+                <p style="margin-bottom: 20px; font-weight: 600;">Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px;">${state.roomId}</code></p>
+                <p style="margin-bottom: 20px; color: #666;">Your Peer ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;">${state.peerId}</code></p>
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Share this link with another player:</p>
+                <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 15px; word-break: break-all; font-size: 0.85rem;">
+                  ${shareUrl}
+                </div>
+                <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
+                <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Connecting using PeerServer...</p>
               </div>
             </div>
           </div>
@@ -778,7 +714,7 @@
               <label for="option${index}">
                 <span class="radio"></span>
                 ${option}
-                <span class="mark">${isCorrect ? "✓" : isIncorrect ? "✗" : ""}</span>
+                <span class="mark">${isCorrect ? "✔" : isIncorrect ? "✘" : ""}</span>
                 ${isPeerSelected ? '<span class="option-indicator">Other Player</span>' : ''}
               </label>
             </div>
@@ -786,8 +722,8 @@
         });
 
         const progress = ((state.currentQuestion + 1) / state.totalQuestions) * 100;
-        const connectionStatus = state.peer ? "Connected" : "Connecting...";
-        const statusClass = state.peer ? "status-connected" : "status-waiting";
+        const connectionStatus = state.conn ? "Connected" : "Waiting for opponent...";
+        const statusClass = state.conn ? "status-connected" : "status-waiting";
 
         let otherUserHtml = "";
         if (state.peerAnswer !== null && userAnswer !== null) {
@@ -819,8 +755,8 @@
                   <div class="value">${state.correctAnswers}</div>
                 </div>
                 <div class="score-item">
-                  <div class="label">Peer Connected</div>
-                  <div class="value">${state.peer ? "✓" : "—"}</div>
+                  <div class="label">Opponent</div>
+                  <div class="value">${state.conn ? "✔" : "–"}</div>
                 </div>
               </div>
             </div>
@@ -839,7 +775,7 @@
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>← Previous</button>
               ${state.peerAnswer !== null && userAnswer !== null && !state.showOtherSelection ? 
-                `<button class="btn-other">👀 See Other Player (${state.currentQuestion + 1}/${state.totalQuestions})</button>` : 
+                `<button class="btn-other">👀 See Opponent (${state.currentQuestion + 1}/${state.totalQuestions})</button>` : 
                 ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results →</button>` :
@@ -871,8 +807,8 @@
         }
 
         // Send answer to peer
-        if (state.peer) {
-          state.peer.send(JSON.stringify({
+        if (state.conn) {
+          state.conn.send(JSON.stringify({
             question: state.currentQuestion,
             answer: optionIndex
           }));
@@ -884,7 +820,6 @@
 
       function toggleOtherUserSelection(state) {
         state.showOtherSelection = !state.showOtherSelection;
-        // Re-render doesn't fully update, so manually update
         const otherDiv = document.querySelector(".other-user-selection");
         if (otherDiv) {
           otherDiv.classList.toggle("visible");
