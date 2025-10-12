@@ -141,7 +141,7 @@
         copyBtn.addEventListener("click", function () {
           // Copy the encoded result to clipboard
           navigator.clipboard
-            .writeText(result.textContent)
+            .writeText("https://mindtools.vercel.app/quiz?data="+result.textContent)
             .then(() => {
               const originalText = copyBtn.textContent;
               copyBtn.textContent = "Copied!";

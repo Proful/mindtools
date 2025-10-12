@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiplayer Quiz Application</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .connection-status {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .status-badge {
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .status-connected {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .status-waiting {
+        background-color: #fff3e0;
+        color: #e65100;
+      }
+
+      .status-room-id {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        font-family: monospace;
+        cursor: pointer;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s ease;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .scores {
+        display: flex;
+        gap: 20px;
+      }
+
+      .score-item {
+        text-align: center;
+      }
+
+      .score-item .label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .score-item .value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .quiz-container {
+        flex-grow: 1;
+      }
+
+      .question {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.4;
+        color: #222;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .option {
+        position: relative;
+        background-color: #f9f9f9;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .option:hover {
+        background-color: #f1f1f1;
+        border-color: #ccc;
+        transform: translateX(5px);
+      }
+
+      .option.selected {
+        background-color: #e8f5e9;
+        border-color: #667eea;
+      }
+
+      .option.correct {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .option.incorrect {
+        background-color: #ffebee;
+        border-color: #f44336;
+      }
+
+      .option.other-user-selected {
+        border-color: #ff9800;
+        background-color: #fff3e0;
+      }
+
+      .option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .option label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .option span.radio {
+        height: 20px;
+        width: 20px;
+        min-width: 20px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        margin-right: 12px;
+        position: relative;
+      }
+
+      .option input:checked ~ label span.radio {
+        border-color: #667eea;
+      }
+
+      .option input:checked ~ label span.radio:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #667eea;
+      }
+
+      .option span.mark {
+        margin-left: auto;
+        font-size: 1.2rem;
+        display: none;
+      }
+
+      .option.correct span.mark {
+        display: block;
+        color: #4caf50;
+      }
+
+      .option.incorrect span.mark {
+        display: block;
+        color: #f44336;
+      }
+
+      .option-indicator {
+        margin-left: auto;
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: none;
+      }
+
+      .option.other-user-selected .option-indicator {
+        display: block;
+        background-color: #ff9800;
+        color: white;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-prev {
+        background-color: #e0e0e0;
+        color: #333;
+      }
+
+      .btn-prev:hover:not(:disabled) {
+        background-color: #d0d0d0;
+      }
+
+      .btn-next {
+        background-color: #667eea;
+        color: white;
+      }
+
+      .btn-next:hover:not(:disabled) {
+        background-color: #5568d3;
+      }
+
+      .btn-other {
+        background-color: #ff9800;
+        color: white;
+      }
+
+      .btn-other:hover:not(:disabled) {
+        background-color: #f57c00;
+      }
+
+      .btn-result {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      .btn-result:hover:not(:disabled) {
+        background-color: #0b7dda;
+      }
+
+      .btn-restart {
+        background-color: #764ba2;
+        color: white;
+      }
+
+      .btn-restart:hover {
+        background-color: #5a3680;
+      }
+
+      .results {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .results h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #667eea;
+      }
+
+      .results-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin: 30px 0;
+      }
+
+      .results-item {
+        text-align: center;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+      }
+
+      .results-item p:first-child {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .explanation {
+        background-color: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        display: none;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-size: 1.5rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 40px;
+        color: #f44336;
+      }
+
+      .setup-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        min-height: 100vh;
+      }
+
+      .setup-box {
+        text-align: center;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+      }
+
+      .setup-box h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+      }
+
+      .setup-box textarea {
+        width: 100%;
+        height: 200px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        font-family: monospace;
+        resize: vertical;
+        margin-bottom: 10px;
+      }
+
+      .other-user-selection {
+        padding: 15px;
+        background-color: #fff3e0;
+        border: 2px solid #ff9800;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .other-user-selection.visible {
+        display: block;
+      }
+
+      .peer-label {
+        font-weight: bold;
+        color: #ff9800;
+        margin-bottom: 10px;
+      }
+
+      .copy-button {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+
+      .copy-button:hover {
+        background: #5568d3;
+      }
+
+      @media (max-width: 600px) {
+        .results-details {
+          grid-template-columns: 1fr;
+        }
+
+        .scores {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading">Loading quiz application...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+    <script>
+      // Generate room ID from URL or create new one
+      function getRoomId() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let roomId = urlParams.get("room");
+        
+        if (!roomId) {
+          roomId = "quiz-" + Math.random().toString(36).substr(2, 9);
+          const dataParam = urlParams.get("data") ? "&data=" + urlParams.get("data") : "";
+          window.history.replaceState({}, document.title, 
+            window.location.pathname + "?room=" + roomId + dataParam);
+        }
+        
+        return roomId;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get("data");
+
+        if (!encodedData) {
+          showSetup();
+          return;
+        }
+
+        try {
+          const jsonData = decodeURIComponent(escape(atob(encodedData)));
+          const quizData = JSON.parse(jsonData);
+
+          if (!Array.isArray(quizData) || quizData.length === 0) {
+            showError("Invalid quiz data format. Expected an array of questions.");
+            return;
+          }
+
+          initMultiplayerQuiz(quizData);
+        } catch (error) {
+          showError("Failed to load quiz data: " + error.message);
+          console.error(error);
+        }
+      });
+
+      function showSetup() {
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+          <div class="setup-screen">
+            <div class="setup-box">
+              <h2>Multiplayer Quiz</h2>
+              <p style="margin-bottom: 20px; color: #666;">Enter quiz data as JSON array or use sample data</p>
+              <textarea id="quizInput" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct_answer":"4","explanation":"2+2 equals 4"}]'></textarea>
+              <button class="btn-next" onclick="loadQuiz()" style="width: 100%;">Start Quiz</button>
+              <button class="btn-prev" onclick="loadSampleQuiz()" style="margin-top: 10px; width: 100%;">Load Sample Quiz</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function loadQuiz() {
+        const input = document.getElementById("quizInput").value;
+        try {
+          const quizData = JSON.parse(input);
+          if (!Array.isArray(quizData)) throw new Error("Must be an array");
+          const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quizData))));
+          window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
+        } catch (e) {
+          alert("Invalid JSON: " + e.message);
+        }
+      }
+
+      function loadSampleQuiz() {
+        const sampleData = [
+          {
+            question: "What is the capital of France?",
+            options: ["London", "Berlin", "Paris", "Madrid"],
+            correct_answer: "Paris",
+            explanation: "Paris is the capital and largest city of France."
+          },
+          {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Venus", "Mars", "Jupiter", "Saturn"],
+            correct_answer: "Mars",
+            explanation: "Mars is called the Red Planet because of its reddish appearance due to iron oxide on its surface."
+          },
+          {
+            question: "What is the largest ocean on Earth?",
+            options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+            correct_answer: "Pacific Ocean",
+            explanation: "The Pacific Ocean is the largest and deepest of the world's five oceanic divisions."
+          }
+        ];
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(sampleData))));
+        window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
+      }
+
+      function showError(message) {
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="error">
+              <h2>Error</h2>
+              <p>${message}</p>
+              <button class="btn-next" onclick="location.reload()" style="margin-top: 20px;">Try Again</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function initMultiplayerQuiz(quizData) {
+        const roomId = getRoomId();
+        const peerId = "user-" + Math.random().toString(36).substr(2, 9);
+
+        const state = {
+          currentQuestion: 0,
+          totalQuestions: quizData.length,
+          correctAnswers: 0,
+          answers: Array(quizData.length).fill(null),
+          quizCompleted: false,
+          connection: null,
+          peerAnswer: null,
+          showOtherSelection: false,
+          roomId: roomId,
+          peerId: peerId,
+          connectionStatus: "Initializing..."
+        };
+
+        renderLoading(state);
+        initP2PConnection(state, quizData);
+      }
+
+      function initP2PConnection(state, quizData) {
+        const peer = new Peer({
+          host: "peerjs.com",
+          port: 443,
+          secure: true,
+          config: {
+            iceServers: [
+              { urls: "stun:stun.l.google.com:19302" },
+              { urls: "stun:stun1.l.google.com:19302" },
+              { urls: "stun:stun2.l.google.com:19302" },
+              { urls: "stun:stun3.l.google.com:19302" },
+              { urls: "stun:stun4.l.google.com:19302" }
+            ]
+          }
+        });
+
+        peer.on("open", (id) => {
+          console.log("My peer ID:", id);
+          state.connectionStatus = "Waiting for peer...";
+
+          // Try to connect to existing peer
+          const connection = peer.connect(state.roomId, {
+            reliable: true
+          });
+
+          connection.on("open", () => {
+            console.log("Connected as initiator");
+            state.connection = connection;
+            setupConnectionHandlers(state, quizData, connection);
+            renderQuiz(state, quizData);
+          });
+
+          connection.on("error", (err) => {
+            console.log("Connection error (trying as receiver):", err);
+            state.connectionStatus = "Waiting for connection...";
+          });
+        });
+
+        peer.on("connection", (connection) => {
+          console.log("Received connection");
+          state.connection = connection;
+          connection.on("open", () => {
+            console.log("Connected as receiver");
+            setupConnectionHandlers(state, quizData, connection);
+            renderQuiz(state, quizData);
+          });
+        });
+
+        peer.on("error", (error) => {
+          console.error("Peer error:", error);
+          if (error.type === "unavailable-id") {
+            state.connectionStatus = "ID unavailable, retrying...";
+          }
+        });
+
+        // Event listeners
+        document.addEventListener("click", function (e) {
+          if (e.target.classList.contains("btn-prev")) {
+            navigateToPrevQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-next")) {
+            navigateToNextQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-result")) {
+            showResults(state);
+          } else if (e.target.classList.contains("btn-restart")) {
+            restartQuiz(state, quizData);
+          } else if (e.target.classList.contains("btn-other")) {
+            toggleOtherUserSelection(state);
+          } else if (e.target.classList.contains("copy-button")) {
+            copyToClipboard(window.location.href);
+          }
+        });
+      }
+
+      function setupConnectionHandlers(state, quizData, connection) {
+        connection.on("data", (data) => {
+          try {
+            state.peerAnswer = data;
+            console.log("Received peer data:", data);
+            renderQuiz(state, quizData);
+          } catch (e) {
+            console.error("Failed to parse peer data:", e);
+          }
+        });
+
+        connection.on("error", (err) => {
+          console.error("Connection data error:", err);
+        });
+
+        connection.on("close", () => {
+          console.log("Connection closed");
+          state.connection = null;
+        });
+      }
+
+      function renderLoading(state) {
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+          <div class="container">
+            <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+              <div style="text-align: center;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">⏳ ${state.connectionStatus}</h2>
+                <p>Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; display: inline-block;">${state.roomId}</code></p>
+                <button class="copy-button" style="margin-left: 10px;">Copy URL</button>
+                <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Share this URL with another player</p>
+                <p style="margin-top: 10px; color: #999; font-size: 0.85rem;">This may take up to 30 seconds to connect</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderQuiz(state, quizData) {
+        const appElement = document.getElementById("app");
+
+        if (state.quizCompleted) {
+          renderResults(state);
+          return;
+        }
+
+        const question = quizData[state.currentQuestion];
+        const isLastQuestion = state.currentQuestion === state.totalQuestions - 1;
+        const userAnswer = state.answers[state.currentQuestion];
+        const showFeedback = userAnswer !== null;
+
+        let optionsHtml = "";
+
+        question.options.forEach((option, index) => {
+          const isSelected = userAnswer === index;
+          const isCorrect = showFeedback && index === question.options.indexOf(question.correct_answer);
+          const isIncorrect = showFeedback && isSelected && !isCorrect;
+          const isPeerSelected = state.peerAnswer !== null && index === state.peerAnswer.answer && state.showOtherSelection && state.peerAnswer.question === state.currentQuestion;
+
+          let optionClass = "option";
+          if (isSelected) optionClass += " selected";
+          if (showFeedback && isCorrect) optionClass += " correct";
+          if (isIncorrect) optionClass += " incorrect";
+          if (isPeerSelected && !isSelected) optionClass += " other-user-selected";
+
+          optionsHtml += `
+            <div class="${optionClass}" data-index="${index}">
+              <input type="radio" name="option" id="option${index}" ${isSelected ? "checked" : ""} ${showFeedback ? "disabled" : ""}>
+              <label for="option${index}">
+                <span class="radio"></span>
+                ${option}
+                <span class="mark">${isCorrect ? "✓" : isIncorrect ? "✗" : ""}</span>
+                ${isPeerSelected ? '<span class="option-indicator">Other Player</span>' : ''}
+              </label>
+            </div>
+          `;
+        });
+
+        const progress = ((state.currentQuestion + 1) / state.totalQuestions) * 100;
+        const connectionStatus = state.connection ? "✓ Connected" : "⏳ Waiting...";
+        const statusClass = state.connection ? "status-connected" : "status-waiting";
+
+        let otherUserHtml = "";
+        if (state.peerAnswer !== null && userAnswer !== null && state.peerAnswer.question === state.currentQuestion) {
+          const peerOption = quizData[state.currentQuestion].options[state.peerAnswer.answer];
+          otherUserHtml = `
+            <div class="other-user-selection ${state.showOtherSelection ? 'visible' : ''}">
+              <div class="peer-label">📱 Other Player Selected:</div>
+              <div style="font-size: 1.1rem; padding: 10px; background: white; border-radius: 6px;">${peerOption}</div>
+            </div>
+          `;
+        }
+
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="connection-status">
+              <span class="status-badge status-room-id">${state.roomId}</span>
+              <span class="status-badge ${statusClass}">${connectionStatus}</span>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress" style="width: ${progress}%"></div>
+            </div>
+
+            <div class="header">
+              <div style="font-size: 1.1rem; font-weight: 600;">Question ${state.currentQuestion + 1} of ${state.totalQuestions}</div>
+              <div class="scores">
+                <div class="score-item">
+                  <div class="label">Your Score</div>
+                  <div class="value">${state.correctAnswers}</div>
+                </div>
+                <div class="score-item">
+                  <div class="label">Peer</div>
+                  <div class="value">${state.connection ? "✓" : "—"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-container">
+              <div class="question">${question.question}</div>
+              <div class="options">${optionsHtml}</div>
+
+              <div class="explanation" ${showFeedback ? 'style="display:block"' : ""}>
+                <p>${question.explanation}</p>
+              </div>
+
+              ${otherUserHtml}
+            </div>
+
+            <div class="actions">
+              <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>← Previous</button>
+              ${state.peerAnswer !== null && userAnswer !== null && state.peerAnswer.question === state.currentQuestion && !state.showOtherSelection ? 
+                `<button class="btn-other">👀 See Other Player</button>` : 
+                ''}
+              ${isLastQuestion ?
+                `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results →</button>` :
+                `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next →</button>`
+              }
+            </div>
+          </div>
+        `;
+
+        // Add event listeners for options
+        if (!showFeedback) {
+          document.querySelectorAll(".option").forEach((option) => {
+            option.addEventListener("click", function () {
+              selectOption(this.dataset.index, state, quizData);
+            });
+          });
+        }
+      }
+
+      function selectOption(optionIndex, state, quizData) {
+        const question = quizData[state.currentQuestion];
+        const selectedOption = question.options[optionIndex];
+        const isCorrect = selectedOption === question.correct_answer;
+
+        state.answers[state.currentQuestion] = parseInt(optionIndex);
+
+        if (isCorrect) {
+          state.correctAnswers++;
+        }
+
+        // Send answer to peer
+        if (state.connection && state.connection.open) {
+          state.connection.send({
+            question: state.currentQuestion,
+            answer: optionIndex
+          });
+        }
+
+        state.showOtherSelection = false;
+        renderQuiz(state, quizData);
+      }
+
+      function toggleOtherUserSelection(state) {
+        state.showOtherSelection = !state.showOtherSelection;
+        const otherDiv = document.querySelector(".other-user-selection");
+        if (otherDiv) {
+          otherDiv.classList.toggle("visible");
+        }
+      }
+
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert("URL copied to clipboard!");
+        });
+      }
+
+      function navigateToPrevQuestion(state, quizData) {
+        if (state.currentQuestion > 0) {
+          state.currentQuestion--;
+          state.showOtherSelection = false;
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function navigateToNextQuestion(state, quizData) {
+        if (state.currentQuestion < state.totalQuestions - 1) {
+          state.currentQuestion++;
+          state.showOtherSelection = false;
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function showResults(state) {
+        state.quizCompleted = true;
+        renderQuiz(state, null);
+      }
+
+      function renderResults(state) {
+        const appElement = document.getElementById("app");
+        const percentage = Math.round((state.correctAnswers / state.totalQuestions) * 100);
+        const incorrectAnswers = state.totalQuestions - state.correctAnswers;
+
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="results">
+              <h2>Quiz Complete! 🎉</h2>
+              <div style="font-size: 4rem; font-weight: bold; color: #667eea; margin: 20px 0;">
+                ${percentage}%
+              </div>
+
+              <div class="results-details">
+                <div class="results-item">
+                  <p>${state.totalQuestions}</p>
+                  <p>Total Questions</p>
+                </div>
+                <div class="results-item">
+                  <p style="color: #4caf50;">${state.correctAnswers}</p>
+                  <p>Correct</p>
+                </div>
+                <div class="results-item">
+                  <p style="color: #f44336;">${incorrectAnswers}</p>
+                  <p>Wrong</p>
+                </div>
+              </div>
+
+              <button class="btn-restart" style="width: 100%;">Try Again</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function restartQuiz(state, quizData) {
+        state.currentQuestion = 0;
+        state.correctAnswers = 0;
+        state.answers = Array(state.totalQuestions).fill(null);
+        state.quizCompleted = false;
+        state.peerAnswer = null;
+        state.showOtherSelection = false;
+
+        renderQuiz(state, quizData);
+      }
+    </script>
+  </body>
+</html>

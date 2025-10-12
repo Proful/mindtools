@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CDN JS Example</title>
+  <title>P5 JS Example</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
@@ -12,30 +12,35 @@
 
 <script>
   function setup() {
-    createCanvas(windowWidth, 400); // Create a 400x400 pixel canvas
-    background(220);         // Light gray background
+    createCanvas(windowWidth, 400);
+    background(220);
   }
+
   function draw() {
+    let x_a = 30;
+    let y_a = 20;
+    let lineWidth = 55;
+    let vGap = 40
+
     point(300, 20);
     stroke('purple');
     strokeWeight(5);
 
-    line(30, 20, 85, 20);
+    line(x_a, y_a, x_a + lineWidth, y_a);
     stroke('black');
     strokeWeight(1);
-    text('A', 25, 35);
-    text('B', 80, 35);
+    text('A', x_a - 5, y_a + 15);
+    text('B', x_a - 5 + lineWidth, y_a + 15);
 
-    strokeWeight(4);      // thickness of the arrow line
+    strokeWeight(4);
     stroke('black');
     fill('black');
 
     // Arrow shaft (line)
-    line(30, 60, 125, 60);
+    line(x_a, y_a + vGap, 125, y_a + vGap);
 
-    // Arrow head (triangle)
-    let x = 135;           // tip x
-    let y = 60;           // tip y
+    let x = 135;
+    let y = 60;
     triangle(x, y, x-20, y-10, x-20, y+10);
 
     strokeWeight(1);
