@@ -603,17 +603,20 @@
         var peer = new Peer();
 
         peer.on("open", (id) => {
+          console.log("open",peer)
           state.peer = peer;
           renderLoading(state);
         });
 
         peer.on("connection", (conn) => {
+          console.log("conn",conn)
           state.conn = conn;
           state.isInitiator = false;
           renderQuiz(state, quizData);
 
           conn.on("data", (data) => {
             try {
+              console.log("data",data)
               const msg = JSON.parse(data);
               state.peerAnswer = msg;
               renderQuiz(state, quizData);
