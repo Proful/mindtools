@@ -603,11 +603,34 @@
         var peer = new Peer();
 
         peer.on("open", (id) => {
-          console.log("open",id, peer)
+          console.log("open", id);
           state.peer = peer;
           state.peerId = id;
-          renderLoading(state);
+
+          // Get the other peerId if present in URL
+          const otherPeerId = new URLSearchParams(window.location.search).get("peer");
+          if (otherPeerId && otherPeerId !== id) {
+            const conn = peer.connect(otherPeerId);
+            conn.on("open", () => {
+              state.conn = conn;
+              state.isInitiator = true;
+              renderQuiz(state, quizData);
+            });
+            conn.on("data", (data) => {
+              const msg = JSON.parse(data);
+              state.peerAnswer = msg;
+              renderQuiz(state, quizData);
+            });
+          } else {
+            renderLoading(state);
+          }
         });
+        // peer.on("open", (id) => {
+        //   console.log("open",id, peer)
+        //   state.peer = peer;
+        //   state.peerId = id;
+        //   renderLoading(state);
+        // });
 
         peer.on("connection", (conn) => {
           console.log("conn",conn)
@@ -665,7 +688,7 @@
 
       function renderLoading(state) {
         const appElement = document.getElementById("app");
-        const shareUrl = window.location.href.split('?')[0] + "?room=" + state.roomId + "&data=" + new URLSearchParams(window.location.search).get("data");
+        const shareUrl = window.location.href.split('?')[0] + "?room=" + state.roomId + "&peer=" + state.peerId +"&data=" + new URLSearchParams(window.location.search).get("data");
         
         appElement.innerHTML = `
           <div class="container">
