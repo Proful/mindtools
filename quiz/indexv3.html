@@ -471,7 +471,7 @@
       <div class="loading">Loading quiz application...</div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
     <script>
       function getRoomId() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -594,12 +594,13 @@
       }
 
       function initP2PConnection(state, quizData) {
-        const peer = new Peer(state.peerId, {
-          host: 'peerjs.com',
-          port: 443,
-          secure: true,
-          path: '/'
-        });
+        // const peer = new Peer(state.peerId, {
+        //   host: 'peerjs.com',
+        //   port: 443,
+        //   secure: true,
+        //   path: '/'
+        // });
+        var peer = new Peer();
 
         peer.on("open", (id) => {
           state.peer = peer;
