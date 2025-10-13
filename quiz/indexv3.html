@@ -537,7 +537,7 @@
 
           // Convert JSON to string and then to Base64
           // const jsonString = JSON.stringify(jsonData);
-          const jsonString = unicodeSafeJSONStringify(jsonData);
+          const jsonString = unicodeSafeJSONStringify(quizData);
           // Use this function to handle Unicode characters
           const encoded = btoa(unescape(encodeURIComponent(jsonString)));
 
