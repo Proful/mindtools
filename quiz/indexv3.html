@@ -605,6 +605,7 @@
         initP2PConnection(state, quizData);
       }
 
+      /*
       function initP2PConnection(state, quizData) {
         // const peer = new Peer(state.peerId, {
         //   host: 'peerjs.com',
@@ -689,7 +690,180 @@
           }
         });
       }
+      */
 
+      function initP2PConnection(state, quizData) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetPeerId = urlParams.get("peer");
+        
+        // If peer ID is in URL, try to use it as our ID (become the host)
+        // Otherwise generate a new random ID
+        const myPeerId = targetPeerId || state.peerId;
+        
+        var peer = new Peer(myPeerId);
+        
+        let connectionAttempted = false;
+
+        peer.on("open", (id) => {
+          console.log("Peer opened with ID:", id);
+          state.peer = peer;
+          state.peerId = id;
+
+          // If we have a target peer ID in URL and it's different from ours,
+          // it means someone else opened the link first, so we try to connect to them
+          if (targetPeerId && targetPeerId !== id && !connectionAttempted) {
+            connectionAttempted = true;
+            console.log("Attempting to connect to peer:", targetPeerId);
+            attemptConnection(peer, targetPeerId, state, quizData);
+          } else {
+            // We're the first one with this link, wait for others
+            renderLoading(state);
+          }
+        });
+
+        peer.on("connection", (conn) => {
+          console.log("Incoming connection from:", conn.peer);
+          state.conn = conn;
+          state.isInitiator = false;
+          
+          conn.on("open", () => {
+            console.log("Connection established");
+            renderQuiz(state, quizData);
+          });
+
+          conn.on("data", (data) => {
+            try {
+              console.log("Received data:", data);
+              const msg = JSON.parse(data);
+              state.peerAnswer = msg;
+              renderQuiz(state, quizData);
+            } catch (e) {
+              console.error("Failed to parse peer data:", e);
+            }
+          });
+
+          conn.on("close", () => {
+            console.log("Connection closed");
+            state.conn = null;
+            renderQuiz(state, quizData);
+          });
+          
+          conn.on("error", (err) => {
+            console.error("Connection error:", err);
+            state.conn = null;
+            renderQuiz(state, quizData);
+          });
+        });
+
+        peer.on("error", (err) => {
+          console.error("Peer error:", err);
+          
+          // If peer-unavailable and we have a target peer, become the host with that ID
+          if (err.type === "peer-unavailable" && targetPeerId) {
+            console.log("Peer unavailable, becoming host");
+            // Already initialized with the target peer ID, just wait for connection
+            renderLoading(state);
+          } else if (err.type === "unavailable-id") {
+            // Someone else already has this ID, generate new one and try to connect
+            console.log("ID taken, reconnecting with new ID");
+            const newPeer = new Peer();
+            newPeer.on("open", (newId) => {
+              state.peer = newPeer;
+              state.peerId = newId;
+              if (targetPeerId) {
+                attemptConnection(newPeer, targetPeerId, state, quizData);
+              }
+            });
+            setupPeerListeners(newPeer, state, quizData);
+          } else {
+            // Show error for other types of errors
+            showError("Connection error: " + err.type);
+          }
+        });
+
+
+        // Event listeners
+        document.addEventListener("click", function (e) {
+          if (e.target.classList.contains("btn-prev")) {
+            navigateToPrevQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-next")) {
+            navigateToNextQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-result")) {
+            showResults(state);
+          } else if (e.target.classList.contains("btn-restart")) {
+            restartQuiz(state, quizData);
+          } else if (e.target.classList.contains("btn-other")) {
+            toggleOtherUserSelection(state);
+          } else if (e.target.classList.contains("copy-btn")) {
+            copyToClipboard(e.target.dataset.url);
+          }
+        });
+      }
+      
+      function attemptConnection(peer, targetPeerId, state, quizData) {
+        console.log("Connecting to:", targetPeerId);
+        const conn = peer.connect(targetPeerId);
+        
+        conn.on("open", () => {
+          console.log("Connection opened to peer");
+          state.conn = conn;
+          state.isInitiator = true;
+          renderQuiz(state, quizData);
+        });
+        
+        conn.on("data", (data) => {
+          try {
+            const msg = JSON.parse(data);
+            state.peerAnswer = msg;
+            renderQuiz(state, quizData);
+          } catch (e) {
+            console.error("Failed to parse peer data:", e);
+          }
+        });
+        
+        conn.on("close", () => {
+          console.log("Connection closed");
+          state.conn = null;
+          renderQuiz(state, quizData);
+        });
+        
+        conn.on("error", (err) => {
+          console.error("Connection error:", err);
+          // If connection fails, wait as host
+          renderLoading(state);
+        });
+      }
+      
+      function setupPeerListeners(peer, state, quizData) {
+        peer.on("connection", (conn) => {
+          state.conn = conn;
+          state.isInitiator = false;
+          
+          conn.on("open", () => {
+            renderQuiz(state, quizData);
+          });
+          
+          conn.on("data", (data) => {
+            try {
+              const msg = JSON.parse(data);
+              state.peerAnswer = msg;
+              renderQuiz(state, quizData);
+            } catch (e) {
+              console.error("Failed to parse peer data:", e);
+            }
+          });
+          
+          conn.on("close", () => {
+            state.conn = null;
+            renderQuiz(state, quizData);
+          });
+        });
+        
+        peer.on("error", (err) => {
+          console.error("Peer error:", err);
+          showError("Connection error: " + err.type);
+        });
+      }
       function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
           alert("URL copied to clipboard!");
@@ -710,10 +884,10 @@
                 <p style="margin-bottom: 20px; font-weight: 600;">Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px;">${state.roomId}</code></p>
                 <p style="margin-bottom: 20px; color: #666;">Your Peer ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;">${state.peerId}</code></p>
                 <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Share this link with another player:</p>
+                <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
                 <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 15px; word-break: break-all; font-size: 0.85rem;">
                   ${shareUrl}
                 </div>
-                <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
                 <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Connecting using PeerServer...</p>
               </div>
             </div>
