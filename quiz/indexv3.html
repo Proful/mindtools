@@ -529,19 +529,16 @@
           return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
         });
       }
+      
       function loadQuiz() {
         const input = document.getElementById("quizInput").value;
         try {
           const quizData = JSON.parse(input);
           if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
-          // Convert JSON to string and then to Base64
-          // const jsonString = JSON.stringify(jsonData);
           const jsonString = unicodeSafeJSONStringify(quizData);
-          // Use this function to handle Unicode characters
           const encoded = btoa(unescape(encodeURIComponent(jsonString)));
 
-          // const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(quizData))));
           window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
         } catch (e) {
           alert("Invalid JSON: " + e.message);
@@ -592,10 +589,10 @@
           totalQuestions: quizData.length,
           correctAnswers: 0,
           answers: Array(quizData.length).fill(null),
+          peerAnswers: Array(quizData.length).fill(null),
           quizCompleted: false,
           peer: null,
           conn: null,
-          peerAnswer: null,
           isInitiator: false,
           showOtherSelection: false,
           roomId: getRoomId(),
@@ -605,99 +602,10 @@
         initP2PConnection(state, quizData);
       }
 
-      /*
-      function initP2PConnection(state, quizData) {
-        // const peer = new Peer(state.peerId, {
-        //   host: 'peerjs.com',
-        //   port: 443,
-        //   secure: true,
-        //   path: '/'
-        // });
-        var peer = new Peer();
-
-        peer.on("open", (id) => {
-          console.log("open", id);
-          state.peer = peer;
-          state.peerId = id;
-
-          // Get the other peerId if present in URL
-          const otherPeerId = new URLSearchParams(window.location.search).get("peer");
-          if (otherPeerId && otherPeerId !== id) {
-            const conn = peer.connect(otherPeerId);
-            conn.on("open", () => {
-              state.conn = conn;
-              state.isInitiator = true;
-              renderQuiz(state, quizData);
-            });
-            conn.on("data", (data) => {
-              const msg = JSON.parse(data);
-              state.peerAnswer = msg;
-              renderQuiz(state, quizData);
-            });
-          } else {
-            renderLoading(state);
-          }
-        });
-        // peer.on("open", (id) => {
-        //   console.log("open",id, peer)
-        //   state.peer = peer;
-        //   state.peerId = id;
-        //   renderLoading(state);
-        // });
-
-        peer.on("connection", (conn) => {
-          console.log("conn",conn)
-          state.conn = conn;
-          state.isInitiator = false;
-          renderQuiz(state, quizData);
-
-          conn.on("data", (data) => {
-            try {
-              console.log("data",data)
-              const msg = JSON.parse(data);
-              state.peerAnswer = msg;
-              renderQuiz(state, quizData);
-            } catch (e) {
-              console.error("Failed to parse peer data:", e);
-            }
-          });
-
-          conn.on("close", () => {
-            state.conn = null;
-            renderQuiz(state, quizData);
-          });
-        });
-
-        peer.on("error", (err) => {
-          console.error("Peer error:", err);
-          showError("Connection error: " + err.type);
-        });
-
-        // Event listeners
-        document.addEventListener("click", function (e) {
-          if (e.target.classList.contains("btn-prev")) {
-            navigateToPrevQuestion(state, quizData);
-          } else if (e.target.classList.contains("btn-next")) {
-            navigateToNextQuestion(state, quizData);
-          } else if (e.target.classList.contains("btn-result")) {
-            showResults(state);
-          } else if (e.target.classList.contains("btn-restart")) {
-            restartQuiz(state, quizData);
-          } else if (e.target.classList.contains("btn-other")) {
-            toggleOtherUserSelection(state);
-          } else if (e.target.classList.contains("copy-btn")) {
-            copyToClipboard(e.target.dataset.url);
-          }
-        });
-      }
-      */
-
       function initP2PConnection(state, quizData) {
         const urlParams = new URLSearchParams(window.location.search);
         const targetPeerId = urlParams.get("peer");
         
-        // If peer ID is in URL, try to use it as our ID (become the host)
-        // Otherwise generate a new random ID
         const myPeerId = targetPeerId || state.peerId;
         
         var peer = new Peer(myPeerId);
@@ -709,14 +617,11 @@
           state.peer = peer;
           state.peerId = id;
 
-          // If we have a target peer ID in URL and it's different from ours,
-          // it means someone else opened the link first, so we try to connect to them
           if (targetPeerId && targetPeerId !== id && !connectionAttempted) {
             connectionAttempted = true;
             console.log("Attempting to connect to peer:", targetPeerId);
             attemptConnection(peer, targetPeerId, state, quizData);
           } else {
-            // We're the first one with this link, wait for others
             renderLoading(state);
           }
         });
@@ -735,7 +640,7 @@
             try {
               console.log("Received data:", data);
               const msg = JSON.parse(data);
-              state.peerAnswer = msg;
+              state.peerAnswers[msg.question] = msg.answer;
               renderQuiz(state, quizData);
             } catch (e) {
               console.error("Failed to parse peer data:", e);
@@ -758,13 +663,10 @@
         peer.on("error", (err) => {
           console.error("Peer error:", err);
           
-          // If peer-unavailable and we have a target peer, become the host with that ID
           if (err.type === "peer-unavailable" && targetPeerId) {
             console.log("Peer unavailable, becoming host");
-            // Already initialized with the target peer ID, just wait for connection
             renderLoading(state);
           } else if (err.type === "unavailable-id") {
-            // Someone else already has this ID, generate new one and try to connect
             console.log("ID taken, reconnecting with new ID");
             const newPeer = new Peer();
             newPeer.on("open", (newId) => {
@@ -776,13 +678,10 @@
             });
             setupPeerListeners(newPeer, state, quizData);
           } else {
-            // Show error for other types of errors
             showError("Connection error: " + err.type);
           }
         });
 
-
-        // Event listeners
         document.addEventListener("click", function (e) {
           if (e.target.classList.contains("btn-prev")) {
             navigateToPrevQuestion(state, quizData);
@@ -814,7 +713,7 @@
         conn.on("data", (data) => {
           try {
             const msg = JSON.parse(data);
-            state.peerAnswer = msg;
+            state.peerAnswers[msg.question] = msg.answer;
             renderQuiz(state, quizData);
           } catch (e) {
             console.error("Failed to parse peer data:", e);
@@ -829,7 +728,6 @@
         
         conn.on("error", (err) => {
           console.error("Connection error:", err);
-          // If connection fails, wait as host
           renderLoading(state);
         });
       }
@@ -846,7 +744,7 @@
           conn.on("data", (data) => {
             try {
               const msg = JSON.parse(data);
-              state.peerAnswer = msg;
+              state.peerAnswers[msg.question] = msg.answer;
               renderQuiz(state, quizData);
             } catch (e) {
               console.error("Failed to parse peer data:", e);
@@ -864,6 +762,7 @@
           showError("Connection error: " + err.type);
         });
       }
+
       function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
           alert("URL copied to clipboard!");
@@ -906,7 +805,9 @@
         const question = quizData[state.currentQuestion];
         const isLastQuestion = state.currentQuestion === state.totalQuestions - 1;
         const userAnswer = state.answers[state.currentQuestion];
+        const peerAnswer = state.peerAnswers[state.currentQuestion];
         const showFeedback = userAnswer !== null;
+        const bothAnswered = userAnswer !== null && (peerAnswer !== null || !state.conn);
 
         let optionsHtml = "";
 
@@ -914,7 +815,7 @@
           const isSelected = userAnswer === index;
           const isCorrect = showFeedback && index === question.options.indexOf(question.correct_answer);
           const isIncorrect = showFeedback && isSelected && !isCorrect;
-          const isPeerSelected = state.peerAnswer !== null && index === state.peerAnswer.answer && state.showOtherSelection;
+          const isPeerSelected = peerAnswer !== null && index === peerAnswer && state.showOtherSelection;
 
           let optionClass = "option";
           if (isSelected) optionClass += " selected";
@@ -928,7 +829,7 @@
               <label for="option${index}">
                 <span class="radio"></span>
                 ${option}
-                <span class="mark">${isCorrect ? "✔" : isIncorrect ? "✘" : ""}</span>
+                <span class="mark">${isCorrect ? "✓" : isIncorrect ? "✘" : ""}</span>
                 ${isPeerSelected ? '<span class="option-indicator">Other Player</span>' : ''}
               </label>
             </div>
@@ -939,9 +840,18 @@
         const connectionStatus = state.conn ? "Connected" : "Waiting for opponent...";
         const statusClass = state.conn ? "status-connected" : "status-waiting";
 
+        let waitingMessage = "";
+        if (userAnswer !== null && peerAnswer === null && state.conn) {
+          waitingMessage = `
+            <div style="background-color: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+              <span style="color: #e65100; font-weight: 500;">⏳ Waiting for opponent to answer...</span>
+            </div>
+          `;
+        }
+
         let otherUserHtml = "";
-        if (state.peerAnswer !== null && userAnswer !== null) {
-          const peerOption = quizData[state.currentQuestion].options[state.peerAnswer.answer];
+        if (peerAnswer !== null && userAnswer !== null) {
+          const peerOption = quizData[state.currentQuestion].options[peerAnswer];
           otherUserHtml = `
             <div class="other-user-selection ${state.showOtherSelection ? 'visible' : ''}">
               <div class="peer-label">📱 Other Player Selected:</div>
@@ -970,7 +880,7 @@
                 </div>
                 <div class="score-item">
                   <div class="label">Opponent</div>
-                  <div class="value">${state.conn ? "✔" : "–"}</div>
+                  <div class="value">${state.conn ? "✓" : "–"}</div>
                 </div>
               </div>
             </div>
@@ -983,23 +893,23 @@
                 <p>${question.explanation}</p>
               </div>
 
+              ${waitingMessage}
               ${otherUserHtml}
             </div>
 
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>← Previous</button>
-              ${state.peerAnswer !== null && userAnswer !== null && !state.showOtherSelection ? 
-                `<button class="btn-other">👀 See Opponent (${state.currentQuestion + 1}/${state.totalQuestions})</button>` : 
+              ${peerAnswer !== null && userAnswer !== null && !state.showOtherSelection ? 
+                `<button class="btn-other">👀 See Opponent</button>` : 
                 ''}
               ${isLastQuestion ?
-                `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results →</button>` :
-                `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next →</button>`
+                `<button class="btn-result" ${!bothAnswered ? "disabled" : ""}>See Results →</button>` :
+                `<button class="btn-next" ${!bothAnswered ? "disabled" : ""}>Next →</button>`
               }
             </div>
           </div>
         `;
 
-        // Add event listeners for options
         if (!showFeedback) {
           document.querySelectorAll(".option").forEach((option) => {
             option.addEventListener("click", function () {
@@ -1020,7 +930,6 @@
           state.correctAnswers++;
         }
 
-        // Send answer to peer
         if (state.conn) {
           state.conn.send(JSON.stringify({
             question: state.currentQuestion,
@@ -1099,8 +1008,8 @@
         state.currentQuestion = 0;
         state.correctAnswers = 0;
         state.answers = Array(state.totalQuestions).fill(null);
+        state.peerAnswers = Array(state.totalQuestions).fill(null);
         state.quizCompleted = false;
-        state.peerAnswer = null;
         state.showOtherSelection = false;
 
         renderQuiz(state, quizData);
