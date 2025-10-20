@@ -45,6 +45,11 @@ body {
   color: #155724;
 }
 
+.status.host {
+  background: #fff3cd;
+  color: #856404;
+}
+
 .equation {
   text-align: center;
   font-size: 48px;
@@ -121,58 +126,78 @@ button:active {
   <div class="controls">
     <div class="url-section">
       <input type="text" id="urlInput" readonly>
-      <button onclick="copyUrl()">Copy</button>
+      <button onclick="copyUrl()">Copy URL</button>
     </div>
-    <button id="startBtn" onclick="startQuiz()" style="display:none;">Start Quiz</button>
   </div>
   
-  <div class="info">Share the URL with another person to sync the quiz</div>
+  <div class="info">Share the URL to sync with another device</div>
 </div>
 
 <script>
+const FIXED_PEER_ID = 'multiplication-quiz-main-host';
 let peer;
 let conn;
 let isHost = false;
-let quizInterval;
-let answering = false;
+let quizActive = false;
+let connections = [];
 
-// Initialize PeerJS
 function init() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const peerId = urlParams.get('peer');
+  updateStatus('Connecting...');
   
-  if (peerId) {
-    // Guest - connect to host
-    peer = new Peer();
-    peer.on('open', (id) => {
-      updateStatus('Connecting to host...');
-      conn = peer.connect(peerId);
-      setupConnection();
-    });
-  } else {
-    // Host - create new peer
+  // Try to connect as host with fixed ID
+  peer = new Peer(FIXED_PEER_ID);
+  
+  peer.on('open', (id) => {
+    // Successfully became host
     isHost = true;
-    peer = new Peer();
-    peer.on('open', (id) => {
-      const url = `${window.location.origin}${window.location.pathname}?peer=${id}`;
-      document.getElementById('urlInput').value = url;
-      updateStatus('Waiting for partner...');
-    });
-    
-    peer.on('connection', (connection) => {
-      conn = connection;
-      setupConnection();
-      updateStatus('Connected! Click Start to begin', true);
-      document.getElementById('startBtn').style.display = 'block';
-    });
-  }
+    const url = `${window.location.origin}${window.location.pathname}`;
+    document.getElementById('urlInput').value = url;
+    updateStatus('Host - Waiting for partner...', 'host');
+    startQuizAsHost();
+  });
+  
+  peer.on('error', (err) => {
+    if (err.type === 'unavailable-id') {
+      // ID taken, connect as guest
+      connectAsGuest();
+    } else {
+      updateStatus('Connection error. Refresh to retry.');
+    }
+  });
+  
+  peer.on('connection', (connection) => {
+    connections.push(connection);
+    setupHostConnection(connection);
+    updateStatus(`Host - ${connections.length} partner(s) connected`, 'host');
+  });
 }
 
-function setupConnection() {
+function connectAsGuest() {
+  peer = new Peer();
+  
+  peer.on('open', (id) => {
+    updateStatus('Connecting to host...');
+    conn = peer.connect(FIXED_PEER_ID);
+    setupGuestConnection();
+  });
+}
+
+function setupHostConnection(connection) {
+  connection.on('open', () => {
+    updateStatus(`Host - ${connections.length} partner(s) connected`, 'host');
+  });
+  
+  connection.on('close', () => {
+    connections = connections.filter(c => c !== connection);
+    updateStatus(`Host - ${connections.length} partner(s) connected`, 'host');
+  });
+}
+
+function setupGuestConnection() {
   conn.on('open', () => {
-    if (!isHost) {
-      updateStatus('Connected! Waiting for host to start...', true);
-    }
+    updateStatus('Connected to host!', true);
+    const url = `${window.location.origin}${window.location.pathname}`;
+    document.getElementById('urlInput').value = url;
   });
   
   conn.on('data', (data) => {
@@ -182,26 +207,33 @@ function setupConnection() {
       showAnswer(data.answer);
     }
   });
+  
+  conn.on('close', () => {
+    updateStatus('Disconnected. Refresh to reconnect.');
+  });
 }
 
-function updateStatus(message, connected = false) {
+function updateStatus(message, type = false) {
   const statusEl = document.getElementById('status');
   statusEl.textContent = message;
-  if (connected) {
+  statusEl.className = 'status';
+  if (type === true) {
     statusEl.classList.add('connected');
-  } else {
-    statusEl.classList.remove('connected');
+  } else if (type === 'host') {
+    statusEl.classList.add('host');
   }
 }
 
-function startQuiz() {
-  if (!isHost || !conn) return;
+function startQuizAsHost() {
+  if (!isHost) return;
   
-  document.getElementById('startBtn').style.display = 'none';
+  quizActive = true;
   runQuizCycle();
 }
 
 function runQuizCycle() {
+  if (!quizActive) return;
+  
   // Generate random multiplication
   const multiplicand = Math.floor(Math.random() * 9) + 2; // 2-10
   const multiplier = Math.floor(Math.random() * 11) + 2; // 2-12
@@ -209,22 +241,26 @@ function runQuizCycle() {
   
   // Show question
   showQuestion(multiplicand, multiplier);
-  if (conn && conn.open) {
-    conn.send({ type: 'question', multiplicand, multiplier });
-  }
+  broadcast({ type: 'question', multiplicand, multiplier });
   
   // Show answer after 5 seconds
   setTimeout(() => {
     showAnswer(answer);
-    if (conn && conn.open) {
-      conn.send({ type: 'answer', answer });
-    }
+    broadcast({ type: 'answer', answer });
     
     // Next question after 2 seconds
     setTimeout(() => {
       runQuizCycle();
     }, 2000);
-  }, 5000);
+  }, 3000);
+}
+
+function broadcast(data) {
+  connections.forEach(connection => {
+    if (connection.open) {
+      connection.send(data);
+    }
+  });
 }
 
 function showQuestion(multiplicand, multiplier) {
@@ -241,14 +277,23 @@ function copyUrl() {
   const input = document.getElementById('urlInput');
   input.select();
   input.setSelectionRange(0, 99999);
-  document.execCommand('copy');
   
-  const btn = event.target;
-  const originalText = btn.textContent;
-  btn.textContent = 'Copied!';
-  setTimeout(() => {
-    btn.textContent = originalText;
-  }, 2000);
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.textContent = originalText;
+    }, 2000);
+  }).catch(() => {
+    document.execCommand('copy');
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.textContent = originalText;
+    }, 2000);
+  });
 }
 
 // Initialize on load
