@@ -484,7 +484,7 @@
         return roomId;
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         const urlParams = new URLSearchParams(window.location.search);
         const encodedData = urlParams.get("data");
 
@@ -494,8 +494,22 @@
         }
 
         try {
-          const jsonData = decodeURIComponent(escape(atob(encodedData)));
-          const quizData = JSON.parse(jsonData);
+          // Convert from URL-safe base64 back to standard base64
+          const base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/').replace(/~/g, '=');
+          
+          // Decode from base64
+          const binaryString = atob(base64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          
+          // Decompress using browser's built-in DecompressionStream
+          const decompressedStream = new Response(
+            new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+          );
+          const decompressed = await decompressedStream.text();
+          const quizData = JSON.parse(decompressed);
 
           if (!Array.isArray(quizData) || quizData.length === 0) {
             showError("Invalid quiz data format. Expected an array of questions.");
@@ -530,14 +544,35 @@
         });
       }
       
-      function loadQuiz() {
+      async function compressAndEncode(data) {
+        // Convert to JSON string
+        const jsonString = unicodeSafeJSONStringify(data);
+        
+        // Compress using browser's built-in CompressionStream
+        const stream = new Blob([jsonString]).stream();
+        const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+        const compressedResponse = new Response(compressedStream);
+        const compressedBlob = await compressedResponse.blob();
+        const compressedBuffer = await compressedBlob.arrayBuffer();
+        const compressed = new Uint8Array(compressedBuffer);
+        
+        // Convert to URL-safe base64
+        let binaryString = '';
+        compressed.forEach(byte => {
+          binaryString += String.fromCharCode(byte);
+        });
+        
+        const base64 = btoa(binaryString);
+        // Make URL-safe: replace +/= with -_~
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
+      }
+      async function loadQuiz() {
         const input = document.getElementById("quizInput").value;
         try {
           const quizData = JSON.parse(input);
           if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
-          const jsonString = unicodeSafeJSONStringify(quizData);
-          const encoded = btoa(unescape(encodeURIComponent(jsonString)));
+          const encoded = await compressAndEncode(quizData);
 
           window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
         } catch (e) {
@@ -545,7 +580,7 @@
         }
       }
 
-      function loadSampleQuiz() {
+      async function loadSampleQuiz() {
         const sampleData = [
           {
             question: "What is the capital of France?",
@@ -566,7 +601,7 @@
             explanation: "The Pacific Ocean is the largest and deepest of the world's five oceanic divisions."
           }
         ];
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(sampleData))));
+        const encoded = await compressAndEncode(sampleData);
         window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
       }
 
