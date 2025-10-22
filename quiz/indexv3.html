@@ -451,7 +451,7 @@
       }
 
       .open-btn:hover {
-        background-color: #45a049;
+        background-color: #6b95e6;
       }
 
       @media (max-width: 600px) {
@@ -506,17 +506,13 @@
         }
 
         try {
-          // Convert from URL-safe base64 back to standard base64
           const base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/').replace(/~/g, '=');
-          
-          // Decode from base64
           const binaryString = atob(base64);
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i);
           }
           
-          // Decompress using browser's built-in DecompressionStream
           const decompressedStream = new Response(
             new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
           );
@@ -557,10 +553,7 @@
       }
       
       async function compressAndEncode(data) {
-        // Convert to JSON string
         const jsonString = unicodeSafeJSONStringify(data);
-        
-        // Compress using browser's built-in CompressionStream
         const stream = new Blob([jsonString]).stream();
         const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
         const compressedResponse = new Response(compressedStream);
@@ -568,16 +561,15 @@
         const compressedBuffer = await compressedBlob.arrayBuffer();
         const compressed = new Uint8Array(compressedBuffer);
         
-        // Convert to URL-safe base64
         let binaryString = '';
         compressed.forEach(byte => {
           binaryString += String.fromCharCode(byte);
         });
         
         const base64 = btoa(binaryString);
-        // Make URL-safe: replace +/= with -_~
         return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
       }
+
       async function loadQuiz() {
         const input = document.getElementById("quizInput").value;
         try {
@@ -585,7 +577,6 @@
           if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
           const encoded = await compressAndEncode(quizData);
-
           window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
         } catch (e) {
           alert("Invalid JSON: " + e.message);
@@ -635,6 +626,7 @@
           currentQuestion: 0,
           totalQuestions: quizData.length,
           correctAnswers: 0,
+          peerCorrectAnswers: 0,
           answers: Array(quizData.length).fill(null),
           peerAnswers: Array(quizData.length).fill(null),
           quizCompleted: false,
@@ -649,24 +641,37 @@
         initP2PConnection(state, quizData);
       }
 
+      function calculatePeerScore(state, quizData) {
+        let score = 0;
+        for (let i = 0; i < state.totalQuestions; i++) {
+          if (state.peerAnswers[i] !== null) {
+            const question = quizData[i];
+            const correctIndex = question.options.indexOf(question.correct_answer);
+            if (Number(state.peerAnswers[i]) === correctIndex) {
+              score++;
+            }
+          }
+        }
+        // console.log("score", score)
+        return score;
+      }
+
       function initP2PConnection(state, quizData) {
         const urlParams = new URLSearchParams(window.location.search);
         const targetPeerId = urlParams.get("peer");
         
         const myPeerId = targetPeerId || state.peerId;
-        
         var peer = new Peer(myPeerId);
-        
         let connectionAttempted = false;
 
         peer.on("open", (id) => {
-          console.log("Peer opened with ID:", id);
+          // console.log("Peer opened with ID:", id);
           state.peer = peer;
           state.peerId = id;
 
           if (targetPeerId && targetPeerId !== id && !connectionAttempted) {
             connectionAttempted = true;
-            console.log("Attempting to connect to peer:", targetPeerId);
+            // console.log("Attempting to connect to peer:", targetPeerId);
             attemptConnection(peer, targetPeerId, state, quizData);
           } else {
             renderLoading(state);
@@ -674,20 +679,28 @@
         });
 
         peer.on("connection", (conn) => {
-          console.log("Incoming connection from:", conn.peer);
+          // console.log("Incoming connection from:", conn.peer);
           state.conn = conn;
           state.isInitiator = false;
           
           conn.on("open", () => {
-            console.log("Connection established");
+            // console.log("Connection established");
             renderQuiz(state, quizData);
           });
 
           conn.on("data", (data) => {
             try {
-              console.log("Received data:", data);
+              // console.log("Received data:", data);
               const msg = JSON.parse(data);
               state.peerAnswers[msg.question] = msg.answer;
+              state.peerCorrectAnswers = calculatePeerScore(state, quizData);
+              
+              // Update the opponent score display immediately
+              const opponentScoreEl = document.querySelector('.score-item:last-child .value');
+              if (opponentScoreEl) {
+                opponentScoreEl.textContent = state.peerCorrectAnswers;
+              }
+              
               renderQuiz(state, quizData);
             } catch (e) {
               console.error("Failed to parse peer data:", e);
@@ -695,7 +708,7 @@
           });
 
           conn.on("close", () => {
-            console.log("Connection closed");
+            // console.log("Connection closed");
             state.conn = null;
             renderQuiz(state, quizData);
           });
@@ -749,11 +762,11 @@
       }
       
       function attemptConnection(peer, targetPeerId, state, quizData) {
-        console.log("Connecting to:", targetPeerId);
+        // console.log("Connecting to:", targetPeerId);
         const conn = peer.connect(targetPeerId);
         
         conn.on("open", () => {
-          console.log("Connection opened to peer");
+          // console.log("Connection opened to peer");
           state.conn = conn;
           state.isInitiator = true;
           renderQuiz(state, quizData);
@@ -761,8 +774,10 @@
         
         conn.on("data", (data) => {
           try {
+            // console.log("attempt connection")
             const msg = JSON.parse(data);
             state.peerAnswers[msg.question] = msg.answer;
+            state.peerCorrectAnswers = calculatePeerScore(state, quizData);
             renderQuiz(state, quizData);
           } catch (e) {
             console.error("Failed to parse peer data:", e);
@@ -770,7 +785,7 @@
         });
         
         conn.on("close", () => {
-          console.log("Connection closed");
+          // console.log("Connection closed");
           state.conn = null;
           renderQuiz(state, quizData);
         });
@@ -792,8 +807,10 @@
           
           conn.on("data", (data) => {
             try {
+              // console.log("setup peer listeners")
               const msg = JSON.parse(data);
               state.peerAnswers[msg.question] = msg.answer;
+              state.peerCorrectAnswers = calculatePeerScore(state, quizData);
               renderQuiz(state, quizData);
             } catch (e) {
               console.error("Failed to parse peer data:", e);
@@ -856,6 +873,9 @@
           return;
         }
 
+        // Recalculate peer score every time we render
+        state.peerCorrectAnswers = calculatePeerScore(state, quizData);
+
         const question = quizData[state.currentQuestion];
         const isLastQuestion = state.currentQuestion === state.totalQuestions - 1;
         const userAnswer = state.answers[state.currentQuestion];
@@ -893,6 +913,8 @@
         const progress = ((state.currentQuestion + 1) / state.totalQuestions) * 100;
         const connectionStatus = state.conn ? "Connected" : "Waiting for opponent...";
         const statusClass = state.conn ? "status-connected" : "status-waiting";
+        
+        const opponentScoreDisplay = state.conn ? state.peerCorrectAnswers : "–";
 
         let waitingMessage = "";
         if (userAnswer !== null && peerAnswer === null && state.conn) {
@@ -934,7 +956,7 @@
                 </div>
                 <div class="score-item">
                   <div class="label">Opponent</div>
-                  <div class="value">${state.conn ? "✓" : "–"}</div>
+                  <div class="value">${opponentScoreDisplay}</div>
                 </div>
               </div>
             </div>
@@ -1029,23 +1051,10 @@
         const percentage = Math.round((state.correctAnswers / state.totalQuestions) * 100);
         const incorrectAnswers = state.totalQuestions - state.correctAnswers;
 
-        // Calculate peer's correct answers
-        let peerCorrectAnswers = 0;
-        if (state.conn) {
-          for (let i = 0; i < state.totalQuestions; i++) {
-            if (state.peerAnswers[i] !== null) {
-              const question = quizData[i];
-              const correctIndex = question.options.indexOf(question.correct_answer);
-              if (state.peerAnswers[i] === correctIndex) {
-                peerCorrectAnswers++;
-              }
-            }
-          }
-        }
+        let peerCorrectAnswers = state.peerCorrectAnswers;
         const peerPercentage = state.conn ? Math.round((peerCorrectAnswers / state.totalQuestions) * 100) : 0;
         const peerIncorrect = state.totalQuestions - peerCorrectAnswers;
 
-        // Determine winner
         let winnerText = "";
         if (state.conn) {
           if (state.correctAnswers > peerCorrectAnswers) {
@@ -1125,6 +1134,7 @@
       function restartQuiz(state, quizData) {
         state.currentQuestion = 0;
         state.correctAnswers = 0;
+        state.peerCorrectAnswers = 0;
         state.answers = Array(state.totalQuestions).fill(null);
         state.peerAnswers = Array(state.totalQuestions).fill(null);
         state.quizCompleted = false;
