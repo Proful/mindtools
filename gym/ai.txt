@@ -1,3 +1,33 @@
+- html, css, js 
+- mobile first, responsive design 
+- use localStorage to store data 
+- build a simple fitness tracker app 
+- load the attached json, it will be available from url
+- in home page, have a primary "Add" button 
+- On clicking "Add" button, allow to enter
+  - machine (dropdown)
+  - variation (dropdown)
+  - set (dropdown, value: 1, 2, 3)
+  - reps (input, allow number only)
+  - weights (dropdown)
+- dropdown values should be choosen from json 
+- after enterring all the above data, allow to Submit and store in localStorage
+
+- in home page, below Add button, view the stored data
+  - example:
+    Friday, 24 Oct 2025
+    Wide-grip pulldown 
+    Lat Pulldown Machine
+    Set 1 X 10 reps, 2.5 Kg
+    Set 2 X 10 reps, 2.5 Kg
+    Set 3 X 12 reps, 2.5 Kg
+
+
+
+
+
+--- 
+
 - construct json for the following machines as per the sample json
 - Leg Press, Leg Extension, Machine Squat, Lat Pulldown Machine, Chest Butterfly, Chest Machine Press, Heightbar, Triceps Pushdown Machine, Wrist Curl Machine
 

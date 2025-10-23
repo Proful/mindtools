@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .workout-list {
+            margin-top: 20px;
+        }
+
+        .workout-group {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .workout-date {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .workout-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .workout-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .workout-variation {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .workout-machine {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .workout-sets {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .workout-set {
+            font-size: 0.95rem;
+            color: #444;
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Fitness Tracker</h1>
+            <p>Track your workouts and progress</p>
+        </div>
+
+        <div class="card">
+            <button class="add-btn" onclick="openModal()">+ Add Workout</button>
+        </div>
+
+        <div class="workout-list" id="workoutList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Workout</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            
+            <form id="workoutForm">
+                <div class="form-group">
+                    <label for="machine">Machine</label>
+                    <select id="machine" required onchange="updateVariations()">
+                        <option value="">Select machine</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="variation">Variation</label>
+                    <select id="variation" required disabled>
+                        <option value="">Select variation</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="set">Set</label>
+                    <select id="set" required>
+                        <option value="">Select set</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reps">Reps</label>
+                    <input type="number" id="reps" min="1" placeholder="Enter number of reps" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">Weight</label>
+                    <select id="weight" required disabled>
+                        <option value="">Select weight</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let machinesData = null;
+
+        // Load JSON data
+        async function loadData() {
+            try {
+                const response = await fetch('machines.json');
+                machinesData = await response.json();
+                populateMachines();
+                loadWorkouts();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function populateMachines() {
+            const machineSelect = document.getElementById('machine');
+            machinesData.machines.forEach(machine => {
+                const option = document.createElement('option');
+                option.value = machine.machine;
+                option.textContent = machine.machine;
+                machineSelect.appendChild(option);
+            });
+        }
+
+        function updateVariations() {
+            const machineSelect = document.getElementById('machine');
+            const variationSelect = document.getElementById('variation');
+            const weightSelect = document.getElementById('weight');
+            
+            const selectedMachine = machinesData.machines.find(
+                m => m.machine === machineSelect.value
+            );
+
+            // Reset and populate variations
+            variationSelect.innerHTML = '<option value="">Select variation</option>';
+            variationSelect.disabled = false;
+
+            if (selectedMachine) {
+                selectedMachine.variations.forEach(variation => {
+                    const option = document.createElement('option');
+                    option.value = variation.variation;
+                    option.textContent = variation.variation;
+                    variationSelect.appendChild(option);
+                });
+
+                // Populate weights
+                weightSelect.innerHTML = '<option value="">Select weight</option>';
+                selectedMachine.weights.forEach(weight => {
+                    const option = document.createElement('option');
+                    option.value = weight;
+                    option.textContent = weight;
+                    weightSelect.appendChild(option);
+                });
+                weightSelect.disabled = false;
+            }
+        }
+
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('workoutForm').reset();
+            document.getElementById('variation').disabled = true;
+            document.getElementById('weight').disabled = true;
+        }
+
+        function saveWorkout(workout) {
+            try {
+                let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                workouts.push(workout);
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+            } catch (error) {
+                console.error('Error saving workout:', error);
+            }
+        }
+
+        function loadWorkouts() {
+            try {
+                const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                displayWorkouts(workouts);
+            } catch (error) {
+                console.error('Error loading workouts:', error);
+                displayWorkouts([]);
+            }
+        }
+
+        function displayWorkouts(workouts) {
+            const workoutList = document.getElementById('workoutList');
+            
+            if (workouts.length === 0) {
+                workoutList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No workouts recorded yet.<br>Click "Add Workout" to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group workouts by date
+            const groupedWorkouts = {};
+            workouts.forEach(workout => {
+                if (!groupedWorkouts[workout.date]) {
+                    groupedWorkouts[workout.date] = [];
+                }
+                groupedWorkouts[workout.date].push(workout);
+            });
+
+            // Sort dates in descending order
+            const sortedDates = Object.keys(groupedWorkouts).sort((a, b) => 
+                new Date(b) - new Date(a)
+            );
+
+            workoutList.innerHTML = sortedDates.map(date => {
+                const dateWorkouts = groupedWorkouts[date];
+                
+                // Group by variation
+                const groupedByVariation = {};
+                dateWorkouts.forEach(workout => {
+                    const key = `${workout.variation}|${workout.machine}`;
+                    if (!groupedByVariation[key]) {
+                        groupedByVariation[key] = [];
+                    }
+                    groupedByVariation[key].push(workout);
+                });
+
+                const workoutItems = Object.keys(groupedByVariation).map(key => {
+                    const [variation, machine] = key.split('|');
+                    const sets = groupedByVariation[key];
+                    
+                    return `
+                        <div class="workout-item">
+                            <div class="workout-variation">${variation}</div>
+                            <div class="workout-machine">${machine}</div>
+                            <div class="workout-sets">
+                                ${sets.map(set => 
+                                    `<div class="workout-set">Set ${set.set} × ${set.reps} reps, ${set.weight}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="workout-group">
+                        <div class="workout-date">${formatDate(date)}</div>
+                        ${workoutItems}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+
+        document.getElementById('workoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const workout = {
+                date: new Date().toISOString().split('T')[0],
+                machine: document.getElementById('machine').value,
+                variation: document.getElementById('variation').value,
+                set: document.getElementById('set').value,
+                reps: document.getElementById('reps').value,
+                weight: document.getElementById('weight').value,
+                timestamp: Date.now()
+            };
+
+            saveWorkout(workout);
+            loadWorkouts();
+            closeModal();
+        });
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
