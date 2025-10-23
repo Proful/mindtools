@@ -727,7 +727,7 @@
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
-              ${state.isRevision ? '<button class="btn-remove">Remove from Revision</button>' : ''}
+              ${state.isRevision ? '<button class="btn-remove">Remove</button>' : ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
                 `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next</button>`
@@ -832,13 +832,14 @@
       function removeCurrentQuestion(state, quizData) {
         const currentQuestionData = quizData[state.currentQuestion];
         removeFromRevisionList(currentQuestionData);
+        alert("This question is removed from revision list.")
         
         // Reload to refresh the quiz with updated data
-        if (wrongAnswers.length === 0) {
-          location.href = "?";
-        } else {
-          location.href = "?revision=true";
-        }
+        // if (wrongAnswers.length === 0) {
+        //   location.href = "?";
+        // } else {
+        //   location.href = "?revision=true";
+        // }
       }
     </script>
   </body>
