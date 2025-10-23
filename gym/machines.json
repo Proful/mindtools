@@ -1,0 +1,195 @@
+{
+  "machines": [
+    {
+      "machine": "Leg Press",
+      "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Single-leg press",
+          "muscles": ["Quadriceps", "Glutes"],
+          "description": "improves balance and corrects strength imbalances between legs"
+        },
+        {
+          "variation": "Narrow stance press",
+          "muscles": ["Quadriceps"],
+          "description": "emphasizes the front thighs by keeping feet close together"
+        }
+      ]
+    },
+    {
+      "machine": "Leg Extension",
+      "muscles": ["Quadriceps"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Single-leg extension",
+          "muscles": ["Quadriceps"],
+          "description": "isolates each thigh to build balanced leg strength"
+        }
+      ]
+    },
+    {
+      "machine": "Machine Squat",
+      "muscles": ["Quadriceps", "Glutes", "Hamstrings"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Front squat machine",
+          "muscles": ["Quadriceps"],
+          "description": "focuses on the front thigh muscles with more upright posture"
+        }
+      ]
+    },
+    {
+      "machine": "Lat Pulldown Machine",
+      "muscles": ["Latissimus Dorsi", "Biceps"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Wide-grip pulldown",
+          "muscles": ["Latissimus Dorsi"],
+          "description": "targets outer lats for a wider back appearance"
+        },
+        {
+          "variation": "Reverse-grip pulldown",
+          "muscles": ["Biceps", "Lower Lats"],
+          "description": "focuses more on biceps and lower lats"
+        }
+      ]
+    },
+    {
+      "machine": "Chest Butterfly",
+      "muscles": ["Pectoralis Major"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Reverse fly",
+          "muscles": ["Rear Deltoids"],
+          "description": "targets upper back and rear shoulders using the same machine reversed"
+        }
+      ]
+    },
+    {
+      "machine": "Chest Machine Press",
+      "muscles": ["Pectoralis Major", "Triceps", "Deltoids"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Incline press",
+          "muscles": ["Upper Pectoralis Major"],
+          "description": "targets upper chest and front shoulders"
+        },
+        {
+          "variation": "Decline press",
+          "muscles": ["Lower Pectoralis Major"],
+          "description": "emphasizes lower chest muscles"
+        }
+      ]
+    },
+    {
+      "machine": "Heightbar",
+      "muscles": ["Latissimus Dorsi", "Biceps", "Forearms"],
+      "weights": ["Bodyweight", "Assisted weight"],
+      "variations": [
+        {
+          "variation": "Pull-up",
+          "muscles": ["Latissimus Dorsi", "Biceps"],
+          "description": "classic upper body movement to build wide, strong back"
+        },
+        {
+          "variation": "Chin-up",
+          "muscles": ["Biceps", "Lower Lats"],
+          "description": "uses underhand grip to emphasize biceps"
+        }
+      ]
+    },
+    {
+      "machine": "Triceps Pushdown Machine",
+      "muscles": ["Triceps Brachii"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Rope pushdown",
+          "muscles": ["Triceps Brachii"],
+          "description": "enhances muscle contraction and targets all three triceps heads"
+        },
+        {
+          "variation": "Straight bar pushdown",
+          "muscles": ["Triceps Brachii"],
+          "description": "allows heavier load and builds strength"
+        }
+      ]
+    },
+    {
+      "machine": "Wrist Curl Machine",
+      "muscles": ["Forearm Flexors", "Forearm Extensors"],
+      "weights": ["1 Kg", "2.5 Kg"],
+      "variations": [
+        {
+          "variation": "Reverse wrist curl",
+          "muscles": ["Forearm Extensors"],
+          "description": "strengthens top side of the forearms"
+        }
+      ]
+    }
+  ],
+  "muscles": [
+    {
+      "muscle": "Quadriceps",
+      "description": "the muscles at the front of the thigh responsible for knee extension"
+    },
+    {
+      "muscle": "Hamstrings",
+      "description": "the muscles at the back of the thigh that help in knee flexion"
+    },
+    {
+      "muscle": "Glutes",
+      "description": "the large muscles of the buttocks that power hip movement"
+    },
+    {
+      "muscle": "Latissimus Dorsi",
+      "description": "the large muscles on the sides of your back that help pull and extend the arms"
+    },
+    {
+      "muscle": "Biceps",
+      "description": "the front upper arm muscles responsible for elbow flexion"
+    },
+    {
+      "muscle": "Pectoralis Major",
+      "description": "the main chest muscle responsible for pressing movements"
+    },
+    {
+      "muscle": "Triceps Brachii",
+      "description": "the muscles at the back of the upper arm that extend the elbow"
+    },
+    {
+      "muscle": "Deltoids",
+      "description": "the shoulder muscles that allow arm lifting and rotation"
+    },
+    {
+      "muscle": "Forearm Flexors",
+      "description": "muscles on the underside of the forearm that flex the wrist"
+    },
+    {
+      "muscle": "Forearm Extensors",
+      "description": "muscles on the top of the forearm that extend the wrist"
+    },
+    {
+      "muscle": "Rear Deltoids",
+      "description": "the back portion of the shoulder muscle that assists in pulling movements"
+    },
+    {
+      "muscle": "Upper Pectoralis Major",
+      "description": "upper chest muscle fibers activated during incline pressing"
+    },
+    {
+      "muscle": "Lower Pectoralis Major",
+      "description": "lower chest muscle fibers activated during decline pressing"
+    },
+    {
+      "muscle": "Lower Lats",
+      "description": "the lower region of the latissimus dorsi that contributes to V-taper look"
+    }
+  ]
+}

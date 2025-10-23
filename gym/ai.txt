@@ -1,0 +1,26 @@
+- construct json for the following machines as per the sample json
+- Leg Press, Leg Extension, Machine Squat, Lat Pulldown Machine, Chest Butterfly, Chest Machine Press, Heightbar, Triceps Pushdown Machine, Wrist Curl Machine
+
+- sample json
+{
+  "machines": [
+    {
+      "machine": "Lat Pulldown Machine",
+      "muscles": ["Latissimus Dorsi"],
+      "weights": ["2.5 Kg", "5 Kg"],
+      "variations": [
+        {
+          "variation": "Wide-grip pulldown",
+          "muscles": ["Latissimus Dorsi"],
+          "description": "targets outer lats"
+        }
+      ]
+    }
+  ],
+  "muscles": [
+    {
+      "muscle": "Latissimus Dorsi",
+      "description": "the large muscles on the sides of your back"
+    }
+  ]
+}
