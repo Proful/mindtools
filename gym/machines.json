@@ -6,7 +6,7 @@
       "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
-          "variation": "Single-leg press",
+          "variation": "Both-leg press",
           "muscles": ["Quadriceps", "Glutes"],
           "description": "improves balance and corrects strength imbalances between legs"
         },
@@ -23,7 +23,7 @@
       "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
-          "variation": "Single-leg extension",
+          "variation": "Both-leg extension",
           "muscles": ["Quadriceps"],
           "description": "isolates each thigh to build balanced leg strength"
         }
