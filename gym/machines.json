@@ -3,7 +3,7 @@
     {
       "machine": "Leg Press",
       "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Single-leg press",
@@ -20,7 +20,7 @@
     {
       "machine": "Leg Extension",
       "muscles": ["Quadriceps"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Single-leg extension",
@@ -32,7 +32,7 @@
     {
       "machine": "Machine Squat",
       "muscles": ["Quadriceps", "Glutes", "Hamstrings"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Front squat machine",
@@ -44,7 +44,7 @@
     {
       "machine": "Lat Pulldown Machine",
       "muscles": ["Latissimus Dorsi", "Biceps"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Wide-grip pulldown",
@@ -61,7 +61,7 @@
     {
       "machine": "Chest Butterfly",
       "muscles": ["Pectoralis Major"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Reverse fly",
@@ -73,7 +73,7 @@
     {
       "machine": "Chest Machine Press",
       "muscles": ["Pectoralis Major", "Triceps", "Deltoids"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Incline press",
@@ -107,7 +107,7 @@
     {
       "machine": "Triceps Pushdown Machine",
       "muscles": ["Triceps Brachii"],
-      "weights": ["2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Rope pushdown",
@@ -124,7 +124,7 @@
     {
       "machine": "Wrist Curl Machine",
       "muscles": ["Forearm Flexors", "Forearm Extensors"],
-      "weights": ["1 Kg", "2.5 Kg"],
+      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
       "variations": [
         {
           "variation": "Reverse wrist curl",

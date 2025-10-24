@@ -344,7 +344,8 @@
         // Load JSON data
         async function loadData() {
             try {
-                const response = await fetch('machines.json');
+                const currentUrl = window.location.href.split('?')[0];
+                const response = await fetch(currentUrl + 'machines.json');
                 machinesData = await response.json();
                 populateMachines();
                 loadWorkouts();
