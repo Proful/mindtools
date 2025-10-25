@@ -40,7 +40,7 @@
           "description": "focuses on the front thigh muscles with more upright posture"
         },
         {
-          "variation": "Front squat machine",
+          "variation": "Back squat machine",
           "muscles": ["Quadriceps"],
           "description": "focuses on the front thigh muscles with more upright posture"
         }
@@ -49,7 +49,18 @@
     {
       "machine": "Lat Pulldown Machine",
       "muscles": ["Latissimus Dorsi", "Biceps"],
-      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg", "37.5 Kg", "45 Kg","60 Kg" ,"70 Kg"],
+      "weights": [
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "30 Kg",
+        "37.5 Kg",
+        "45 Kg",
+        "60 Kg",
+        "70 Kg"
+      ],
       "variations": [
         {
           "variation": "Wide-grip pulldown",
@@ -60,14 +71,24 @@
           "variation": "Underhand Reverse pulldown",
           "muscles": ["Latissimus Dorsi"],
           "description": "targets outer lats for a wider back appearance"
-        },
         }
       ]
     },
     {
       "machine": "Chest Butterfly",
       "muscles": ["Pectoralis Major"],
-      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg", "37.5 Kg", "45 Kg","60 Kg" ,"70 Kg"],
+      "weights": [
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "30 Kg",
+        "37.5 Kg",
+        "45 Kg",
+        "60 Kg",
+        "70 Kg"
+      ],
       "variations": [
         {
           "variation": "Butterfly",
