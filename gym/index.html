@@ -344,8 +344,7 @@
         // Load JSON data
         async function loadData() {
             try {
-                // const currentUrl = window.location.protocol + "://" + window.location.host + "/gym/machines.json"; 
-                const currentUrl = "machines.json";
+                const currentUrl = "/gym/machines.json";
                 const response = await fetch(currentUrl);
                 machinesData = await response.json();
                 populateMachines();
