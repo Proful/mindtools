@@ -344,8 +344,9 @@
         // Load JSON data
         async function loadData() {
             try {
-                const currentUrl = window.location.href.split('?')[0];
-                const response = await fetch(currentUrl + '/' + 'machines.json');
+                // const currentUrl = window.location.protocol + "://" + window.location.host + "/gym/machines.json"; 
+                const currentUrl = "machines.json";
+                const response = await fetch(currentUrl);
                 machinesData = await response.json();
                 populateMachines();
                 loadWorkouts();
@@ -470,10 +471,13 @@
                 const workoutItems = Object.keys(groupedByVariation).map(key => {
                     const [variation, machine] = key.split('|');
                     const sets = groupedByVariation[key];
+                    const currentUrl = window.location.href.split('?')[0];
+                    const variationUrl = currentUrl + "/machine.html?variation=" + variation;
+                    console.log("variation: ", variation);
                     
                     return `
                         <div class="workout-item">
-                            <div class="workout-variation">${variation}</div>
+<div class="workout-variation"><a href="${variationUrl}">${variation}</a></div>
                             <div class="workout-machine">${machine}</div>
                             <div class="workout-sets">
                                 ${sets.map(set => 

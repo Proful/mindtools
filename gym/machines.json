@@ -8,12 +8,8 @@
         {
           "variation": "Both-leg press",
           "muscles": ["Quadriceps", "Glutes"],
-          "description": "improves balance and corrects strength imbalances between legs"
-        },
-        {
-          "variation": "Narrow stance press",
-          "muscles": ["Quadriceps"],
-          "description": "emphasizes the front thighs by keeping feet close together"
+          "description": "improves balance and corrects strength imbalances between legs",
+          "image": "leg-press.png"
         }
       ]
     },
@@ -25,7 +21,8 @@
         {
           "variation": "Both-leg extension",
           "muscles": ["Quadriceps"],
-          "description": "isolates each thigh to build balanced leg strength"
+          "description": "isolates each thigh to build balanced leg strength",
+          "image": "leg-extension.png"
         }
       ]
     },
@@ -37,12 +34,14 @@
         {
           "variation": "Front squat machine",
           "muscles": ["Quadriceps"],
-          "description": "focuses on the front thigh muscles with more upright posture"
+          "description": "focuses on the front thigh muscles with more upright posture",
+          "image": "leg-extension.png"
         },
         {
           "variation": "Back squat machine",
           "muscles": ["Quadriceps"],
-          "description": "focuses on the front thigh muscles with more upright posture"
+          "description": "focuses on the front thigh muscles with more upright posture",
+          "image": "leg-extension.png"
         }
       ]
     },
@@ -65,12 +64,14 @@
         {
           "variation": "Wide-grip pulldown",
           "muscles": ["Latissimus Dorsi"],
-          "description": "targets outer lats for a wider back appearance"
+          "description": "targets outer lats for a wider back appearance",
+          "image": "leg-extension.png"
         },
         {
           "variation": "Underhand Reverse pulldown",
           "muscles": ["Latissimus Dorsi"],
-          "description": "targets outer lats for a wider back appearance"
+          "description": "targets outer lats for a wider back appearance",
+          "image": "leg-extension.png"
         }
       ]
     },
@@ -93,7 +94,8 @@
         {
           "variation": "Butterfly",
           "muscles": ["Pectoralis"],
-          "description": "targets upper back and rear shoulders using the same machine"
+          "description": "targets upper back and rear shoulders using the same machine",
+          "image": "leg-extension.png"
         }
       ]
     },
@@ -105,12 +107,14 @@
         {
           "variation": "Incline press",
           "muscles": ["Upper Pectoralis Major"],
-          "description": "targets upper chest and front shoulders"
+          "description": "targets upper chest and front shoulders",
+          "image": "leg-extension.png"
         },
         {
           "variation": "Decline press",
           "muscles": ["Lower Pectoralis Major"],
-          "description": "emphasizes lower chest muscles"
+          "description": "emphasizes lower chest muscles",
+          "image": "leg-extension.png"
         }
       ]
     },

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Details - Fitness Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .machine-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .machine-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 12px;
+            margin: 0 auto 24px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .muscles-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .muscle-tag {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .error-message {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .error-message h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 24px;
+            }
+
+            .machine-title {
+                font-size: 1.6rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/gym" class="back-btn">← Back to Tracker</a>
+        
+        <div id="content">
+            <div class="loading">Loading machine details...</div>
+        </div>
+    </div>
+
+    <script>
+        let machinesData = null;
+
+        async function loadData() {
+            try {
+                const response = await fetch('machines.json');
+                machinesData = await response.json();
+                displayMachineDetails();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load machine data');
+            }
+        }
+
+        function getVariationFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('variation');
+        }
+
+        function findVariation(variationName) {
+            if (!machinesData || !variationName) return null;
+
+            for (const machine of machinesData.machines) {
+                const variation = machine.variations.find(
+                    v => v.variation === variationName
+                );
+                if (variation) {
+                    return {
+                        ...variation,
+                        machineName: machine.machine
+                    };
+                }
+            }
+            return null;
+        }
+
+        function displayMachineDetails() {
+            const contentDiv = document.getElementById('content');
+            const variationName = getVariationFromURL();
+
+            if (!variationName) {
+                showError('No variation specified');
+                return;
+            }
+
+            const variationData = findVariation(variationName);
+
+            if (!variationData) {
+                showError('Variation not found');
+                return;
+            }
+
+            const imagePath = variationData.image 
+                ? `images/${variationData.image}` 
+                : 'images/placeholder.png';
+
+            contentDiv.innerHTML = `
+                <div class="card">
+                    <h1 class="machine-title">${variationData.variation}</h1>
+                    
+                    ${variationData.image ? `
+                        <img src="${imagePath}" 
+                             alt="${variationData.variation}" 
+                             class="machine-image"
+                             onerror="this.style.display='none'">
+                    ` : ''}
+                    
+                    <div class="section">
+                        <h2 class="section-title">Machine</h2>
+                        <p class="description">${variationData.machineName}</p>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">Description</h2>
+                        <p class="description">${variationData.description}</p>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">Target Muscles</h2>
+                        <div class="muscles-list">
+                            ${variationData.muscles.map(muscle => 
+                                `<span class="muscle-tag">${muscle}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update page title
+            document.title = `${variationData.variation} - Fitness Tracker`;
+        }
+
+        function showError(message) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `
+                <div class="error-message">
+                    <h2>❌ ${message}</h2>
+                    <p>Please check the URL and try again.</p>
+                </div>
+            `;
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
