@@ -38,13 +38,18 @@
           "variation": "Front squat machine",
           "muscles": ["Quadriceps"],
           "description": "focuses on the front thigh muscles with more upright posture"
+        },
+        {
+          "variation": "Front squat machine",
+          "muscles": ["Quadriceps"],
+          "description": "focuses on the front thigh muscles with more upright posture"
         }
       ]
     },
     {
       "machine": "Lat Pulldown Machine",
       "muscles": ["Latissimus Dorsi", "Biceps"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg", "37.5 Kg", "45 Kg","60 Kg" ,"70 Kg"],
       "variations": [
         {
           "variation": "Wide-grip pulldown",
@@ -52,21 +57,22 @@
           "description": "targets outer lats for a wider back appearance"
         },
         {
-          "variation": "Reverse-grip pulldown",
-          "muscles": ["Biceps", "Lower Lats"],
-          "description": "focuses more on biceps and lower lats"
+          "variation": "Underhand Reverse pulldown",
+          "muscles": ["Latissimus Dorsi"],
+          "description": "targets outer lats for a wider back appearance"
+        },
         }
       ]
     },
     {
       "machine": "Chest Butterfly",
       "muscles": ["Pectoralis Major"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg", "37.5 Kg", "45 Kg","60 Kg" ,"70 Kg"],
       "variations": [
         {
-          "variation": "Reverse fly",
-          "muscles": ["Rear Deltoids"],
-          "description": "targets upper back and rear shoulders using the same machine reversed"
+          "variation": "Butterfly",
+          "muscles": ["Pectoralis"],
+          "description": "targets upper back and rear shoulders using the same machine"
         }
       ]
     },
