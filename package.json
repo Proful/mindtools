@@ -1,0 +1,17 @@
+{
+  "name": "mindtools",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "nanoid": "^3.3.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vercel/node": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}
