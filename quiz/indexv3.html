@@ -430,6 +430,18 @@
         margin-bottom: 10px;
       }
 
+      .short-btn {
+        background-color: #e26a75;
+        color: white;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        margin-left: 10px;
+      }
+
+      .short-btn:hover {
+        background-color: #45a049;
+      }
+
       .copy-btn {
         background-color: #4caf50;
         color: white;
@@ -755,6 +767,8 @@
             toggleOtherUserSelection(state);
           } else if (e.target.classList.contains("copy-btn")) {
             copyToClipboard(e.target.dataset.url);
+          } else if (e.target.classList.contains("short-btn")) {
+            copyToClipboard(e.target.dataset.url);
           } else if (e.target.classList.contains("open-btn")) {
             openToTab(e.target.dataset.url);
           }
@@ -844,25 +858,66 @@
       function renderLoading(state) {
         const appElement = document.getElementById("app");
         const shareUrl = window.location.href.split('?')[0] + "?room=" + state.roomId + "&peer=" + state.peerId +"&data=" + new URLSearchParams(window.location.search).get("data");
-        
-        appElement.innerHTML = `
-          <div class="container">
-            <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-              <div style="text-align: center; max-width: 500px;">
-                <h2 style="color: #667eea; margin-bottom: 20px;">Waiting for opponent...</h2>
-                <p style="margin-bottom: 20px; font-weight: 600;">Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px;">${state.roomId}</code></p>
-                <p style="margin-bottom: 20px; color: #666;">Your Peer ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;">${state.peerId}</code></p>
-                <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Share this link with another player:</p>
-                <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
-                <button class="open-btn" data-url="${shareUrl}">Open Link</button>
-                <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 15px; word-break: break-all; font-size: 0.85rem;">
-                  ${shareUrl}
+
+        fetch("https://mindtools.vercel.app/api/shorten", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            url: shareUrl
+          })
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok " + response.statusText);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log("Shortened URL:", data);
+            const shortUrl = data.shortUrl
+            appElement.innerHTML = `
+              <div class="container">
+                <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                  <div style="text-align: center; max-width: 500px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">Waiting for opponent...</h2>
+                    <p style="margin-bottom: 20px; font-weight: 600;">Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px;">${state.roomId}</code></p>
+                    <p style="margin-bottom: 20px; color: #666;">Your Peer ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;">${state.peerId}</code></p>
+                    <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Share this link with another player:</p>
+                    <button class="short-btn" data-url="${shortUrl}">Copy Short Link</button>
+                    <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
+                    <button class="open-btn" data-url="${shareUrl}">Open Link</button>
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 15px; word-break: break-all; font-size: 0.85rem;">
+                      ${shareUrl}
+                    </div>
+                    <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Connecting using PeerServer...</p>
+                  </div>
                 </div>
-                <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Connecting using PeerServer...</p>
               </div>
-            </div>
-          </div>
-        `;
+            `;
+          })
+          .catch(error => {
+            appElement.innerHTML = `
+              <div class="container">
+                <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                  <div style="text-align: center; max-width: 500px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">Waiting for opponent...</h2>
+                    <p style="margin-bottom: 20px; font-weight: 600;">Room ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px;">${state.roomId}</code></p>
+                    <p style="margin-bottom: 20px; color: #666;">Your Peer ID: <code style="background: #f5f5f5; padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;">${state.peerId}</code></p>
+                    <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Share this link with another player:</p>
+                    <button class="copy-btn" data-url="${shareUrl}">Copy Link</button>
+                    <button class="open-btn" data-url="${shareUrl}">Open Link</button>
+                    <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 15px; word-break: break-all; font-size: 0.85rem;">
+                      ${shareUrl}
+                    </div>
+                    <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">Connecting using PeerServer...</p>
+                  </div>
+                </div>
+              </div>
+            `;
+            console.error("Error:", error);
+          });
       }
 
       function renderQuiz(state, quizData) {
