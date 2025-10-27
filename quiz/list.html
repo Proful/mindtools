@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener - All Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ff4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .url-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .url-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .url-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .url-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .url-name:hover {
+            text-decoration: underline;
+        }
+
+        .url-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .short-url {
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            word-break: break-all;
+        }
+
+        .original-url {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 1rem;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.65rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-copy {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #5568d3;
+        }
+
+        .btn-copy.copied {
+            background: #10b981;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background: #22c55e;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            background: white;
+            color: #667eea;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        @media (min-width: 640px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .url-card {
+                padding: 1.5rem;
+            }
+
+            .actions {
+                grid-template-columns: repeat(2, auto);
+                justify-content: flex-start;
+            }
+
+            .btn {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+
+            header {
+                margin-bottom: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener</h1>
+            <p class="subtitle">All your shortened links in one place</p>
+        </header>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            Loading links...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="urlList"></div>
+
+        <div id="pagination" class="pagination" style="display: none;">
+            <button class="page-btn" id="prevBtn" onclick="previousPage()">← Previous</button>
+            <div class="page-info">
+                <span id="pageInfo"></span>
+            </div>
+            <button class="page-btn" id="nextBtn" onclick="nextPage()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentOffset = 0;
+        const limit = 20;
+        let totalUrls = 0;
+        const apiBaseUrl = window.location.origin;
+
+        async function fetchUrls() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const urlList = document.getElementById('urlList');
+            const pagination = document.getElementById('pagination');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            urlList.innerHTML = '';
+            pagination.style.display = 'none';
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch URLs');
+                }
+
+                const data = await response.json();
+                totalUrls = data.pagination.total;
+
+                loading.style.display = 'none';
+
+                if (data.data.length === 0 && currentOffset === 0) {
+                    urlList.innerHTML = `
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                            <h2>No links yet</h2>
+                            <p>Start by creating your first shortened URL</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                data.data.forEach(url => {
+                    const card = createUrlCard(url);
+                    urlList.appendChild(card);
+                });
+
+                if (totalUrls > limit) {
+                    updatePagination(data.pagination);
+                    pagination.style.display = 'flex';
+                }
+
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = 'Failed to load URLs. Please try again later.';
+                console.error('Error:', err);
+            }
+        }
+
+        function createUrlCard(url) {
+            const card = document.createElement('div');
+            card.className = 'url-card';
+
+            const displayName = url.name || url.shortCode;
+            const createdDate = new Date(url.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            card.innerHTML = `
+                <div class="url-header">
+                    <a href="${url.shortUrl}" target="_blank" rel="noopener noreferrer" class="url-name">
+                        ${escapeHtml(displayName)}
+                    </a>
+                </div>
+                <div class="url-meta">
+                    <div class="meta-item">
+                        <span>👁️ ${url.clicks} clicks</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📅 ${createdDate}</span>
+                    </div>
+                </div>
+                <div class="short-url">${url.shortUrl}</div>
+                <div class="original-url" title="${escapeHtml(url.originalUrl)}">
+                    ${escapeHtml(url.originalUrl)}
+                </div>
+                <div class="actions">
+                    <button class="btn btn-copy" onclick="copyToClipboard('${url.shortUrl}', this)">
+                        📋 Copy Link
+                    </button>
+                    <a href="https://wa.me/?text=${encodeURIComponent(url.shortUrl)}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-whatsapp">
+                        💬 WhatsApp
+                    </a>
+                </div>
+            `;
+
+            return card;
+        }
+
+        async function copyToClipboard(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = button.innerHTML;
+                button.classList.add('copied');
+                button.innerHTML = '✓ Copied!';
+                
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy to clipboard');
+                console.error('Copy failed:', err);
+            }
+        }
+
+        function updatePagination(pagination) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const pageInfo = document.getElementById('pageInfo');
+
+            const currentPage = Math.floor(currentOffset / limit) + 1;
+            const totalPages = Math.ceil(pagination.total / limit);
+
+            prevBtn.disabled = currentOffset === 0;
+            nextBtn.disabled = !pagination.hasMore;
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        function nextPage() {
+            currentOffset += limit;
+            fetchUrls();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function previousPage() {
+            currentOffset = Math.max(0, currentOffset - limit);
+            fetchUrls();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load URLs on page load
+        fetchUrls();
+    </script>
+</body>
+</html>

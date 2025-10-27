@@ -9,11 +9,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { url } = req.body;
+    const { url, name } = req.body;
 
     // Validate URL
     if (!url || typeof url !== "string") {
       return res.status(400).json({ error: "URL is required" });
+    }
+
+    // Validate name if provided
+    if (name && typeof name !== "string") {
+      return res.status(400).json({ error: "Name must be a string" });
     }
 
     // Validate URL format
@@ -30,8 +35,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Insert into database
     await sql`
-      INSERT INTO urls (short_code, original_url)
-      VALUES (${shortCode}, ${url})
+      INSERT INTO urls (short_code, original_url, name)
+      VALUES (${shortCode}, ${url}, ${name || null})
     `;
 
     // Get the base URL from the request
@@ -42,6 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       shortCode,
       shortUrl: `${baseUrl}/api/re/${shortCode}`,
       originalUrl: url,
+      name: name || null,
     });
   } catch (error) {
     console.error("Error creating short URL:", error);
