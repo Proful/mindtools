@@ -47,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const formattedUrls = urls.map(url => ({
       id: url.id,
       shortCode: url.short_code,
-      shortUrl: `${baseUrl}/${url.short_code}`,
+      shortUrl: `${baseUrl}/api/re/${url.short_code}`,
       originalUrl: url.original_url,
       name: url.name,
       clicks: url.clicks,
