@@ -38,6 +38,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       LIMIT 1
     `;
 
+    console.log(url);
+    console.log(existing);
+
     const baseUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
 
     // If URL exists, return existing short code
