@@ -550,6 +550,7 @@
             <div class="setup-box">
               <h2>Multiplayer Quiz</h2>
               <p style="margin-bottom: 20px; color: #666;">Enter quiz data as JSON array or use sample data</p>
+              <input id="quizName"></input>
               <textarea id="quizInput" placeholder='[{"question":"What is 2+2?","options":["3","4","5"],"correct_answer":"4","explanation":"2+2 equals 4"}]' style="height:200px; resize:vertical;"></textarea>
               <button class="btn-next" onclick="loadQuiz()">Start Quiz</button>
               <button class="btn-prev" onclick="loadSampleQuiz()" style="margin-top: 10px;">Load Sample Quiz</button>
@@ -584,18 +585,20 @@
 
       async function loadQuiz() {
         const input = document.getElementById("quizInput").value;
+        const name = document.getElementById("quizName").value;
         try {
           const quizData = JSON.parse(input);
           if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
           const encoded = await compressAndEncode(quizData);
-          window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
+          window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded + "&name=" + name;
         } catch (e) {
           alert("Invalid JSON: " + e.message);
         }
       }
 
       async function loadSampleQuiz() {
+        const name = document.getElementById("quizName").value;
         const sampleData = [
           {
             question: "What is the capital of France?",
@@ -617,7 +620,7 @@
           }
         ];
         const encoded = await compressAndEncode(sampleData);
-        window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded;
+        window.location.href = window.location.pathname + "?room=" + getRoomId() + "&data=" + encoded + "&name=" + name;
       }
 
       function showError(message) {
@@ -857,6 +860,8 @@
 
       function renderLoading(state) {
         const appElement = document.getElementById("app");
+        const urlParams = new URLSearchParams(window.location.search);
+        let name = urlParams.get("name");
         const shareUrl = window.location.href.split('?')[0] + "?room=" + state.roomId + "&peer=" + state.peerId +"&data=" + new URLSearchParams(window.location.search).get("data");
 
         fetch("https://mindtools.vercel.app/api/shorten", {
@@ -865,7 +870,8 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            url: shareUrl
+            url: shareUrl,
+            name
           })
         })
           .then(response => {
