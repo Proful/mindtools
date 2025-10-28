@@ -70,6 +70,26 @@
             margin-bottom: 1rem;
         }
 
+        .success {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .url-card {
             background: white;
             border-radius: 12px;
@@ -77,6 +97,23 @@
             margin-bottom: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .url-card.deleting {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .url-card.deleted {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
         }
 
         .url-card:hover {
@@ -159,12 +196,17 @@
             text-decoration: none;
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .btn-copy {
             background: #667eea;
             color: white;
         }
 
-        .btn-copy:hover {
+        .btn-copy:hover:not(:disabled) {
             background: #5568d3;
         }
 
@@ -179,6 +221,16 @@
 
         .btn-whatsapp:hover {
             background: #22c55e;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-delete:hover:not(:disabled) {
+            background: #dc2626;
         }
 
         .pagination {
@@ -232,6 +284,93 @@
             opacity: 0.3;
         }
 
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 100%;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .modal-message {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-url {
+            font-weight: 600;
+            color: #667eea;
+            word-break: break-word;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-cancel:hover {
+            background: #d1d5db;
+        }
+
+        .btn-confirm {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
         @media (min-width: 640px) {
             h1 {
                 font-size: 2.5rem;
@@ -242,8 +381,13 @@
             }
 
             .actions {
-                grid-template-columns: repeat(2, auto);
+                grid-template-columns: repeat(2, auto) 1fr;
                 justify-content: flex-start;
+            }
+
+            .btn-delete {
+                grid-column: auto;
+                justify-self: end;
             }
 
             .btn {
@@ -275,6 +419,7 @@
         </div>
 
         <div id="error" class="error" style="display: none;"></div>
+        <div id="success" class="success" style="display: none;"></div>
 
         <div id="urlList"></div>
 
@@ -287,11 +432,26 @@
         </div>
     </div>
 
+    <div id="deleteModal" class="modal-overlay" onclick="closeDeleteModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h2 class="modal-title">Delete URL?</h2>
+            <p class="modal-message">
+                Are you sure you want to delete this shortened URL?<br>
+                <span class="modal-url" id="deleteUrlName"></span>
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-confirm" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentOffset = 0;
         const limit = 20;
         let totalUrls = 0;
         const apiBaseUrl = window.location.origin;
+        let deleteTarget = null;
 
         async function fetchUrls() {
             const loading = document.getElementById('loading');
@@ -350,6 +510,7 @@
         function createUrlCard(url) {
             const card = document.createElement('div');
             card.className = 'url-card';
+            card.id = `card-${url.shortCode}`;
 
             const displayName = url.name || url.shortCode;
             const createdDate = new Date(url.createdAt).toLocaleDateString('en-US', {
@@ -386,6 +547,9 @@
                        class="btn btn-whatsapp">
                         💬 WhatsApp
                     </a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
+                        🗑️ Delete
+                    </button>
                 </div>
             `;
 
@@ -404,9 +568,77 @@
                     button.innerHTML = originalText;
                 }, 2000);
             } catch (err) {
-                alert('Failed to copy to clipboard');
+                showError('Failed to copy to clipboard');
                 console.error('Copy failed:', err);
             }
+        }
+
+        function openDeleteModal(shortCode, displayName) {
+            deleteTarget = shortCode;
+            document.getElementById('deleteUrlName').textContent = displayName;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteTarget = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteTarget) return;
+
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const card = document.getElementById(`card-${deleteTarget}`);
+            
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Deleting...';
+            card.classList.add('deleting');
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/delete/${deleteTarget}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to delete URL');
+                }
+
+                closeDeleteModal();
+                card.classList.add('deleted');
+                
+                setTimeout(() => {
+                    showSuccess('URL deleted successfully!');
+                    fetchUrls();
+                }, 500);
+
+            } catch (err) {
+                showError(err.message || 'Failed to delete URL. Please try again.');
+                console.error('Delete error:', err);
+                card.classList.remove('deleting');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Delete';
+            }
+        }
+
+        function showSuccess(message) {
+            const success = document.getElementById('success');
+            success.textContent = message;
+            success.style.display = 'block';
+            setTimeout(() => {
+                success.style.display = 'none';
+            }, 3000);
+        }
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = message;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
         }
 
         function updatePagination(pagination) {
@@ -439,6 +671,13 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
 
         // Load URLs on page load
         fetchUrls();
