@@ -30,6 +30,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const sql = getDb();
 
+    // Check if URL already exists
+    const existing = await sql`
+      SELECT short_code, original_url, name, created_at
+      FROM urls
+      WHERE original_url = ${url}
+      LIMIT 1
+    `;
+
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
+
+    // If URL exists, return existing short code
+    if (existing.length > 0) {
+      const existingUrl = existing[0];
+      return res.status(200).json({
+        success: true,
+        shortCode: existingUrl.short_code,
+        shortUrl: `${baseUrl}/api/re/${existingUrl.short_code}`,
+        originalUrl: existingUrl.original_url,
+        name: existingUrl.name,
+        existing: true,
+      });
+    }
+
     // Generate short code
     const shortCode = nanoid(7);
 
@@ -39,15 +62,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       VALUES (${shortCode}, ${url}, ${name || null})
     `;
 
-    // Get the base URL from the request
-    const baseUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
-
     return res.status(201).json({
       success: true,
       shortCode,
       shortUrl: `${baseUrl}/api/re/${shortCode}`,
       originalUrl: url,
       name: name || null,
+      existing: false,
     });
   } catch (error) {
     console.error("Error creating short URL:", error);
