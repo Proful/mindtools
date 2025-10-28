@@ -30,11 +30,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const sql = getDb();
 
+    const params = new URL(url).searchParams;
+    const dataValue = params.get("data");
+
     // Check if URL already exists
     const existing = await sql`
       SELECT short_code, original_url, name, created_at
       FROM urls
-      WHERE original_url = ${url}
+      WHERE original_url LIKE CONCAT('%data=', ${dataValue}, '%')
       LIMIT 1
     `;
 
