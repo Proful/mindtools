@@ -176,8 +176,8 @@
         }
 
         .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
         }
 
@@ -235,7 +235,7 @@
         .btn-delete {
             background: #ef4444;
             color: white;
-            grid-column: 1 / -1;
+            flex: 1 1 100%;
         }
 
         .btn-delete:hover:not(:disabled) {
@@ -390,13 +390,13 @@
             }
 
             .actions {
-                grid-template-columns: repeat(2, auto) 1fr;
-                justify-content: flex-start;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
 
             .btn-delete {
-                grid-column: auto;
-                justify-self: end;
+                flex: 0 1 auto;
             }
 
             .btn {
