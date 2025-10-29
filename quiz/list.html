@@ -223,6 +223,15 @@
             background: #22c55e;
         }
 
+        .btn-single {
+            background: #f5c2e7;
+            color: white;
+        }
+
+        .btn-single:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
         .btn-delete {
             background: #ef4444;
             color: white;
@@ -546,6 +555,12 @@
                        rel="noopener noreferrer" 
                        class="btn btn-whatsapp">
                         💬 WhatsApp
+                    </a>
+                    <a href="${url.originalUrl.replace('indexv3', 'indexv2')}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-single">
+                       👤 Single
                     </a>
                     <button class="btn btn-delete" onclick="openDeleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
                         🗑️ Delete
