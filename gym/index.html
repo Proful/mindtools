@@ -333,6 +333,13 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="sameRepsAllSets" checked style="width: auto; margin-right: 8px; cursor: pointer;">
+                        <span>Same reps for all 3 sets</span>
+                    </label>
+                </div>
+
                 <button type="submit" class="submit-btn">Submit</button>
             </form>
         </div>
@@ -505,17 +512,42 @@
         document.getElementById('workoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const workout = {
-                date: new Date().toISOString().split('T')[0],
-                machine: document.getElementById('machine').value,
-                variation: document.getElementById('variation').value,
-                set: document.getElementById('set').value,
-                reps: document.getElementById('reps').value,
-                weight: document.getElementById('weight').value,
-                timestamp: Date.now()
-            };
+            const date = new Date().toISOString().split('T')[0];
+            const machine = document.getElementById('machine').value;
+            const variation = document.getElementById('variation').value;
+            const set = document.getElementById('set').value;
+            const reps = document.getElementById('reps').value;
+            const weight = document.getElementById('weight').value;
+            const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
 
-            saveWorkout(workout);
+            if (sameRepsAllSets) {
+                // Create 3 workouts for all sets
+                for (let i = 1; i <= 3; i++) {
+                    const workout = {
+                        date: date,
+                        machine: machine,
+                        variation: variation,
+                        set: i.toString(),
+                        reps: reps,
+                        weight: weight,
+                        timestamp: Date.now() + i
+                    };
+                    saveWorkout(workout);
+                }
+            } else {
+                // Create single workout
+                const workout = {
+                    date: date,
+                    machine: machine,
+                    variation: variation,
+                    set: set,
+                    reps: reps,
+                    weight: weight,
+                    timestamp: Date.now()
+                };
+                saveWorkout(workout);
+            }
+
             loadWorkouts();
             closeModal();
         });
