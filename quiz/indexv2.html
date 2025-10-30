@@ -727,7 +727,7 @@
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
-              ${state.isRevision ? '<button class="btn-remove">Remove</button>' : ''}
+              <!-- ${state.isRevision ? '<button class="btn-remove">Remove</button>' : ''} -->
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
                 `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next</button>`
