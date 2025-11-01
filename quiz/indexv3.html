@@ -709,7 +709,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const targetPeerId = urlParams.get("peer");
         
-        // Check if ANY session for this room is already active in another tab
+        // Double check here as well
         const roomStorageKey = `quiz-room-active-${state.roomId}`;
         const existingSession = localStorage.getItem(roomStorageKey);
         const now = Date.now();
@@ -729,20 +729,45 @@
           }
         }
         
-        // Mark this tab as active for this room
+        // Mark this tab as active for this room with a unique tab ID
+        const tabId = 'tab-' + Math.random().toString(36).substr(2, 9);
         const sessionData = {
           timestamp: now,
           peerId: targetPeerId || state.peerId,
-          isHost: !targetPeerId
+          isHost: !targetPeerId,
+          tabId: tabId
         };
         localStorage.setItem(roomStorageKey, JSON.stringify(sessionData));
+        
+        // Continuously monitor for other tabs trying to connect
+        const monitorInterval = setInterval(() => {
+          const currentSession = localStorage.getItem(roomStorageKey);
+          if (currentSession) {
+            try {
+              const data = JSON.parse(currentSession);
+              // If another tab has taken over (different tabId)
+              if (data.tabId !== tabId && (Date.now() - data.timestamp) < 5000) {
+                clearInterval(monitorInterval);
+                clearInterval(heartbeatInterval);
+                if (state.peer) {
+                  state.peer.destroy();
+                }
+                showError("Another tab has taken over this quiz room.");
+                return;
+              }
+            } catch (e) {
+              console.error("Monitor error:", e);
+            }
+          }
+        }, 1000);
         
         // Update timestamp every 2 seconds to show this tab is active
         const heartbeatInterval = setInterval(() => {
           const currentSession = {
             timestamp: Date.now(),
             peerId: state.peerId,
-            isHost: !targetPeerId
+            isHost: !targetPeerId,
+            tabId: tabId
           };
           localStorage.setItem(roomStorageKey, JSON.stringify(currentSession));
         }, 2000);
@@ -750,27 +775,39 @@
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {
           clearInterval(heartbeatInterval);
-          localStorage.removeItem(roomStorageKey);
+          clearInterval(monitorInterval);
+          const currentSession = localStorage.getItem(roomStorageKey);
+          if (currentSession) {
+            try {
+              const data = JSON.parse(currentSession);
+              if (data.tabId === tabId) {
+                localStorage.removeItem(roomStorageKey);
+              }
+            } catch (e) {}
+          }
         });
         
-        // Also clean up on visibility change (tab switch/close)
+        // Also handle visibility change
         document.addEventListener('visibilitychange', () => {
           if (document.hidden) {
             const oldSession = {
               timestamp: Date.now() - 6000, // Mark as old
               peerId: state.peerId,
-              isHost: !targetPeerId
+              isHost: !targetPeerId,
+              tabId: tabId
             };
             localStorage.setItem(roomStorageKey, JSON.stringify(oldSession));
           } else {
             const activeSession = {
               timestamp: Date.now(),
               peerId: state.peerId,
-              isHost: !targetPeerId
+              isHost: !targetPeerId,
+              tabId: tabId
             };
             localStorage.setItem(roomStorageKey, JSON.stringify(activeSession));
           }
         });
+        
         const myPeerId = targetPeerId || state.peerId;
         var peer = new Peer(myPeerId);
         let connectionAttempted = false;
