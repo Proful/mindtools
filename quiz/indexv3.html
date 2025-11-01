@@ -709,6 +709,68 @@
         const urlParams = new URLSearchParams(window.location.search);
         const targetPeerId = urlParams.get("peer");
         
+        // Check if ANY session for this room is already active in another tab
+        const roomStorageKey = `quiz-room-active-${state.roomId}`;
+        const existingSession = localStorage.getItem(roomStorageKey);
+        const now = Date.now();
+        
+        if (existingSession) {
+          try {
+            const sessionData = JSON.parse(existingSession);
+            const timeDiff = now - sessionData.timestamp;
+            
+            // If there's an active session less than 5 seconds old
+            if (timeDiff < 5000) {
+              showError("This quiz room is already open in another tab. Please close the other tab first or use a different browser/device.");
+              return;
+            }
+          } catch (e) {
+            console.error("Error parsing session data:", e);
+          }
+        }
+        
+        // Mark this tab as active for this room
+        const sessionData = {
+          timestamp: now,
+          peerId: targetPeerId || state.peerId,
+          isHost: !targetPeerId
+        };
+        localStorage.setItem(roomStorageKey, JSON.stringify(sessionData));
+        
+        // Update timestamp every 2 seconds to show this tab is active
+        const heartbeatInterval = setInterval(() => {
+          const currentSession = {
+            timestamp: Date.now(),
+            peerId: state.peerId,
+            isHost: !targetPeerId
+          };
+          localStorage.setItem(roomStorageKey, JSON.stringify(currentSession));
+        }, 2000);
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+          clearInterval(heartbeatInterval);
+          localStorage.removeItem(roomStorageKey);
+        });
+        
+        // Also clean up on visibility change (tab switch/close)
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            const oldSession = {
+              timestamp: Date.now() - 6000, // Mark as old
+              peerId: state.peerId,
+              isHost: !targetPeerId
+            };
+            localStorage.setItem(roomStorageKey, JSON.stringify(oldSession));
+          } else {
+            const activeSession = {
+              timestamp: Date.now(),
+              peerId: state.peerId,
+              isHost: !targetPeerId
+            };
+            localStorage.setItem(roomStorageKey, JSON.stringify(activeSession));
+          }
+        });
         const myPeerId = targetPeerId || state.peerId;
         var peer = new Peer(myPeerId);
         let connectionAttempted = false;
