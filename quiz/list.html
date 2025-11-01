@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -38,6 +38,25 @@
         .subtitle {
             font-size: 0.9rem;
             opacity: 0.9;
+        }
+
+        .btn-new-quiz {
+            background: white;
+            color: #667eea;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-new-quiz:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .loading {
@@ -326,6 +345,10 @@
             animation: slideUp 0.3s ease-out;
         }
 
+        .modal-large {
+            max-width: 600px;
+        }
+
         @keyframes slideUp {
             from {
                 transform: translateY(20px);
@@ -380,6 +403,70 @@
             background: #dc2626;
         }
 
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: monospace;
+            min-height: 200px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-submit {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #5568d3;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         @media (min-width: 640px) {
             h1 {
                 font-size: 2.5rem;
@@ -420,6 +507,7 @@
         <header>
             <h1>🔗 URL Shortener</h1>
             <p class="subtitle">All your shortened links in one place</p>
+            <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
         </header>
 
         <div id="loading" class="loading">
@@ -452,6 +540,37 @@
                 <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
                 <button class="btn btn-confirm" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
             </div>
+        </div>
+    </div>
+
+    <div id="newQuizModal" class="modal-overlay" onclick="closeNewQuizModal(event)">
+        <div class="modal modal-large" onclick="event.stopPropagation()">
+            <h2 class="modal-title">Create New Quiz</h2>
+            <form id="newQuizForm" onsubmit="submitNewQuiz(event)">
+                <div class="form-group">
+                    <label class="form-label" for="quizName">Quiz Name</label>
+                    <input 
+                        type="text" 
+                        id="quizName" 
+                        class="form-input" 
+                        placeholder="Enter quiz name"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="quizInput">Quiz Data (JSON)</label>
+                    <textarea 
+                        id="quizInput" 
+                        class="form-textarea" 
+                        placeholder='{"questions": [...]}'
+                        required
+                    ></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeNewQuizModal()">Cancel</button>
+                    <button type="submit" class="btn btn-submit" id="submitQuizBtn">Create Quiz</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -562,9 +681,6 @@
                        class="btn btn-single">
                        👤 Single
                     </a>
-                    <!-- <button class="btn btn-delete" onclick="openDeleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')"> -->
-                    <!--     🗑️ Delete -->
-                    <!-- </button> -->
                 </div>
             `;
 
@@ -638,6 +754,100 @@
             }
         }
 
+        function openNewQuizModal() {
+            document.getElementById('newQuizModal').classList.add('active');
+            document.getElementById('quizName').value = '';
+            document.getElementById('quizInput').value = '';
+        }
+
+        function closeNewQuizModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('newQuizModal').classList.remove('active');
+        }
+
+      function unicodeSafeJSONStringify(obj) {
+        return JSON.stringify(obj).replace(/[\u007F-\uFFFF]/g, function(ch) {
+          return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
+        });
+      }
+      
+      async function compressAndEncode(data) {
+        const jsonString = unicodeSafeJSONStringify(data);
+        const stream = new Blob([jsonString]).stream();
+        const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+        const compressedResponse = new Response(compressedStream);
+        const compressedBlob = await compressedResponse.blob();
+        const compressedBuffer = await compressedBlob.arrayBuffer();
+        const compressed = new Uint8Array(compressedBuffer);
+        
+        let binaryString = '';
+        compressed.forEach(byte => {
+          binaryString += String.fromCharCode(byte);
+        });
+        
+        const base64 = btoa(binaryString);
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
+      }
+
+        async function submitNewQuiz(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitQuizBtn');
+            const name = document.getElementById('quizName').value.trim();
+            const input = document.getElementById('quizInput').value.trim();
+
+            // Validate JSON
+            try {
+                JSON.parse(input);
+            } catch (err) {
+                showError('Invalid JSON format. Please check your quiz data.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+
+            try {
+                const roomId = "quiz-" + Math.random().toString(36).substr(2, 9);
+                const peerId = "quiz-" + Math.random().toString(36).substr(2, 9)
+                const quizData = JSON.parse(input);
+                if (!Array.isArray(quizData)) throw new Error("Must be an array");
+
+                const encoded = await compressAndEncode(quizData);
+
+                const shareUrl = apiBaseUrl + "/quiz/indexv3.html?room=" + roomId + "&peer=" + peerId +"&data=" + encoded;
+
+                // Here you would typically send the data to your API
+                const response = await fetch(`${apiBaseUrl}/api/shorten`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: shareUrl,
+                        name
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create quiz');
+                }
+
+                closeNewQuizModal();
+                showSuccess(`Quiz "${quizName}" created successfully!`);
+                
+                // Optionally refresh the list
+                // fetchUrls();
+
+            } catch (err) {
+                showError(err.message || 'Failed to create quiz. Please try again.');
+                console.error('Create quiz error:', err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Quiz';
+            }
+        }
+
         function showSuccess(message) {
             const success = document.getElementById('success');
             success.textContent = message;
@@ -687,10 +897,11 @@
             return div.innerHTML;
         }
 
-        // Close modal with Escape key
+        // Close modals with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeDeleteModal();
+                closeNewQuizModal();
             }
         });
 
