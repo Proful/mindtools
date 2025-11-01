@@ -834,10 +834,10 @@
                 }
 
                 closeNewQuizModal();
-                showSuccess(`Quiz "${quizName}" created successfully!`);
+                showSuccess(`Quiz "${name}" created successfully!`);
                 
                 // Optionally refresh the list
-                // fetchUrls();
+                fetchUrls();
 
             } catch (err) {
                 showError(err.message || 'Failed to create quiz. Please try again.');
