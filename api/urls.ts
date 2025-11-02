@@ -1,10 +1,10 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../lib/db';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { getDb } from "../lib/db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Validate limit
     if (limit < 1 || limit > 100) {
-      return res.status(400).json({ error: 'Limit must be between 1 and 100' });
+      return res.status(400).json({ error: "Limit must be between 1 and 100" });
     }
 
     // Get all URLs ordered by creation date (latest first)
@@ -29,6 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         clicks,
         created_at
       FROM urls 
+      WHERE status = 0
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}
@@ -41,17 +42,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const total = parseInt(countResult[0].total);
 
     // Get base URL for constructing short URLs
-    const baseUrl = `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers.host}`;
+    const baseUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
 
     // Format response with short URLs
-    const formattedUrls = urls.map(url => ({
+    const formattedUrls = urls.map((url) => ({
       id: url.id,
       shortCode: url.short_code,
       shortUrl: `${baseUrl}/api/re/${url.short_code}`,
       originalUrl: url.original_url,
       name: url.name,
       clicks: url.clicks,
-      createdAt: url.created_at
+      createdAt: url.created_at,
     }));
 
     return res.status(200).json({
@@ -61,12 +62,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         total,
         limit,
         offset,
-        hasMore: offset + limit < total
-      }
+        hasMore: offset + limit < total,
+      },
     });
-
   } catch (error) {
-    console.error('Error fetching URLs:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching URLs:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
