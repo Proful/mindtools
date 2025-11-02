@@ -42,7 +42,7 @@
             opacity: 0.9;
         }
 
-        .btn-new-quiz {
+        .btn-new-quiz, .btn-revision-quiz {
             background: white;
             color: #667eea;
             padding: 0.75rem 1.5rem;
@@ -57,6 +57,11 @@
         }
 
         .btn-new-quiz:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-revision-quiz:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
@@ -519,6 +524,7 @@
             <h1>🔗 URL Shortener</h1>
             <p class="subtitle">All your shortened links in one place</p>
             <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
+            <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪢 Revision</button>
         </header>
 
         <div id="loading" class="loading">
@@ -844,6 +850,10 @@
         function closeNewQuizModal(event) {
             if (event && event.target !== event.currentTarget) return;
             document.getElementById('newQuizModal').classList.remove('active');
+        }
+
+        function openRevisionQuiz() {
+          window.open(`${apiBaseUrl}/quiz/indexv2.html?revision=true`, '_blank', 'noopener');
         }
 
       function unicodeSafeJSONStringify(obj) {
