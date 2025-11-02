@@ -121,12 +121,12 @@
             position: relative;
         }
 
-        .url-card.deleting {
+        .url-card.deleting, .url-card.completing  {
             opacity: 0.5;
             pointer-events: none;
         }
 
-        .url-card.deleted {
+        .url-card.deleted, .url-card.completed {
             animation: fadeOut 0.5s ease-out forwards;
         }
 
@@ -260,6 +260,16 @@
         }
 
         .btn-delete:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn-complete {
+            background: #fab386;
+            color: white;
+            flex: 1 1 100%;
+        }
+
+        .btn-complete:hover:not(:disabled) {
             background: #dc2626;
         }
 
@@ -545,6 +555,20 @@
         </div>
     </div>
 
+    <div id="completeModal" class="modal-overlay" onclick="closeCompleteModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h2 class="modal-title">Complete quiz?</h2>
+            <p class="modal-message">
+                Are you sure you want to complete this quiz?<br>
+                <span class="modal-url" id="completeUrlName"></span>
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeCompleteModal()">Cancel</button>
+                <button class="btn btn-confirm" id="confirmCompleteBtn" onclick="confirmComplete()">Complete</button>
+            </div>
+        </div>
+    </div>
+
     <div id="newQuizModal" class="modal-overlay" onclick="closeNewQuizModal(event)">
         <div class="modal modal-large" onclick="event.stopPropagation()">
             <h2 class="modal-title">Create New Quiz</h2>
@@ -582,6 +606,7 @@
         let totalUrls = 0;
         const apiBaseUrl = window.location.origin;
         let deleteTarget = null;
+        let completeTarget = null;
 
         async function fetchUrls() {
             const loading = document.getElementById('loading');
@@ -683,6 +708,9 @@
                        class="btn btn-single">
                        👤 Single
                     </a>
+                     <button class="btn btn-complete" onclick="openCompleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
+                        🗑️ Complete
+                    </button>
                 </div>
             `;
 
@@ -754,6 +782,56 @@
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = 'Delete';
             }
+        }
+
+        async function confirmComplete() {
+            if (!completeTarget) return;
+
+            const confirmBtn = document.getElementById('confirmCompleteBtn');
+            const card = document.getElementById(`card-${completeTarget}`);
+            
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Completing...';
+            card.classList.add('completing');
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/complete/${completeTarget}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to complete quiz');
+                }
+
+                closeCompleteModal();
+                card.classList.add('completed');
+                
+                setTimeout(() => {
+                    showSuccess('Quiz completed successfully!');
+                    fetchUrls();
+                }, 500);
+
+            } catch (err) {
+                showError(err.message || 'Failed to complete quiz. Please try again.');
+                console.error('Complete error:', err);
+                card.classList.remove('completing');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Complete';
+            }
+        }
+
+        function openCompleteModal(shortCode, displayName) {
+            completeTarget = shortCode;
+            document.getElementById('completeUrlName').textContent = displayName;
+            document.getElementById('completeModal').classList.add('active');
+        }
+
+        function closeCompleteModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('completeModal').classList.remove('active');
+            completeTarget = null;
         }
 
         function openNewQuizModal() {
