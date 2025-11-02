@@ -253,6 +253,15 @@
             background: #dc2626;
         }
 
+        .btn-complete {
+            background: #fab386;
+            color: white;
+        }
+
+        .btn-complete:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
         .btn-delete {
             background: #ef4444;
             color: white;
@@ -260,16 +269,6 @@
         }
 
         .btn-delete:hover:not(:disabled) {
-            background: #dc2626;
-        }
-
-        .btn-complete {
-            background: #fab386;
-            color: white;
-            flex: 1 1 100%;
-        }
-
-        .btn-complete:hover:not(:disabled) {
             background: #dc2626;
         }
 
@@ -609,6 +608,8 @@
         let completeTarget = null;
 
         async function fetchUrls() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get("status") || 0;
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const urlList = document.getElementById('urlList');
@@ -620,7 +621,7 @@
             pagination.style.display = 'none';
 
             try {
-                const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}`);
+            const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}&status=${status}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch URLs');
