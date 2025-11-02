@@ -808,11 +808,11 @@
                 closeCompleteModal();
                 card.classList.add('completed');
                 
-                setTimeout(() => {
-                    showSuccess('Quiz completed successfully!');
-                    fetchUrls();
-                }, 500);
-
+                // setTimeout(() => {
+                //     showSuccess('Quiz completed successfully!');
+                //     fetchUrls();
+                // }, 500);
+                //
             } catch (err) {
                 showError(err.message || 'Failed to complete quiz. Please try again.');
                 console.error('Complete error:', err);
