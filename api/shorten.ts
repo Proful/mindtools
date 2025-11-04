@@ -65,8 +65,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Insert into database
     await sql`
-      INSERT INTO urls (short_code, original_url, name)
-      VALUES (${shortCode}, ${url}, ${name || null})
+      INSERT INTO urls (short_code, original_url, name, status)
+      VALUES (${shortCode}, ${url}, ${name || null}, 0)
     `;
 
     return res.status(201).json({
