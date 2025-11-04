@@ -451,7 +451,7 @@
               return;
             }
 
-            initQuiz(quizData, false, true);
+            initQuiz(quizData, false, false);
           } catch (error) {
             showError("Failed to load quiz data: " + error.message);
             console.error(error);
@@ -645,7 +645,7 @@
           answers: Array(quizData.length).fill(null),
           quizCompleted: false,
           isRevision: isRevision,
-          isRemove
+          isRemove: isRemove
         };
 
         renderQuiz(state, quizData);
