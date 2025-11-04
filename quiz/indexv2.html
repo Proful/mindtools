@@ -413,6 +413,7 @@
 
     <script>
       let wrongAnswers = [];
+      const apiBaseUrl = window.location.origin;
 
       document.addEventListener("DOMContentLoaded", async function () {
         loadWrongAnswers();
@@ -420,12 +421,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const encodedData = urlParams.get("data");
         const isRevision = urlParams.get("revision") === "true";
+        const isRemove = urlParams.get("remove") === "true";
 
         if (isRevision) {
           if (wrongAnswers.length === 0) {
             showHome(true);
           } else {
-            initQuiz(wrongAnswers, true);
+            initQuiz(wrongAnswers, true, isRemove);
           }
         } else if (!encodedData) {
           showHome();
@@ -449,7 +451,7 @@
               return;
             }
 
-            initQuiz(quizData, false);
+            initQuiz(quizData, false, true);
           } catch (error) {
             showError("Failed to load quiz data: " + error.message);
             console.error(error);
@@ -635,7 +637,7 @@
         `;
       }
 
-      function initQuiz(quizData, isRevision) {
+      function initQuiz(quizData, isRevision, isRemove) {
         const state = {
           currentQuestion: 0,
           totalQuestions: quizData.length,
@@ -643,6 +645,7 @@
           answers: Array(quizData.length).fill(null),
           quizCompleted: false,
           isRevision: isRevision,
+          isRemove
         };
 
         renderQuiz(state, quizData);
@@ -657,7 +660,7 @@
           } else if (e.target.classList.contains("btn-restart")) {
             restartQuiz(state, quizData);
           } else if (e.target.classList.contains("btn-home")) {
-            location.href = "?";
+            location.href = `${apiBaseUrl}/quiz/list.html`
           } else if (e.target.classList.contains("btn-remove")) {
             removeCurrentQuestion(state, quizData);
           }
@@ -727,7 +730,7 @@
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
-              <!-- ${state.isRevision ? '<button class="btn-remove">Remove</button>' : ''} -->
+              ${state.isRemove ? '<button class="btn-remove">Remove</button>' : ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
                 `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next</button>`
