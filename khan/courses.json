@@ -1,0 +1,23 @@
+[
+  {
+    "course": "Pre-algebra",
+    "category": "Math",
+    "units": [
+      { "unit": 1, "title": "Factors and multiples" },
+      { "unit": 2, "title": "Patterns" },
+      { "unit": 3, "title": "Ratios and rates" },
+      { "unit": 4, "title": "Percentages" },
+      { "unit": 5, "title": "Exponents intro and order of operations" },
+      { "unit": 6, "title": "Variables & expressions" },
+      { "unit": 7, "title": "Equations & inequalities introduction" },
+      { "unit": 8, "title": "Percent & rational number word problems" },
+      { "unit": 9, "title": "Proportional relationships" },
+      { "unit": 10, "title": "One-step and two-step equations & inequalities" },
+      { "unit": 11, "title": "Roots, exponents, & scientific notation" },
+      { "unit": 12, "title": "Multi-step equations" },
+      { "unit": 13, "title": "Two-variable equations" },
+      { "unit": 14, "title": "Functions and linear models" },
+      { "unit": 15, "title": "Systems of equations" }
+    ]
+  }
+]

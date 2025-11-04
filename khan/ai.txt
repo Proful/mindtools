@@ -1,0 +1,25 @@
+Study Tracker
+- html, css, js 
+- mobile first, responsive design 
+- use localStorage to store data 
+- do not use windows.storage api
+- build a simple study tracker app 
+- load the attached json, it will be available from url
+- in home page, have a primary "Add" button 
+- On clicking "Add" button, allow to enter
+  - course (dropdown)
+  - unit title (dropdown)
+  - start time (input, e.g., 04:15 PM)
+  - end time (input, e.g., 06:30 PM)
+  - break (input, number e.g., 15)
+- dropdown values should be choosen from json 
+- build a mobile responsive time picker for start time and end time
+- after entering all the above data, allow to Submit and store in localStorage
+
+- in home page, below Add button, view the stored data
+  - example:
+    Friday, 24 Oct 2025
+    Pre-algebra, Math
+    Unit 1. Factors and multiples
+    Study time: 1 hr 45 min 
+    04:15 PM to 06:30 PM (15 min Break)
