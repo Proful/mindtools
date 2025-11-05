@@ -1,5 +1,24 @@
 [
   {
+    "course": "Class 5 Olympiad",
+    "category": "Science",
+    "units": [
+      { "unit": 1, "title": "Animals" },
+      { "unit": 2, "title": "Plants" },
+      { "unit": 3, "title": "Human Body" },
+      { "unit": 4, "title": "Food and Nutrients" },
+      { "unit": 5, "title": "Water" },
+      { "unit": 6, "title": "Matter and Materials" },
+      { "unit": 7, "title": "Work, Force, and Energy" },
+      { "unit": 8, "title": "Environment and Natural Calamities" },
+      { "unit": 9, "title": "Natural Resources" },
+      { "unit": 10, "title": "Universe" },
+      { "unit": 11, "title": "Farming and Agriculture" },
+      { "unit": 12, "title": "Rocks and Minerals" },
+      { "unit": 13, "title": "Soil Erosion and Conservation" }
+    ]
+  },
+  {
     "course": "Pre-algebra",
     "category": "Math",
     "units": [
