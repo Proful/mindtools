@@ -1,0 +1,1065 @@
+ <!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Application</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background-color: #4caf50;
+        transition: width 0.3s ease;
+      }
+
+      .timer-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .timer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .timer-label {
+        color: white;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .timer-display {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+      }
+
+      .timer-display.warning {
+        color: #ffeb3b;
+        animation: pulse 1s infinite;
+      }
+
+      .timer-display.danger {
+        color: #ff5252;
+        animation: pulse 0.5s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+
+      .timer-progress-bar {
+        height: 6px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .timer-progress {
+        height: 100%;
+        background-color: white;
+        transition: width 0.1s linear;
+        border-radius: 3px;
+      }
+
+      .timer-progress.warning {
+        background-color: #ffeb3b;
+      }
+
+      .timer-progress.danger {
+        background-color: #ff5252;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .score {
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .quiz-container {
+        flex-grow: 1;
+      }
+
+      .question {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .option {
+        position: relative;
+        background-color: #f9f9f9;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .option:hover:not(.disabled) {
+        background-color: #f1f1f1;
+        border-color: #ccc;
+      }
+
+      .option.selected {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .option.correct {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      .option.incorrect {
+        background-color: #ffebee;
+        border-color: #f44336;
+      }
+
+      .option.disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      .option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .option label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .option.disabled label {
+        cursor: not-allowed;
+      }
+
+      .option span.radio {
+        height: 20px;
+        width: 20px;
+        min-width: 20px;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        margin-right: 12px;
+        position: relative;
+      }
+
+      .option input:checked ~ label span.radio {
+        border-color: #4caf50;
+      }
+
+      .option input:checked ~ label span.radio:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #4caf50;
+      }
+
+      .option span.mark {
+        margin-left: auto;
+        font-size: 1.2rem;
+        display: none;
+      }
+
+      .option.correct span.mark {
+        display: block;
+        color: #4caf50;
+      }
+
+      .option.incorrect span.mark {
+        display: block;
+        color: #f44336;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-prev {
+        background-color: #e0e0e0;
+        color: #333;
+      }
+
+      .btn-prev:hover:not(:disabled) {
+        background-color: #d0d0d0;
+      }
+
+      .btn-next {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .btn-next:hover:not(:disabled) {
+        background-color: #45a049;
+      }
+
+      .btn-result {
+        background-color: #2196f3;
+        color: white;
+      }
+
+      .btn-result:hover {
+        background-color: #0b7dda;
+      }
+
+      .btn-restart {
+        background-color: #9c27b0;
+        color: white;
+      }
+
+      .btn-restart:hover {
+        background-color: #7b1fa2;
+      }
+
+      .btn-remove {
+        background-color: #ff9800;
+        color: white;
+      }
+
+      .btn-remove:hover:not(:disabled) {
+        background-color: #f57c00;
+      }
+
+      .results {
+        text-align: center;
+        padding: 20px;
+      }
+
+      .results h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .results p {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+
+      .results .percentage {
+        font-size: 4rem;
+        font-weight: bold;
+        color: #4caf50;
+        margin: 20px 0;
+      }
+
+      .results-details {
+        display: flex;
+        justify-content: space-around;
+        margin: 30px 0;
+      }
+
+      .results-item {
+        text-align: center;
+      }
+
+      .results-item p:first-child {
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .correct-count {
+        color: #4caf50;
+      }
+
+      .incorrect-count {
+        color: #f44336;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .explanation {
+        background-color: #f8f9fa;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        display: none;
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-size: 1.5rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 40px;
+        color: #f44336;
+      }
+
+      .home {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .home h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .home p {
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        color: #666;
+      }
+
+      .home-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .btn-revision {
+        background-color: #ff9800;
+        color: white;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+      }
+
+      .btn-revision:hover:not(:disabled) {
+        background-color: #f57c00;
+      }
+
+      .btn-home {
+        background-color: #2196f3;
+        color: white;
+        margin-top: 20px;
+      }
+
+      .btn-home:hover {
+        background-color: #0b7dda;
+      }
+
+      .revision-badge {
+        display: inline-block;
+        background-color: #f44336;
+        color: white;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.9rem;
+        margin-left: 8px;
+      }
+
+      .btn-clear {
+        background-color: #f44336;
+        color: white;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      .btn-clear:hover {
+        background-color: #d32f2f;
+      }
+
+      .setup-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        min-height: 100vh;
+      }
+
+      .setup-box {
+        text-align: center;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .setup-box h2 {
+        color: #4caf50;
+        margin-bottom: 20px;
+      }
+
+      .setup-box textarea {
+        padding: 12px;
+        font-size: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        width: 100%;
+        font-family: monospace;
+      }
+
+      .setup-box button {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .timeout-notice {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 6px;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        color: #856404;
+        font-size: 0.95rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading">Loading...</div>
+    </div>
+
+    <script>
+      let wrongAnswers = [];
+      let timerInterval = null;
+      let TIMER_DURATION = 60;
+      const apiBaseUrl = window.location.origin;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        loadWrongAnswers();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get("data");
+        const isRevision = urlParams.get("revision") === "true";
+        const isRemove = urlParams.get("remove") === "true";
+        TIMER_DURATION = urlParams.get("timer") || 60;
+
+        if (isRevision) {
+          if (wrongAnswers.length === 0) {
+            showHome(true);
+          } else {
+            initQuiz(wrongAnswers, true, isRemove);
+          }
+        } else if (!encodedData) {
+          showHome();
+        } else {
+          try {
+            const base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/').replace(/~/g, '=');
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            
+            const decompressedStream = new Response(
+              new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+            );
+            const decompressed = await decompressedStream.text();
+            const quizData = JSON.parse(decompressed);
+
+            if (!Array.isArray(quizData) || quizData.length === 0) {
+              showError("Invalid quiz data format. Expected an array of questions.");
+              return;
+            }
+
+            initQuiz(quizData, false, false);
+          } catch (error) {
+            showError("Failed to load quiz data: " + error.message);
+            console.error(error);
+          }
+        }
+      });
+
+      function loadWrongAnswers() {
+        try {
+          const stored = localStorage.getItem("quiz-wrong-answers");
+          if (stored) {
+            wrongAnswers = JSON.parse(stored);
+          }
+        } catch (error) {
+          console.log("No wrong answers stored yet");
+          wrongAnswers = [];
+        }
+      }
+
+      function saveWrongAnswer(question) {
+        try {
+          const exists = wrongAnswers.some(
+            (q) => q.question === question.question,
+          );
+
+          if (!exists) {
+            wrongAnswers.push(question);
+            localStorage.setItem(
+              "quiz-wrong-answers",
+              JSON.stringify(wrongAnswers),
+            );
+          }
+        } catch (error) {
+          console.error("Error saving wrong answer:", error);
+        }
+      }
+
+      function removeFromRevisionList(question) {
+        try {
+          wrongAnswers = wrongAnswers.filter(
+            (q) => q.question !== question.question
+          );
+          localStorage.setItem(
+            "quiz-wrong-answers",
+            JSON.stringify(wrongAnswers),
+          );
+        } catch (error) {
+          console.error("Error removing from revision list:", error);
+        }
+      }
+
+      function clearWrongAnswers() {
+        try {
+          wrongAnswers = [];
+          localStorage.removeItem("quiz-wrong-answers");
+          showHome();
+        } catch (error) {
+          console.error("Error clearing wrong answers:", error);
+        }
+      }
+
+      function showHome(noQuestions) {
+        if (noQuestions === undefined) noQuestions = false;
+        stopTimer();
+        const wrongCount = wrongAnswers.length;
+
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+          <div class="setup-screen">
+            <div class="setup-box">
+              <h1>📚 Quiz Application</h1>
+              <p>${noQuestions ? "No wrong answers to revise yet. Complete a quiz first!" : "Welcome! Start a new quiz or revise your wrong answers."}</p>
+              
+              <textarea id="quizInput" placeholder='[{"question":"What is 2+2?","options":["3","4","5","6"],"correct_answer":"4","explanation":"2+2 equals 4"}]' style="height:200px; resize:vertical;"></textarea>
+              
+              <button class="btn-next" onclick="loadQuiz()">Start Quiz</button>
+              <button class="btn-prev" onclick="loadSampleQuiz()">Load Sample Quiz</button>
+              
+              <div class="home-buttons" style="margin-top: 30px;">
+                <button class="btn-revision" ${wrongCount === 0 ? "disabled" : ""} onclick="startRevision()">
+                  📖 Revision Quiz
+                  ${wrongCount > 0 ? `<span class="revision-badge">${wrongCount}</span>` : ""}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function startRevision() {
+        window.location.href = "?revision=true";
+      }
+
+      function unicodeSafeJSONStringify(obj) {
+        return JSON.stringify(obj).replace(/[\u007F-\uFFFF]/g, function(ch) {
+          return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
+        });
+      }
+      
+      async function compressAndEncode(data) {
+        const jsonString = unicodeSafeJSONStringify(data);
+        const stream = new Blob([jsonString]).stream();
+        const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+        const compressedResponse = new Response(compressedStream);
+        const compressedBlob = await compressedResponse.blob();
+        const compressedBuffer = await compressedBlob.arrayBuffer();
+        const compressed = new Uint8Array(compressedBuffer);
+        
+        let binaryString = '';
+        compressed.forEach(byte => {
+          binaryString += String.fromCharCode(byte);
+        });
+        
+        const base64 = btoa(binaryString);
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
+      }
+
+      async function loadQuiz() {
+        const input = document.getElementById("quizInput").value.trim();
+        if (!input) {
+          alert("Please enter quiz data");
+          return;
+        }
+        
+        try {
+          const quizData = JSON.parse(input);
+          if (!Array.isArray(quizData)) throw new Error("Must be an array");
+          if (quizData.length === 0) throw new Error("Array cannot be empty");
+
+          const encoded = await compressAndEncode(quizData);
+          window.location.href = window.location.pathname + "?data=" + encoded;
+        } catch (e) {
+          alert("Invalid JSON: " + e.message);
+        }
+      }
+
+      async function loadSampleQuiz() {
+        const sampleData = [
+          {
+            question: "What is the capital of France?",
+            options: ["London", "Berlin", "Paris", "Madrid"],
+            correct_answer: "Paris",
+            explanation: "Paris is the capital and largest city of France."
+          },
+          {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Venus", "Mars", "Jupiter", "Saturn"],
+            correct_answer: "Mars",
+            explanation: "Mars is called the Red Planet because of its reddish appearance due to iron oxide on its surface."
+          },
+          {
+            question: "What is the largest ocean on Earth?",
+            options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+            correct_answer: "Pacific Ocean",
+            explanation: "The Pacific Ocean is the largest and deepest of the world's five oceanic divisions."
+          },
+          {
+            question: "Who wrote 'Romeo and Juliet'?",
+            options: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+            correct_answer: "William Shakespeare",
+            explanation: "William Shakespeare wrote this famous tragedy in the early years of his career."
+          },
+          {
+            question: "What is the chemical symbol for gold?",
+            options: ["Go", "Gd", "Au", "Ag"],
+            correct_answer: "Au",
+            explanation: "The symbol Au comes from the Latin word for gold, 'aurum'."
+          }
+        ];
+        
+        const encoded = await compressAndEncode(sampleData);
+        window.location.href = window.location.pathname + "?data=" + encoded;
+      }
+
+      function showError(message) {
+        stopTimer();
+        const appElement = document.getElementById("app");
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="error">
+              <h2>Error</h2>
+              <p>${message}</p>
+              <button class="btn-home" onclick="location.href='?'">Go to Home</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function initQuiz(quizData, isRevision, isRemove) {
+        const state = {
+          currentQuestion: 0,
+          totalQuestions: quizData.length,
+          correctAnswers: 0,
+          answers: Array(quizData.length).fill(null),
+          quizCompleted: false,
+          isRevision: isRevision,
+          isRemove: isRemove,
+          timeRemaining: TIMER_DURATION,
+          timedOut: Array(quizData.length).fill(false)
+        };
+
+        renderQuiz(state, quizData);
+        startTimer(state, quizData);
+
+        document.addEventListener("click", function (e) {
+          if (e.target.classList.contains("btn-prev")) {
+            navigateToPrevQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-next")) {
+            navigateToNextQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-result")) {
+            showResults(state);
+          } else if (e.target.classList.contains("btn-restart")) {
+            restartQuiz(state, quizData);
+          } else if (e.target.classList.contains("btn-home")) {
+            location.href = `${apiBaseUrl}/quiz/list.html`
+          } else if (e.target.classList.contains("btn-remove")) {
+            removeCurrentQuestion(state, quizData);
+          }
+        });
+      }
+
+      function startTimer(state, quizData) {
+        stopTimer();
+        state.timeRemaining = TIMER_DURATION;
+        
+        timerInterval = setInterval(() => {
+          state.timeRemaining--;
+          updateTimerDisplay(state);
+          
+          if (state.timeRemaining <= 0) {
+            handleTimeout(state, quizData);
+          }
+        }, 1000);
+        
+        updateTimerDisplay(state);
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+
+      function updateTimerDisplay(state) {
+        const timerDisplay = document.querySelector('.timer-display');
+        const timerProgress = document.querySelector('.timer-progress');
+        
+        if (!timerDisplay || !timerProgress) return;
+        
+        const minutes = Math.floor(state.timeRemaining / 60);
+        const seconds = state.timeRemaining % 60;
+        const timeString = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        
+        timerDisplay.textContent = timeString;
+        
+        const progressPercent = (state.timeRemaining / TIMER_DURATION) * 100;
+        timerProgress.style.width = progressPercent + '%';
+        
+        timerDisplay.classList.remove('warning', 'danger');
+        timerProgress.classList.remove('warning', 'danger');
+        
+        if (state.timeRemaining <= 30) {
+          timerDisplay.classList.add('danger');
+          timerProgress.classList.add('danger');
+        } else if (state.timeRemaining <= 60) {
+          timerDisplay.classList.add('warning');
+          timerProgress.classList.add('warning');
+        }
+      }
+
+      function handleTimeout(state, quizData) {
+        stopTimer();
+        
+        state.timedOut[state.currentQuestion] = true;
+        
+        const question = quizData[state.currentQuestion];
+        const correctIndex = question.options.indexOf(question.correct_answer);
+        
+        const wrongIndices = [];
+        for (let i = 0; i < question.options.length; i++) {
+          if (i !== correctIndex) {
+            wrongIndices.push(i);
+          }
+        }
+        
+        const randomWrongIndex = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+        state.answers[state.currentQuestion] = randomWrongIndex;
+        
+        if (!state.isRevision) {
+          saveWrongAnswer(question);
+        }
+        
+        renderQuiz(state, quizData);
+        
+        setTimeout(() => {
+          if (state.currentQuestion < state.totalQuestions - 1) {
+            navigateToNextQuestion(state, quizData);
+          } else {
+            const resultBtn = document.querySelector('.btn-result');
+            if (resultBtn) {
+              resultBtn.disabled = false;
+            }
+          }
+        }, 2000);
+      }
+
+      function renderQuiz(state, quizData) {
+        const appElement = document.getElementById("app");
+
+        if (state.quizCompleted) {
+          stopTimer();
+          renderResults(state, quizData);
+          return;
+        }
+
+        const question = quizData[state.currentQuestion];
+        const isLastQuestion = state.currentQuestion === state.totalQuestions - 1;
+        const userAnswer = state.answers[state.currentQuestion];
+        const showFeedback = userAnswer !== null;
+        const isTimedOut = state.timedOut[state.currentQuestion];
+
+        let optionsHtml = "";
+
+        question.options.forEach((option, index) => {
+          const isSelected = userAnswer === index;
+          const isCorrect = showFeedback && index === question.options.indexOf(question.correct_answer);
+          const isIncorrect = showFeedback && isSelected && !isCorrect;
+
+          let optionClass = "option";
+          if (isSelected) optionClass += " selected";
+          if (showFeedback && isCorrect) optionClass += " correct";
+          if (isIncorrect) optionClass += " incorrect";
+          if (showFeedback) optionClass += " disabled";
+
+          optionsHtml += `
+            <div class="${optionClass}" data-index="${index}">
+              <input type="radio" name="option" id="option${index}" ${isSelected ? "checked" : ""} ${showFeedback ? "disabled" : ""}>
+              <label for="option${index}">
+                <span class="radio"></span>
+                ${option}
+                <span class="mark">${isCorrect ? "✓" : isIncorrect ? "✗" : ""}</span>
+              </label>
+            </div>
+          `;
+        });
+
+        const progress = ((state.currentQuestion + 1) / state.totalQuestions) * 100;
+
+        const timerHtml = !showFeedback ? `
+            <div class="timer-container">
+              <div class="timer-header">
+                <span class="timer-label">⏱️ Time Remaining</span>
+                <span class="timer-display">2:00</span>
+              </div>
+              <div class="timer-progress-bar">
+                <div class="timer-progress" style="width: 100%"></div>
+              </div>
+            </div>
+            ` : '';
+        
+        const timeoutNotice = isTimedOut ? '<div class="timeout-notice">⏰ Time expired! A wrong answer was automatically selected.</div>' : '';
+
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="progress-bar">
+              <div class="progress" style="width: ${progress}%"></div>
+            </div>
+            
+            ${timerHtml}
+            ${timeoutNotice}
+            
+            <div class="header">
+              <div class="question-number">
+                ${state.isRevision ? "📖 Revision - " : ""}Question ${state.currentQuestion + 1} of ${state.totalQuestions}
+              </div>
+              <div class="score">Score: ${state.correctAnswers}</div>
+            </div>
+            
+            <div class="quiz-container">
+              <div class="question">${question.question}</div>
+              <div class="options">${optionsHtml}</div>
+              
+              <div class="explanation" ${showFeedback ? 'style="display:block"' : ""}>
+                <p><strong>Explanation:</strong> ${question.explanation}</p>
+              </div>
+            </div>
+            
+            <div class="actions">
+              <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
+              ${state.isRemove ? '<button class="btn-remove">Remove</button>' : ''}
+              ${isLastQuestion ?
+                `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
+                `<button class="btn-next" ${!showFeedback ? "disabled" : ""}>Next</button>`
+              }
+            </div>
+          </div>
+        `;
+
+        if (!showFeedback) {
+          updateTimerDisplay(state);
+          document.querySelectorAll(".option").forEach((option) => {
+            option.addEventListener("click", function () {
+              selectOption(this.dataset.index, state, quizData);
+            });
+          });
+        }
+      }
+
+      function selectOption(optionIndex, state, quizData) {
+        stopTimer();
+        
+        const question = quizData[state.currentQuestion];
+        const selectedOption = question.options[optionIndex];
+        const isCorrect = selectedOption === question.correct_answer;
+
+        state.answers[state.currentQuestion] = parseInt(optionIndex);
+
+        if (isCorrect) {
+          state.correctAnswers++;
+        } else {
+          if (!state.isRevision) {
+            saveWrongAnswer(question);
+          }
+        }
+
+        renderQuiz(state, quizData);
+      }
+
+      function navigateToPrevQuestion(state, quizData) {
+        if (state.currentQuestion > 0) {
+          stopTimer();
+          state.currentQuestion--;
+          
+          if (state.answers[state.currentQuestion] === null) {
+            state.timeRemaining = TIMER_DURATION;
+            startTimer(state, quizData);
+          }
+          
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function navigateToNextQuestion(state, quizData) {
+        if (state.currentQuestion < state.totalQuestions - 1) {
+          stopTimer();
+          state.currentQuestion++;
+          
+          if (state.answers[state.currentQuestion] === null) {
+            state.timeRemaining = TIMER_DURATION;
+            startTimer(state, quizData);
+          }
+          
+          renderQuiz(state, quizData);
+        }
+      }
+
+      function showResults(state) {
+        stopTimer();
+        state.quizCompleted = true;
+        renderQuiz(state, null);
+      }
+
+      function renderResults(state) {
+        const appElement = document.getElementById("app");
+        const percentage = Math.round((state.correctAnswers / state.totalQuestions) * 100);
+        const incorrectAnswers = state.totalQuestions - state.correctAnswers;
+        const timedOutCount = state.timedOut.filter(t => t).length;
+
+        const timeoutMessage = timedOutCount > 0 ? `<p style="margin: 10px 0; color: #ff5722;">⏰ ${timedOutCount} question(s) timed out</p>` : '';
+        const revisionMessage = incorrectAnswers > 0 && !state.isRevision ? `<p style="margin: 20px 0; color: #ff9800;">💡 ${incorrectAnswers} question(s) saved for revision!</p>` : "";
+
+        appElement.innerHTML = `
+          <div class="container">
+            <div class="results">
+              <h2>Quiz Results</h2>
+              <div class="percentage">${percentage}%</div>
+              
+              <div class="results-details">
+                <div class="results-item">
+                  <p>${state.totalQuestions}</p>
+                  <p>Total Questions</p>
+                </div>
+                <div class="results-item">
+                  <p class="correct-count">${state.correctAnswers}</p>
+                  <p>Correct</p>
+                </div>
+                <div class="results-item">
+                  <p class="incorrect-count">${incorrectAnswers}</p>
+                  <p>Wrong</p>
+                </div>
+              </div>
+              
+              ${timeoutMessage}
+              ${revisionMessage}
+              
+              <button class="btn-restart">Try Again</button>
+              <button class="btn-home">Go to Home</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function restartQuiz(state, quizData) {
+        stopTimer();
+        state.currentQuestion = 0;
+        state.correctAnswers = 0;
+        state.answers = Array(state.totalQuestions).fill(null);
+        state.quizCompleted = false;
+        state.timeRemaining = TIMER_DURATION;
+        state.timedOut = Array(state.totalQuestions).fill(false);
+
+        renderQuiz(state, quizData);
+        startTimer(state, quizData);
+      }
+
+      function removeCurrentQuestion(state, quizData) {
+        const currentQuestionData = quizData[state.currentQuestion];
+        removeFromRevisionList(currentQuestionData);
+        alert("This question is removed from revision list.");
+      }
+    </script>
+  </body>
+</html>

@@ -258,6 +258,15 @@
             background: #dc2626;
         }
 
+        .btn-timer {
+            background: #fca7ea;
+            color: white;
+        }
+
+        .btn-timer:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
         .btn-complete {
             background: #fab386;
             color: white;
@@ -714,6 +723,12 @@
                        rel="noopener noreferrer" 
                        class="btn btn-single">
                        👤 Single
+                    </a>
+                    <a href="${url.originalUrl.replace('indexv3', 'indexv4')}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-timer">
+                       ⏳ Timer
                     </a>
                      <button class="btn btn-complete" onclick="openCompleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
                         🗑️ Complete
