@@ -501,6 +501,17 @@
       let TIMER_DURATION = 60;
       const apiBaseUrl = window.location.origin;
 
+      function getRandomElements(arr, count = 30) {
+        // Shuffle using Fisher–Yates algorithm
+        const shuffled = [...arr];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        // Return the first `count` elements
+        return shuffled.slice(0, count);
+      }
+
       document.addEventListener("DOMContentLoaded", async function () {
         loadWrongAnswers();
 
@@ -514,7 +525,8 @@
           if (wrongAnswers.length === 0) {
             showHome(true);
           } else {
-            initQuiz(wrongAnswers, true, isRemove);
+            const d = getRandomElements(wrongAnswers, 30)
+            initQuiz(d, true, isRemove);
           }
         } else if (!encodedData) {
           showHome();
