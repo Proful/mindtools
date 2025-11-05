@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -30,6 +30,30 @@
             color: white;
             margin-bottom: 2rem;
             padding: 1rem 0;
+            position: relative;
+        }
+
+        .settings-btn {
+            position: absolute;
+            top: 1rem;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
         }
 
         h1 {
@@ -56,12 +80,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-new-quiz:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-revision-quiz:hover {
+        .btn-new-quiz:hover, .btn-revision-quiz:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
@@ -470,6 +489,12 @@
             border-color: #667eea;
         }
 
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
         .btn-submit {
             background: #667eea;
             color: white;
@@ -530,10 +555,11 @@
 <body>
     <div class="container">
         <header>
+            <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
             <h1>🔗 URL Shortener</h1>
             <p class="subtitle">All your shortened links in one place</p>
             <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
-            <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪢 Revision</button>
+            <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪜 Revision</button>
         </header>
 
         <div id="loading" class="loading">
@@ -555,6 +581,33 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay" onclick="closeSettingsModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h2 class="modal-title">⚙️ Settings</h2>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <div class="form-group">
+                    <label class="form-label" for="timerDuration">Timer Duration (seconds)</label>
+                    <input 
+                        type="number" 
+                        id="timerDuration" 
+                        class="form-input" 
+                        placeholder="Enter duration in seconds"
+                        min="1"
+                        max="3600"
+                        required
+                    >
+                    <p class="form-help">Set the default timer duration for quizzes (1-3600 seconds)</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeSettingsModal()">Cancel</button>
+                    <button type="submit" class="btn btn-submit">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
     <div id="deleteModal" class="modal-overlay" onclick="closeDeleteModal(event)">
         <div class="modal" onclick="event.stopPropagation()">
             <h2 class="modal-title">Delete URL?</h2>
@@ -569,6 +622,7 @@
         </div>
     </div>
 
+    <!-- Complete Modal -->
     <div id="completeModal" class="modal-overlay" onclick="closeCompleteModal(event)">
         <div class="modal" onclick="event.stopPropagation()">
             <h2 class="modal-title">Complete quiz?</h2>
@@ -583,6 +637,7 @@
         </div>
     </div>
 
+    <!-- New Quiz Modal -->
     <div id="newQuizModal" class="modal-overlay" onclick="closeNewQuizModal(event)">
         <div class="modal modal-large" onclick="event.stopPropagation()">
             <h2 class="modal-title">Create New Quiz</h2>
@@ -615,6 +670,63 @@
     </div>
 
     <script>
+        // Settings configuration
+        const SETTINGS_KEY = 'urlShortenerSettings';
+        let appSettings = {
+            timerDuration: 60 // default 60 seconds
+        };
+
+        // Load settings from localStorage
+        function loadSettings() {
+            try {
+                const stored = localStorage.getItem(SETTINGS_KEY);
+                if (stored) {
+                    appSettings = JSON.parse(stored);
+                }
+            } catch (err) {
+                console.error('Failed to load settings:', err);
+            }
+        }
+
+        // Save settings to localStorage
+        function saveSettingsToStorage() {
+            try {
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
+            } catch (err) {
+                console.error('Failed to save settings:', err);
+            }
+        }
+
+        // Open settings modal
+        function openSettingsModal() {
+            document.getElementById('timerDuration').value = appSettings.timerDuration;
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        // Close settings modal
+        function closeSettingsModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        // Save settings
+        function saveSettings(event) {
+            event.preventDefault();
+            
+            const timerDuration = parseInt(document.getElementById('timerDuration').value);
+            
+            if (timerDuration < 1 || timerDuration > 3600) {
+                showError('Timer duration must be between 1 and 3600 seconds');
+                return;
+            }
+
+            appSettings.timerDuration = timerDuration;
+            saveSettingsToStorage();
+            
+            closeSettingsModal();
+            showSuccess('Settings saved successfully!');
+        }
+
         let currentOffset = 0;
         const limit = 20;
         let totalUrls = 0;
@@ -636,7 +748,7 @@
             pagination.style.display = 'none';
 
             try {
-            const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}&status=${status}`);
+                const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}&status=${status}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch URLs');
@@ -724,12 +836,9 @@
                        class="btn btn-single">
                        👤 Single
                     </a>
-                    <a href="${url.originalUrl.replace('indexv3', 'indexv4')}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="btn btn-timer">
+                    <button class="btn btn-timer" onclick="openTimerBasedQuiz('${url.originalUrl}')">
                        ⏳ Timer
-                    </a>
+                    </button>
                      <button class="btn btn-complete" onclick="openCompleteModal('${url.shortCode}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
                         🗑️ Complete
                     </button>
@@ -738,7 +847,7 @@
 
             return card;
         }
-
+         
         async function copyToClipboard(text, button) {
             try {
                 await navigator.clipboard.writeText(text);
@@ -753,6 +862,17 @@
             } catch (err) {
                 showError('Failed to copy to clipboard');
                 console.error('Copy failed:', err);
+            }
+        }
+
+        async function openTimerBasedQuiz(text) {
+            try {
+                const url = text.replace('indexv3', 'indexv4') + "&timer=" + appSettings.timerDuration;
+                console.log(url)
+                window.open(url, '_blank');
+            } catch (err) {
+                showError('Failed to open Timer Quiz App');
+                console.error('Failed to open:', err);
             }
         }
 
@@ -828,12 +948,7 @@
 
                 closeCompleteModal();
                 card.classList.add('completed');
-                
-                // setTimeout(() => {
-                //     showSuccess('Quiz completed successfully!');
-                //     fetchUrls();
-                // }, 500);
-                //
+
             } catch (err) {
                 showError(err.message || 'Failed to complete quiz. Please try again.');
                 console.error('Complete error:', err);
@@ -868,32 +983,32 @@
         }
 
         function openRevisionQuiz() {
-          window.open(`${apiBaseUrl}/quiz/indexv2.html?revision=true`, '_blank', 'noopener');
+          window.open(`${apiBaseUrl}/quiz/indexv4.html?revision=true&timer=${appSettings.timerDuration}`, '_blank', 'noopener');
         }
 
-      function unicodeSafeJSONStringify(obj) {
-        return JSON.stringify(obj).replace(/[\u007F-\uFFFF]/g, function(ch) {
-          return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
-        });
-      }
-      
-      async function compressAndEncode(data) {
-        const jsonString = unicodeSafeJSONStringify(data);
-        const stream = new Blob([jsonString]).stream();
-        const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
-        const compressedResponse = new Response(compressedStream);
-        const compressedBlob = await compressedResponse.blob();
-        const compressedBuffer = await compressedBlob.arrayBuffer();
-        const compressed = new Uint8Array(compressedBuffer);
+        function unicodeSafeJSONStringify(obj) {
+            return JSON.stringify(obj).replace(/[\u007F-\uFFFF]/g, function(ch) {
+                return "\\u" + ("0000" + ch.charCodeAt(0).toString(16)).slice(-4);
+            });
+        }
         
-        let binaryString = '';
-        compressed.forEach(byte => {
-          binaryString += String.fromCharCode(byte);
-        });
-        
-        const base64 = btoa(binaryString);
-        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
-      }
+        async function compressAndEncode(data) {
+            const jsonString = unicodeSafeJSONStringify(data);
+            const stream = new Blob([jsonString]).stream();
+            const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+            const compressedResponse = new Response(compressedStream);
+            const compressedBlob = await compressedResponse.blob();
+            const compressedBuffer = await compressedBlob.arrayBuffer();
+            const compressed = new Uint8Array(compressedBuffer);
+            
+            let binaryString = '';
+            compressed.forEach(byte => {
+                binaryString += String.fromCharCode(byte);
+            });
+            
+            const base64 = btoa(binaryString);
+            return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '~');
+        }
 
         async function submitNewQuiz(event) {
             event.preventDefault();
@@ -915,15 +1030,14 @@
 
             try {
                 const roomId = "quiz-" + Math.random().toString(36).substr(2, 9);
-                const peerId = "quiz-" + Math.random().toString(36).substr(2, 9)
+                const peerId = "quiz-" + Math.random().toString(36).substr(2, 9);
                 const quizData = JSON.parse(input);
                 if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
                 const encoded = await compressAndEncode(quizData);
 
-                const shareUrl = apiBaseUrl + "/quiz/indexv3.html?room=" + roomId + "&peer=" + peerId +"&data=" + encoded;
+                const shareUrl = apiBaseUrl + "/quiz/indexv3.html?room=" + roomId + "&peer=" + peerId + "&data=" + encoded;
 
-                // Here you would typically send the data to your API
                 const response = await fetch(`${apiBaseUrl}/api/shorten`, {
                     method: 'POST',
                     headers: {
@@ -942,7 +1056,6 @@
                 closeNewQuizModal();
                 showSuccess(`Quiz "${name}" created successfully!`);
                 
-                // Optionally refresh the list
                 fetchUrls();
 
             } catch (err) {
@@ -1008,10 +1121,13 @@
             if (e.key === 'Escape') {
                 closeDeleteModal();
                 closeNewQuizModal();
+                closeSettingsModal();
+                closeCompleteModal();
             }
         });
 
-        // Load URLs on page load
+        // Initialize app
+        loadSettings();
         fetchUrls();
     </script>
 </body>
