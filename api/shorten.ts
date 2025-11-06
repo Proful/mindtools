@@ -9,7 +9,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { url, name } = req.body;
+    const { url, name, subject } = req.body;
 
     // Validate URL
     if (!url || typeof url !== "string") {
@@ -19,6 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Validate name if provided
     if (name && typeof name !== "string") {
       return res.status(400).json({ error: "Name must be a string" });
+    }
+
+    // Validate subject if provided
+    if (subject && typeof subject !== "string") {
+      return res.status(400).json({ error: "Subject must be a string" });
     }
 
     // Validate URL format
@@ -42,9 +47,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       LIMIT 1
     `;
 
-    console.log(url);
-    console.log(existing);
-
     const baseUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
 
     // If URL exists, return existing short code
@@ -57,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         originalUrl: existingUrl.original_url,
         name: existingUrl.name,
         existing: true,
+        subject: existingUrl.subject,
       });
     }
 
@@ -65,8 +68,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Insert into database
     await sql`
-      INSERT INTO urls (short_code, original_url, name, status)
-      VALUES (${shortCode}, ${url}, ${name || null}, 0)
+      INSERT INTO urls (short_code, original_url, name, status, subject)
+      VALUES (${shortCode}, ${url}, ${name || null}, 0, ${subject || "science"})
     `;
 
     return res.status(201).json({
@@ -76,6 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       originalUrl: url,
       name: name || null,
       existing: false,
+      subject,
     });
   } catch (error) {
     console.error("Error creating short URL:", error);

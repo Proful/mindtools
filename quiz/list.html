@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/quiz/favicon-48x48.png" type="image/png" />
     <link rel="manifest" href="/quiz/manifest.json" />
-    <title>URL Shortener - All Links</title>
+    <title>Quizzes</title>
     <style>
         * {
             margin: 0;
@@ -488,7 +488,7 @@
             margin-bottom: 0.5rem;
         }
 
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #e5e7eb;
@@ -497,9 +497,33 @@
             transition: border-color 0.2s;
         }
 
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .form-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .form-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .form-checkbox-label span {
+            font-weight: 500;
+        }
+
+        select.form-input {
+            cursor: pointer;
+            background-color: white;
         }
 
         .form-textarea {
@@ -586,8 +610,8 @@
     <div class="container">
         <header>
             <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
-            <h1>🔗 URL Shortener</h1>
-            <p class="subtitle">All your shortened links in one place</p>
+            <h1>🫧 Quizzes</h1>
+            <p class="subtitle">Learn, revise & improve by continuously testing your knowledge.</p>
             <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
             <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪜 Revision</button>
 
@@ -634,6 +658,17 @@
                         required
                     >
                     <p class="form-help">Set the default timer duration for quizzes (1-3600 seconds)</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="showCompleted" 
+                            class="form-checkbox"
+                        >
+                        <span>Show completed quizzes</span>
+                    </label>
+                    <p class="form-help">Display quizzes that have been marked as completed</p>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" onclick="closeSettingsModal()">Cancel</button>
@@ -697,6 +732,19 @@
                         required
                     ></textarea>
                 </div>
+                <div class="form-group">
+                    <label class="form-label" for="quizSubject">Subject</label>
+                    <select 
+                        id="quizSubject" 
+                        class="form-input" 
+                        required
+                    >
+                        <option value="">Select subject...</option>
+                        <option value="science">🔬 Science</option>
+                        <option value="math">➗ Math</option>
+                        <option value="misc">📚 Misc</option>
+                    </select>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" onclick="closeNewQuizModal()">Cancel</button>
                     <button type="submit" class="btn btn-submit" id="submitQuizBtn">Create Quiz</button>
@@ -709,7 +757,8 @@
         // Settings configuration
         const SETTINGS_KEY = 'urlShortenerSettings';
         let appSettings = {
-            timerDuration: 60 // default 60 seconds
+            timerDuration: 60, // default 60 seconds
+            showCompleted: false
         };
 
         // Load settings from localStorage
@@ -736,6 +785,7 @@
         // Open settings modal
         function openSettingsModal() {
             document.getElementById('timerDuration').value = appSettings.timerDuration;
+            document.getElementById('showCompleted').checked = appSettings.showCompleted;
             document.getElementById('settingsModal').classList.add('active');
         }
 
@@ -750,6 +800,7 @@
             event.preventDefault();
             
             const timerDuration = parseInt(document.getElementById('timerDuration').value);
+            const showCompleted = document.getElementById('showCompleted').checked;
             
             if (timerDuration < 1 || timerDuration > 3600) {
                 showError('Timer duration must be between 1 and 3600 seconds');
@@ -757,6 +808,7 @@
             }
 
             appSettings.timerDuration = timerDuration;
+            appSettings.showCompleted = showCompleted;
             saveSettingsToStorage();
             
             closeSettingsModal();
@@ -772,7 +824,7 @@
 
         async function fetchUrls() {
             const urlParams = new URLSearchParams(window.location.search);
-            const status = urlParams.get("status") || 0;
+            const status = appSettings.showCompleted ? 1 : (urlParams.get("status") || 0);
             const subject = urlParams.get("subject") || "science";
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
@@ -1012,6 +1064,7 @@
             document.getElementById('newQuizModal').classList.add('active');
             document.getElementById('quizName').value = '';
             document.getElementById('quizInput').value = '';
+            document.getElementById('quizSubject').value = '';
             document.getElementById('quizName').focus()
         }
 
@@ -1073,6 +1126,7 @@
                 if (!Array.isArray(quizData)) throw new Error("Must be an array");
 
                 const encoded = await compressAndEncode(quizData);
+                const subject = document.getElementById('quizSubject').value || "science";
 
                 const shareUrl = apiBaseUrl + "/quiz/indexv3.html?room=" + roomId + "&peer=" + peerId + "&data=" + encoded;
 
@@ -1083,7 +1137,8 @@
                     },
                     body: JSON.stringify({
                         url: shareUrl,
-                        name
+                        name,
+                        subject
                     })
                 });
 
