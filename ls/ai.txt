@@ -1,0 +1,8 @@
+- html, css, js 
+- mobile first, responsive design 
+- build a simple localStorage management app 
+- list down all keys 
+- view value as properly formatted 
+- edit json value as easily as possible 
+- build a simple json value editor 
+- allow to save updated value
