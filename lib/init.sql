@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS urls (
   name VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   clicks INTEGER DEFAULT 0,
-  status INTEGER DEFAULT 0
+  status INTEGER DEFAULT 0,
+  subject VARCHAR(50)
 );
 
 CREATE INDEX idx_short_code ON urls(short_code);
@@ -15,3 +16,4 @@ CREATE INDEX idx_short_code ON urls(short_code);
 -- If table already exists, run this to add the name column:
 -- ALTER TABLE urls ADD COLUMN IF NOT EXISTS name VARCHAR(255);
 -- ALTER TABLE urls ADD COLUMN IF NOT EXISTS status INTEGER;
+-- ALTER TABLE urls ADD COLUMN IF NOT EXISTS subject VARCHAR(50);

@@ -14,6 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const limit = parseInt(req.query.limit as string) || 50;
     const offset = parseInt(req.query.offset as string) || 0;
     const status = parseInt(req.query.status as string) || 0;
+    const subject = req.query.subject || "science";
 
     // Validate limit
     if (limit < 1 || limit > 100) {
@@ -31,6 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         created_at
       FROM urls 
       WHERE status = ${status}
+      AND subject = ${subject}
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}
@@ -38,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Get total count
     const countResult = await sql`
-      SELECT COUNT(*) as total FROM urls WHERE status = ${status}
+      SELECT COUNT(*) as total FROM urls WHERE status = ${status} AND subject = ${subject}
     `;
     const total = parseInt(countResult[0].total);
 
