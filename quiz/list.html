@@ -85,6 +85,36 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .subject-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
         .loading {
             text-align: center;
             color: white;
@@ -560,6 +590,12 @@
             <p class="subtitle">All your shortened links in one place</p>
             <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
             <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪜 Revision</button>
+
+            <nav class="subject-nav">
+               <a href="?subject=science" class="nav-link" data-subject="science">🔬 Science</a>
+               <a href="?subject=math" class="nav-link" data-subject="math">➗ Math</a>
+               <a href="?subject=misc" class="nav-link" data-subject="misc">📚 Misc</a>
+            </nav>
         </header>
 
         <div id="loading" class="loading">
@@ -737,6 +773,7 @@
         async function fetchUrls() {
             const urlParams = new URLSearchParams(window.location.search);
             const status = urlParams.get("status") || 0;
+            const subject = urlParams.get("subject") || "science";
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const urlList = document.getElementById('urlList');
@@ -748,7 +785,7 @@
             pagination.style.display = 'none';
 
             try {
-                const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}&status=${status}`);
+                const response = await fetch(`${apiBaseUrl}/api/urls?limit=${limit}&offset=${currentOffset}&status=${status}&subject=${subject}`);
                 
                 if (!response.ok) {
                     throw new Error('Failed to fetch URLs');
@@ -1117,6 +1154,21 @@
             return div.innerHTML;
         }
 
+        // Highlight active navigation link
+        function updateActiveNav() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSubject = urlParams.get('subject');
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const linkSubject = link.getAttribute('data-subject');
+                if (linkSubject === currentSubject) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
         // Close modals with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -1129,6 +1181,7 @@
 
         // Initialize app
         loadSettings();
+        updateActiveNav();
         fetchUrls();
     </script>
 </body>
