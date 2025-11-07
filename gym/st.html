@@ -1,0 +1,209 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Streak</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .month-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #5568d3;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+        }
+
+        .day-number {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        .day-box.completed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="month-header">
+                <button class="nav-btn" onclick="changeMonth(-1)">Prev</button>
+                <div class="month-title" id="monthTitle"></div>
+                <button class="nav-btn" onclick="changeMonth(1)">Next</button>
+            </div>
+            <div class="month-grid" id="monthGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+
+        function loadWorkouts() {
+            try {
+                const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                updateMonthlyTracker(workouts);
+            } catch (error) {
+                console.error('Error loading workouts:', error);
+                updateMonthlyTracker([]);
+            }
+        }
+
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            loadWorkouts();
+        }
+
+        function updateMonthlyTracker(workouts) {
+            const monthGrid = document.getElementById('monthGrid');
+            const monthTitle = document.getElementById('monthTitle');
+            const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            
+            // Get first and last day of current month
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            monthTitle.textContent = `${monthNames[month]}, ${year}`;
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // Get day of week for first day (0=Sunday, 1=Monday, etc)
+            const firstDayOfWeek = firstDay.getDay();
+            const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Convert to Monday=0
+            
+            const daysInMonth = lastDay.getDate();
+            
+            // Check which dates have workouts
+            const workoutDates = new Set(workouts.map(w => w.date));
+            
+            let html = '';
+            
+            // Add day labels
+            for (let i = 0; i < 7; i++) {
+                html += `
+                    <div class="day-column">
+                        <div class="day-label">${dayLabels[i]}</div>
+                    </div>
+                `;
+            }
+            
+            // Add empty cells before first day
+            for (let i = 0; i < startOffset; i++) {
+                html += `
+                    <div class="day-column">
+                        <div class="day-box"></div>
+                    </div>
+                `;
+            }
+            
+            // Add days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateString = date.toISOString().split('T')[0];
+                const hasWorkout = workoutDates.has(dateString);
+                
+                html += `
+                    <div class="day-column">
+                        <div class="day-box ${hasWorkout ? 'completed' : ''}">
+                            <div class="day-number">${day}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            monthGrid.innerHTML = html;
+        }
+
+        // Initialize
+        loadWorkouts();
+    </script>
+</body>
+</html>
