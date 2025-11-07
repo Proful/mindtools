@@ -136,19 +136,61 @@
       ]
     },
     {
-      "machine": "Triceps Pushdown Machine",
-      "muscles": ["Triceps Brachii"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "machine": "Barbell",
+      "muscles": ["Biceps Brachii", "Brachialis", "Forearm Flexors"],
+      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg", "30 Kg"],
       "variations": [
         {
-          "variation": "Rope pushdown",
-          "muscles": ["Triceps Brachii"],
-          "description": "enhances muscle contraction and targets all three triceps heads"
-        },
+          "variation": "Barbell Curl",
+          "muscles": ["Biceps Brachii", "Brachialis"],
+          "description": "A classic strength exercise targeting the biceps. It involves curling the barbell upward while keeping the elbows close to the torso, helping develop mass and overall arm strength."
+        }
+      ]
+    },
+    {
+      "machine": "Triceps Pushdown Machine",
+      "muscles": ["Triceps Brachii"],
+      "weights": [
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "32.5 Kg",
+        "40 Kg",
+        "47.5 Kg",
+        "55 Kg",
+        "62.5 Kg"
+      ],
+      "variations": [
         {
           "variation": "Straight bar pushdown",
           "muscles": ["Triceps Brachii"],
           "description": "allows heavier load and builds strength"
+        }
+      ]
+    },
+    {
+      "machine": "Shoulder Press Machine",
+      "muscles": ["Deltoids", "Triceps Brachii", "Trapezius (upper fibers)"],
+      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg"],
+      "variations": [
+        {
+          "variation": "Seated Shoulder Press",
+          "muscles": ["Anterior Deltoid", "Triceps Brachii"],
+          "description": "Performed in a seated position to isolate the shoulders and reduce lower body involvement."
+        }
+      ]
+    },
+    {
+      "machine": "Dumbbell",
+      "muscles": ["Biceps Brachii", "Brachialis", "Brachioradialis"],
+      "weights": ["1 Kg", "2 Kg", "2.5 Kg", "5 Kg", "7.5 Kg", "10 Kg"],
+      "variations": [
+        {
+          "variation": "Bicep Curls",
+          "muscles": ["Biceps Brachii", "Brachialis"],
+          "description": "A fundamental arm exercise that strengthens and builds the biceps by curling the dumbbells upward through controlled movement."
         }
       ]
     },
