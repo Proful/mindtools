@@ -49,28 +49,31 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .week-grid {
+         .week-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 8px;
         }
 
-        .day-box {
-            aspect-ratio: 1;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+        .day-column {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px;
-            position: relative;
+            gap: 4px;
         }
 
         .day-label {
             font-size: 0.75rem;
             color: #666;
             font-weight: 600;
-            z-index: 1;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            position: relative;
         }
 
         .day-box.completed::before {
@@ -84,7 +87,6 @@
                         linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
             border-radius: 8px;
         }
-
         .add-btn {
             width: 100%;
             padding: 16px;
@@ -515,8 +517,9 @@
             weekGrid.innerHTML = days.map((day, index) => {
                 const hasWorkout = workoutDates.has(weekDates[index]);
                 return `
-                    <div class="day-box ${hasWorkout ? 'completed' : ''}">
+                    <div class="day-column">
                         <div class="day-label">${day}</div>
+                        <div class="day-box ${hasWorkout ? 'completed' : ''}"></div>
                     </div>
                 `;
             }).join('');
