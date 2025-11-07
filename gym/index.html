@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -47,6 +47,42 @@
             padding: 24px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            position: relative;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .day-box.completed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
+            border-radius: 8px;
         }
 
         .add-btn {
@@ -287,6 +323,10 @@
             <button class="add-btn" onclick="openModal()">+ Add Workout</button>
         </div>
 
+        <div class="card">
+            <div class="week-grid" id="weekGrid"></div>
+        </div>
+
         <div class="workout-list" id="workoutList"></div>
     </div>
 
@@ -441,10 +481,45 @@
             try {
                 const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
                 displayWorkouts(workouts);
+                updateStreakTracker(workouts);
             } catch (error) {
                 console.error('Error loading workouts:', error);
                 displayWorkouts([]);
+                updateStreakTracker([]);
             }
+        }
+
+        function updateStreakTracker(workouts) {
+            const weekGrid = document.getElementById('weekGrid');
+            const days = ['M', 'T', 'W', 'T', 'F', 'S'];
+            
+            // Get current week's dates (Monday to Saturday)
+            const today = new Date();
+            const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+            
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + mondayOffset);
+            monday.setHours(0, 0, 0, 0);
+            
+            const weekDates = [];
+            for (let i = 0; i < 6; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date.toISOString().split('T')[0]);
+            }
+            
+            // Check which dates have workouts
+            const workoutDates = new Set(workouts.map(w => w.date));
+            
+            weekGrid.innerHTML = days.map((day, index) => {
+                const hasWorkout = workoutDates.has(weekDates[index]);
+                return `
+                    <div class="day-box ${hasWorkout ? 'completed' : ''}">
+                        <div class="day-label">${day}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function displayWorkouts(workouts) {
