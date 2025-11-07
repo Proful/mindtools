@@ -317,7 +317,7 @@
                     <label for="set">Set</label>
                     <select id="set" required>
                         <option value="">Select set</option>
-                        <option value="1">1</option>
+                        <option value="1" selected>1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                     </select>
@@ -325,7 +325,7 @@
 
                 <div class="form-group">
                     <label for="reps">Reps</label>
-                    <input type="number" id="reps" min="1" placeholder="Enter number of reps" required>
+                    <input type="number" id="reps" min="1" value="10" placeholder="Enter number of reps" required>
                 </div>
 
                 <div class="form-group">
@@ -393,6 +393,11 @@
                     option.textContent = variation.variation;
                     variationSelect.appendChild(option);
                 });
+ 
+              // Select the first option by default
+              if (variationSelect.options.length > 0) {
+                  variationSelect.selectedIndex = 1;
+              }
 
                 // Populate weights
                 weightSelect.innerHTML = '<option value="">Select weight</option>';
@@ -403,6 +408,11 @@
                     weightSelect.appendChild(option);
                 });
                 weightSelect.disabled = false;
+ 
+              // Select the first option by default
+              if (weightSelect.options.length > 0) {
+                  weightSelect.selectedIndex = 1;
+              }
             }
         }
 
