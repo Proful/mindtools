@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,22 +32,83 @@
             font-size: 28px;
         }
 
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
         .add-btn {
             width: 100%;
             padding: 16px;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
             border-radius: 12px;
             font-size: 18px;
             font-weight: 600;
-            color: #667eea;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
         }
 
         .add-btn:active {
-            transform: scale(0.98);
+            transform: translateY(0);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .day-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .day-box.completed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #10b981 calc(50% - 2px), #10b981 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #10b981 calc(50% - 2px), #10b981 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
+            border-radius: 8px;
+        }
+
+        .day-box.math::before {
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #3b82f6 calc(50% - 2px), #3b82f6 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #3b82f6 calc(50% - 2px), #3b82f6 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
+        }
+
+        .day-box.science::before {
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #f59e0b calc(50% - 2px), #f59e0b calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #f59e0b calc(50% - 2px), #f59e0b calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
         }
 
         .modal {
@@ -344,6 +405,20 @@
             opacity: 0.8;
         }
 
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
         @media (min-width: 768px) {
             h1 {
                 font-size: 36px;
@@ -361,7 +436,19 @@
     <div class="container">
         <h1>📚 Study Tracker</h1>
         
-        <button class="add-btn" onclick="openModal()">+ Add Study Session</button>
+        <div class="card">
+            <button class="add-btn" onclick="openModal()">+ Add Study Session</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 16px; color: #3b82f6; font-size: 1.2rem;">🔢 Math Streak</h3>
+            <div class="week-grid" id="weekGridMath"></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 16px; color: #f59e0b; font-size: 1.2rem;">🔬 Science Streak</h3>
+            <div class="week-grid" id="weekGridScience"></div>
+        </div>
         
         <div class="sessions-list" id="sessionsList"></div>
     </div>
@@ -608,6 +695,65 @@
             }
         }
 
+        function updateStreakTracker(sessions) {
+            const days = ['M', 'T', 'W', 'T', 'F', 'S'];
+            
+            // Get current week's dates (Monday to Saturday)
+            const today = new Date();
+            const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+            
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + mondayOffset);
+            monday.setHours(0, 0, 0, 0);
+            
+            const weekDates = [];
+            for (let i = 0; i < 6; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date.toLocaleDateString('en-CA')); // YYYY-MM-DD in local time
+            }
+            
+            // Separate sessions by category
+            const mathSessions = sessions.filter(s => s.category === 'Math');
+            const scienceSessions = sessions.filter(s => s.category === 'Science');
+            
+            // Check which dates have sessions
+            const mathDates = new Set(mathSessions.map(s => {
+                const sessionDate = new Date(s.date);
+                return sessionDate.toLocaleDateString('en-CA');
+            }));
+            
+            const scienceDates = new Set(scienceSessions.map(s => {
+                const sessionDate = new Date(s.date);
+                return sessionDate.toLocaleDateString('en-CA');
+            }));
+            
+            // Update Math tracker
+            const weekGridMath = document.getElementById('weekGridMath');
+            weekGridMath.innerHTML = days.map((day, index) => {
+                const hasSession = mathDates.has(weekDates[index]);
+                return `
+                    <div class="day-column">
+                        <div class="day-label">${day}</div>
+                        <div class="day-box ${hasSession ? 'completed math' : ''}"></div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update Science tracker
+            const weekGridScience = document.getElementById('weekGridScience');
+            weekGridScience.innerHTML = days.map((day, index) => {
+                const hasSession = scienceDates.has(weekDates[index]);
+                return `
+                    <div class="day-column">
+                        <div class="day-label">${day}</div>
+                        <div class="day-box ${hasSession ? 'completed science' : ''}"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function handleSubmit(event) {
             event.preventDefault();
             
@@ -621,6 +767,7 @@
                 id: Date.now(),
                 course: courseData.name,
                 category: courseData.category,
+                activity: courseData.category,
                 unit: unitData.unit,
                 unitTitle: unitData.title,
                 startTime,
@@ -641,6 +788,9 @@
         function loadSessions() {
             const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
             const sessionsList = document.getElementById('sessionsList');
+            
+            // Update streak tracker
+            updateStreakTracker(sessions);
             
             if (sessions.length === 0) {
                 sessionsList.innerHTML = '<div class="empty-state">No study sessions yet. Click "Add Study Session" to get started!</div>';
