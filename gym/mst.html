@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Streak</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .month-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #5568d3;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+        }
+
+        .day-number {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        .day-box.completed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom right, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%),
+                        linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
+            border-radius: 8px;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #ef4444;
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        .info-message {
+            text-align: center;
+            color: #666;
+            padding: 10px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="category-title" id="categoryTitle"></h1>
+            <div class="month-header">
+                <button class="nav-btn" onclick="changeMonth(-1)">Prev</button>
+                <div class="month-title" id="monthTitle"></div>
+                <button class="nav-btn" onclick="changeMonth(1)">Next</button>
+            </div>
+            <div class="month-grid" id="monthGrid"></div>
+            <div class="info-message" id="infoMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        class MonthlyStreakComponent {
+            constructor(config) {
+                this.config = {
+                    title: config.title || 'Activity',
+                    storageKey: config.storageKey || 'activities',
+                    dateField: config.dateField || 'date',
+                    filterFn: config.filterFn || null
+                };
+                this.currentDate = new Date();
+            }
+
+            changeMonth(offset) {
+                this.currentDate.setMonth(this.currentDate.getMonth() + offset);
+                this.update();
+            }
+
+            loadData() {
+                try {
+                    const data = JSON.parse(localStorage.getItem(this.config.storageKey) || '[]');
+                    return this.config.filterFn ? data.filter(this.config.filterFn) : data;
+                } catch (error) {
+                    console.error(`Error loading data from ${this.config.storageKey}:`, error);
+                    return [];
+                }
+            }
+
+            update() {
+                const data = this.loadData();
+                const monthGrid = document.getElementById('monthGrid');
+                const monthTitle = document.getElementById('monthTitle');
+                const categoryTitle = document.getElementById('categoryTitle');
+                const infoMessage = document.getElementById('infoMessage');
+                const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+                // Update category title
+                categoryTitle.textContent = this.config.title;
+
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+
+                monthTitle.textContent = `${monthNames[month]}, ${year}`;
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const firstDayOfWeek = firstDay.getDay();
+                const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+                const daysInMonth = lastDay.getDate();
+
+                // Extract dates from data
+                const completedDates = new Set(
+                    data.map(item => {
+                        const dateValue = item[this.config.dateField];
+                        if (dateValue instanceof Date) {
+                            return dateValue.toLocaleDateString('en-CA');
+                        }
+                        return dateValue;
+                    })
+                );
+
+                let html = '';
+
+                // Add day labels
+                for (let i = 0; i < 7; i++) {
+                    html += `
+                        <div class="day-column">
+                            <div class="day-label">${dayLabels[i]}</div>
+                        </div>
+                    `;
+                }
+
+                // Add empty cells before first day
+                for (let i = 0; i < startOffset; i++) {
+                    html += `
+                        <div class="day-column">
+                            <div class="day-box"></div>
+                        </div>
+                    `;
+                }
+
+                // Add days of month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dateString = date.toLocaleDateString('en-CA');
+                    const isCompleted = completedDates.has(dateString);
+
+                    html += `
+                        <div class="day-column">
+                            <div class="day-box ${isCompleted ? 'completed' : ''}">
+                                <div class="day-number">${day}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                monthGrid.innerHTML = html;
+
+                // Show info message
+                const completedCount = data.filter(item => {
+                    const dateValue = item[this.config.dateField];
+                    const dateString = dateValue instanceof Date ? dateValue.toLocaleDateString('en-CA') : dateValue;
+                    const itemDate = new Date(dateString);
+                    return itemDate.getMonth() === month && itemDate.getFullYear() === year;
+                }).length;
+
+                infoMessage.textContent = `${completedCount} day${completedCount !== 1 ? 's' : ''} completed this month`;
+            }
+        }
+
+        // Parse URL parameters
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                category: params.get('category') || 'Activity',
+                storageKey: params.get('storageKey') || 'activities',
+                dateField: params.get('dateField') || 'date'
+            };
+        }
+
+        // Initialize tracker
+        let tracker;
+
+        function initializeTracker() {
+            const params = getUrlParams();
+            
+            tracker = new MonthlyStreakComponent({
+                title: params.category,
+                storageKey: params.storageKey,
+                dateField: params.dateField
+            });
+
+            tracker.update();
+        }
+
+        function changeMonth(offset) {
+            if (tracker) {
+                tracker.changeMonth(offset);
+            }
+        }
+
+        // Initialize on load
+        initializeTracker();
+
+        // Example: To test, add some demo data
+        // Open console and run:
+        // localStorage.setItem('workouts', JSON.stringify([
+        //     {date: '2024-11-01', activity: 'gym'},
+        //     {date: '2024-11-05', activity: 'gym'},
+        //     {date: '2024-11-10', activity: 'gym'}
+        // ]));
+        // Then reload with: st.html?category=Gym&storageKey=workouts
+    </script>
+</body>
+</html>
