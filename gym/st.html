@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +28,15 @@
             border-radius: 16px;
             padding: 24px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-transform: capitalize;
         }
 
         .month-header {
@@ -112,6 +121,7 @@
 <body>
     <div class="container">
         <div class="card">
+            <h1 class="category-title" id="categoryTitle"></h1>
             <div class="month-header">
                 <button class="nav-btn" onclick="changeMonth(-1)">Prev</button>
                 <div class="month-title" id="monthTitle"></div>
@@ -123,11 +133,23 @@
 
     <script>
         let currentDate = new Date();
+        let currentCategory = 'gym';
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('category') || 'gym';
+        }
 
         function loadWorkouts() {
             try {
-                const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-                updateMonthlyTracker(workouts);
+                const allWorkouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                
+                if (currentCategory === 'gym') {
+                    categoryWorkouts = allWorkouts.filter(w => w.category === currentCategory || w.category === undefined);
+                } else {
+                    categoryWorkouts = allWorkouts.filter(w => w.category === currentCategory);
+                }
+                updateMonthlyTracker(categoryWorkouts);
             } catch (error) {
                 console.error('Error loading workouts:', error);
                 updateMonthlyTracker([]);
@@ -142,7 +164,11 @@
         function updateMonthlyTracker(workouts) {
             const monthGrid = document.getElementById('monthGrid');
             const monthTitle = document.getElementById('monthTitle');
+            const categoryTitle = document.getElementById('categoryTitle');
             const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            
+            // Update category title
+            categoryTitle.textContent = currentCategory;
             
             // Get first and last day of current month
             const year = currentDate.getFullYear();
@@ -203,6 +229,7 @@
         }
 
         // Initialize
+        currentCategory = getUrlParams();
         loadWorkouts();
     </script>
 </body>
