@@ -187,7 +187,7 @@
             // Add days of month
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const dateString = date.toISOString().split('T')[0];
+                const dateString = date.toLocaleDateString('en-CA');
                 const hasWorkout = workoutDates.has(dateString);
                 
                 html += `

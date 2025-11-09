@@ -511,7 +511,7 @@
             for (let i = 0; i < 6; i++) {
                 const date = new Date(monday);
                 date.setDate(monday.getDate() + i);
-                weekDates.push(date.toISOString().split('T')[0]);
+                weekDates.push(date.toLocaleDateString('en-CA')); // YYYY-MM-DD in local time
             }
             
             // Check which dates have workouts
@@ -605,7 +605,7 @@
         document.getElementById('workoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const date = new Date().toISOString().split('T')[0];
+            const date = new Date().toLocaleDateString('en-CA');
             const machine = document.getElementById('machine').value;
             const variation = document.getElementById('variation').value;
             const set = document.getElementById('set').value;
