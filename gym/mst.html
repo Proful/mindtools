@@ -167,6 +167,7 @@
             loadData() {
                 try {
                     const data = JSON.parse(localStorage.getItem(this.config.storageKey) || '[]');
+                    this.config.filterFn = (item) => item.activity === this.config.activity;
                     return this.config.filterFn ? data.filter(this.config.filterFn) : data;
                 } catch (error) {
                     console.error(`Error loading data from ${this.config.storageKey}:`, error);
