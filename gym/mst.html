@@ -123,14 +123,6 @@
             padding: 20px;
             font-weight: 600;
         }
-
-        .info-message {
-            text-align: center;
-            color: #666;
-            padding: 10px;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -143,7 +135,6 @@
                 <button class="nav-btn" onclick="changeMonth(1)">Next</button>
             </div>
             <div class="month-grid" id="monthGrid"></div>
-            <div class="info-message" id="infoMessage"></div>
         </div>
     </div>
 
@@ -183,7 +174,6 @@
                 const monthGrid = document.getElementById('monthGrid');
                 const monthTitle = document.getElementById('monthTitle');
                 const activityTitle = document.getElementById('activityTitle');
-                const infoMessage = document.getElementById('infoMessage');
                 const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
                 // Update activity title
@@ -250,15 +240,6 @@
 
                 monthGrid.innerHTML = html;
 
-                // Show info message
-                const completedCount = data.filter(item => {
-                    const dateValue = item[this.config.dateField];
-                    const dateString = dateValue instanceof Date ? dateValue.toLocaleDateString('en-CA') : dateValue;
-                    const itemDate = new Date(dateString);
-                    return itemDate.getMonth() === month && itemDate.getFullYear() === year;
-                }).length;
-
-                infoMessage.textContent = `${completedCount} day${completedCount !== 1 ? 's' : ''} completed this month`;
             }
         }
 
