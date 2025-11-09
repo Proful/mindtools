@@ -346,7 +346,7 @@
             <h3 style="margin-bottom: 16px; color: #667eea; font-size: 1.2rem;">💪 Gym Tracker</h3>
             <div class="week-grid" id="weekGridGym"></div>
             <div style="position: absolute; top: 3px; right: 10px;">
-                <a href="mst.html?category=gym&storageKey=workouts" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">📆</a>
+                <a href="mst.html?activity=gym&storageKey=workouts" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">📆</a>
             </div>
         </div>
 
@@ -354,7 +354,7 @@
             <h3 style="margin-bottom: 16px; color: #667eea; font-size: 1.2rem;">🚶 Walk Tracker</h3>
             <div class="week-grid" id="weekGridWalk"></div>
             <div style="position: absolute; top: 3px; right: 10px;">
-                <a href="mst.html?category=walk&storageKey=workouts" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">📆</a>
+                <a href="mst.html?activity=walk&storageKey=workouts" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">📆</a>
             </div>
         </div>
 
@@ -371,8 +371,8 @@
             
             <form id="workoutForm">
                 <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" required onchange="updateFormVisibility()">
+                    <label for="activity">Activity</label>
+                    <select id="activity" required onchange="updateFormVisibility()">
                         <option value="gym" selected>Gym</option>
                         <option value="walk">Walk</option>
                     </select>
@@ -449,11 +449,11 @@
         let machinesData = null;
 
         function updateFormVisibility() {
-            const category = document.getElementById('category').value;
+            const activity = document.getElementById('activity').value;
             const gymForm = document.getElementById('gymForm');
             const walkForm = document.getElementById('walkForm');
             
-            if (category === 'walk') {
+            if (activity === 'walk') {
                 gymForm.style.display = 'none';
                 walkForm.style.display = 'block';
                 
@@ -616,9 +616,9 @@
                 weekDates.push(date.toLocaleDateString('en-CA')); // YYYY-MM-DD in local time
             }
             
-            // Separate workouts by category
-            const gymWorkouts = workouts.filter(w => (w.category || 'gym') === 'gym');
-            const walkWorkouts = workouts.filter(w => w.category === 'walk');
+            // Separate workouts by activity
+            const gymWorkouts = workouts.filter(w => (w.activity || 'gym') === 'gym');
+            const walkWorkouts = workouts.filter(w => w.activity === 'walk');
             
             // Check which dates have workouts
             const gymWorkoutDates = new Set(gymWorkouts.map(w => w.date));
@@ -678,9 +678,9 @@
             workoutList.innerHTML = sortedDates.map(date => {
                 const dateWorkouts = groupedWorkouts[date];
                 
-                // Separate by category
-                const gymWorkouts = dateWorkouts.filter(w => (w.category || 'gym') === 'gym');
-                const walkWorkouts = dateWorkouts.filter(w => w.category === 'walk');
+                // Separate by activity
+                const gymWorkouts = dateWorkouts.filter(w => (w.activity || 'gym') === 'gym');
+                const walkWorkouts = dateWorkouts.filter(w => w.activity === 'walk');
                 
                 let workoutItems = '';
                 
@@ -750,16 +750,16 @@
             e.preventDefault();
 
             const date = new Date().toLocaleDateString('en-CA');
-            const category = document.getElementById('category').value;
+            const activity = document.getElementById('activity').value;
 
-            if (category === 'walk') {
+            if (activity === 'walk') {
                 // Save walk workout
                 const rounds = document.getElementById('rounds').value;
                 const description = document.getElementById('walkDescription').value;
                 
                 const workout = {
                     date: date,
-                    category: 'walk',
+                    activity: 'walk',
                     rounds: rounds,
                     description: description,
                     timestamp: Date.now()
@@ -779,7 +779,7 @@
                     for (let i = 1; i <= 3; i++) {
                         const workout = {
                             date: date,
-                            category: 'gym',
+                            activity: 'gym',
                             machine: machine,
                             variation: variation,
                             set: i.toString(),
@@ -793,7 +793,7 @@
                     // Create single workout
                     const workout = {
                         date: date,
-                        category: 'gym',
+                        activity: 'gym',
                         machine: machine,
                         variation: variation,
                         set: set,

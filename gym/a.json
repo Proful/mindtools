@@ -1,0 +1,761 @@
+[
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761271716706,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761274482892,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761274500060,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761274515168,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761277843605,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761277860220,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761277886900,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761277906174,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-24",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1761277925765,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "1",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761364838914,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "2",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761364853852,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "3",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761364867521,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "1",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761364882580,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "2",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761364898938,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "3",
+    "reps": "30",
+    "weight": "10 Kg",
+    "timestamp": 1761364927060,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "1",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761365103709,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "2",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761365158559,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-25",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "3",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761365181728,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "1",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709147473,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "2",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709161004,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "3",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709173675,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "1",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709213440,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "2",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709240775,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Underhand Reverse pulldown",
+    "set": "3",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1761709252845,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "1",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761709268513,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "2",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761709281008,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-29",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "3",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1761709294767,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Heightbar",
+    "variation": "Pull-up",
+    "set": "1",
+    "reps": "10",
+    "weight": "Bodyweight",
+    "timestamp": 1761797454648,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Heightbar",
+    "variation": "Pull-up",
+    "set": "2",
+    "reps": "10",
+    "weight": "Bodyweight",
+    "timestamp": 1761797454650,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Heightbar",
+    "variation": "Pull-up",
+    "set": "3",
+    "reps": "10",
+    "weight": "Bodyweight",
+    "timestamp": 1761797454651,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "1",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761797482450,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "2",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761797482451,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "3",
+    "reps": "10",
+    "weight": "10 Kg",
+    "timestamp": 1761797482452,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "1",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1761797509581,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "2",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1761797509582,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-10-30",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "3",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1761797509583,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "1",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762265401168,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "2",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762265401170,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "3",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762265401171,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265441698,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265441699,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265441700,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265482839,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265482841,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-04",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762265482842,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "1",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1762399435679,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "2",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1762399453712,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Lat Pulldown Machine",
+    "variation": "Wide-grip pulldown",
+    "set": "3",
+    "reps": "10",
+    "weight": "15 Kg",
+    "timestamp": 1762399470237,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "1",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1762399496743,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "2",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1762399496744,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Butterfly",
+    "variation": "Butterfly",
+    "set": "3",
+    "reps": "10",
+    "weight": "20 Kg",
+    "timestamp": 1762399496745,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Machine Press",
+    "variation": "Incline press",
+    "set": "1",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762399513594,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Machine Press",
+    "variation": "Incline press",
+    "set": "2",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762399513595,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-06",
+    "machine": "Chest Machine Press",
+    "variation": "Incline press",
+    "set": "3",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762399513596,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Barbell",
+    "variation": "Barbell Curl",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518011635,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Barbell",
+    "variation": "Barbell Curl",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518011637,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Barbell",
+    "variation": "Barbell Curl",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518011638,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "1",
+    "reps": "10",
+    "weight": "40 Kg",
+    "timestamp": 1762518066433,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "2",
+    "reps": "10",
+    "weight": "40 Kg",
+    "timestamp": 1762518066434,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Triceps Pushdown Machine",
+    "variation": "Straight bar pushdown",
+    "set": "3",
+    "reps": "10",
+    "weight": "40 Kg",
+    "timestamp": 1762518066435,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Shoulder Press Machine",
+    "variation": "Seated Shoulder Press",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518118917,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Shoulder Press Machine",
+    "variation": "Seated Shoulder Press",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518118919,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Shoulder Press Machine",
+    "variation": "Seated Shoulder Press",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762518118920,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Dumbbell",
+    "variation": "Bicep Curls",
+    "set": "1",
+    "reps": "10",
+    "weight": "2.5 Kg",
+    "timestamp": 1762518179708,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Dumbbell",
+    "variation": "Bicep Curls",
+    "set": "2",
+    "reps": "10",
+    "weight": "2.5 Kg",
+    "timestamp": 1762518179709,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-07",
+    "machine": "Dumbbell",
+    "variation": "Bicep Curls",
+    "set": "3",
+    "reps": "10",
+    "weight": "2.5 Kg",
+    "timestamp": 1762518179710,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574437223,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574437224,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Press",
+    "variation": "Both-leg press",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574437225,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "1",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762574449974,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "2",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762574449975,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Leg Extension",
+    "variation": "Both-leg extension",
+    "set": "3",
+    "reps": "10",
+    "weight": "5 Kg",
+    "timestamp": 1762574449976,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "1",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574457596,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "2",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574457598,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-08",
+    "machine": "Machine Squat",
+    "variation": "Front squat machine",
+    "set": "3",
+    "reps": "10",
+    "weight": "0 Kg",
+    "timestamp": 1762574457599,
+    "activity": "gym"
+  },
+  {
+    "date": "2025-11-09",
+    "category": "walk",
+    "rounds": "40",
+    "description": "",
+    "timestamp": 1762662750850,
+    "activity": "walk"
+  }
+]
+

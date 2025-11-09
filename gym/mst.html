@@ -30,7 +30,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .category-title {
+        .activity-title {
             text-align: center;
             font-size: 1.5rem;
             font-weight: 700;
@@ -136,7 +136,7 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1 class="category-title" id="categoryTitle"></h1>
+            <h1 class="activity-title" id="activityTitle"></h1>
             <div class="month-header">
                 <button class="nav-btn" onclick="changeMonth(-1)">Prev</button>
                 <div class="month-title" id="monthTitle"></div>
@@ -178,12 +178,12 @@
                 const data = this.loadData();
                 const monthGrid = document.getElementById('monthGrid');
                 const monthTitle = document.getElementById('monthTitle');
-                const categoryTitle = document.getElementById('categoryTitle');
+                const activityTitle = document.getElementById('activityTitle');
                 const infoMessage = document.getElementById('infoMessage');
                 const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-                // Update category title
-                categoryTitle.textContent = this.config.title;
+                // Update activity title
+                activityTitle.textContent = this.config.title;
 
                 const year = this.currentDate.getFullYear();
                 const month = this.currentDate.getMonth();
@@ -262,7 +262,7 @@
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                category: params.get('category') || 'Activity',
+                activity: params.get('activity') || 'Activity',
                 storageKey: params.get('storageKey') || 'activities',
                 dateField: params.get('dateField') || 'date'
             };
@@ -275,7 +275,7 @@
             const params = getUrlParams();
             
             tracker = new MonthlyStreakComponent({
-                title: params.category,
+                title: params.activity,
                 storageKey: params.storageKey,
                 dateField: params.dateField
             });
@@ -299,7 +299,7 @@
         //     {date: '2024-11-05', activity: 'gym'},
         //     {date: '2024-11-10', activity: 'gym'}
         // ]));
-        // Then reload with: st.html?category=Gym&storageKey=workouts
+        // Then reload with: st.html?activity=Gym&storageKey=workouts
     </script>
 </body>
 </html>
