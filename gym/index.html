@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -87,6 +87,23 @@
                         linear-gradient(to bottom left, transparent 0%, transparent calc(50% - 2px), #ef4444 calc(50% - 2px), #ef4444 calc(50% + 2px), transparent calc(50% + 2px), transparent 100%);
             border-radius: 8px;
         }
+
+        .workout-distance {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .workout-description {
+            font-size: 0.95rem;
+            color: #444;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            line-height: 1.5;
+        }
+
         .add-btn {
             width: 100%;
             padding: 16px;
@@ -326,10 +343,16 @@
         </div>
 
         <div class="card" style="position: relative;">
-            <div class="week-grid" id="weekGrid"></div>
+            <h3 style="margin-bottom: 16px; color: #667eea; font-size: 1.2rem;">💪 Gym Tracker</h3>
+            <div class="week-grid" id="weekGridGym"></div>
             <div style="position: absolute; top: 3px; right: 10px;">
                 <a href="st.html" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">📆</a>
             </div>
+        </div>
+
+        <div class="card" style="position: relative;">
+            <h3 style="margin-bottom: 16px; color: #667eea; font-size: 1.2rem;">🚶 Walk Tracker</h3>
+            <div class="week-grid" id="weekGridWalk"></div>
         </div>
 
         <div class="workout-list" id="workoutList"></div>
@@ -345,46 +368,73 @@
             
             <form id="workoutForm">
                 <div class="form-group">
-                    <label for="machine">Machine</label>
-                    <select id="machine" required onchange="updateVariations()">
-                        <option value="">Select machine</option>
+                    <label for="category">Category</label>
+                    <select id="category" required onchange="updateFormVisibility()">
+                        <option value="gym" selected>Gym</option>
+                        <option value="walk">Walk</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="variation">Variation</label>
-                    <select id="variation" required disabled>
-                        <option value="">Select variation</option>
-                    </select>
+                <div id="gymForm">
+                    <div class="form-group">
+                        <label for="machine">Machine</label>
+                        <select id="machine" onchange="updateVariations()">
+                            <option value="">Select machine</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="variation">Variation</label>
+                        <select id="variation" disabled>
+                            <option value="">Select variation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="set">Set</label>
+                        <select id="set">
+                            <option value="">Select set</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reps">Reps</label>
+                        <input type="number" id="reps" min="1" value="10" placeholder="Enter number of reps">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">Weight</label>
+                        <select id="weight" disabled>
+                            <option value="">Select weight</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="sameRepsAllSets" checked style="width: auto; margin-right: 8px; cursor: pointer;">
+                            <span>Same reps for all 3 sets</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="set">Set</label>
-                    <select id="set" required>
-                        <option value="">Select set</option>
-                        <option value="1" selected>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div>
+                <div id="walkForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="rounds">Rounds</label>
+                        <input type="number" id="rounds" min="1" value="1" placeholder="Enter number of rounds">
+                    </div>
 
-                <div class="form-group">
-                    <label for="reps">Reps</label>
-                    <input type="number" id="reps" min="1" value="10" placeholder="Enter number of reps" required>
-                </div>
+                    <div class="form-group">
+                        <label for="distance">Distance</label>
+                        <input type="text" id="distance" readonly style="background: #f8f9fa;">
+                    </div>
 
-                <div class="form-group">
-                    <label for="weight">Weight</label>
-                    <select id="weight" required disabled>
-                        <option value="">Select weight</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="checkbox" id="sameRepsAllSets" checked style="width: auto; margin-right: 8px; cursor: pointer;">
-                        <span>Same reps for all 3 sets</span>
-                    </label>
+                    <div class="form-group">
+                        <label for="walkDescription">Description</label>
+                        <textarea id="walkDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; font-family: inherit; resize: vertical;" placeholder="Add notes about your walk..."></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-btn">Submit</button>
@@ -394,6 +444,55 @@
 
     <script>
         let machinesData = null;
+
+        function updateFormVisibility() {
+            const category = document.getElementById('category').value;
+            const gymForm = document.getElementById('gymForm');
+            const walkForm = document.getElementById('walkForm');
+            
+            if (category === 'walk') {
+                gymForm.style.display = 'none';
+                walkForm.style.display = 'block';
+                
+                // Remove required from gym fields
+                document.getElementById('machine').removeAttribute('required');
+                document.getElementById('variation').removeAttribute('required');
+                document.getElementById('set').removeAttribute('required');
+                document.getElementById('reps').removeAttribute('required');
+                document.getElementById('weight').removeAttribute('required');
+                
+                // Add required to walk fields
+                document.getElementById('rounds').setAttribute('required', 'required');
+            } else {
+                gymForm.style.display = 'block';
+                walkForm.style.display = 'none';
+                
+                // Add required to gym fields
+                document.getElementById('machine').setAttribute('required', 'required');
+                document.getElementById('variation').setAttribute('required', 'required');
+                document.getElementById('set').setAttribute('required', 'required');
+                document.getElementById('reps').setAttribute('required', 'required');
+                document.getElementById('weight').setAttribute('required', 'required');
+                
+                // Remove required from walk fields
+                document.getElementById('rounds').removeAttribute('required');
+            }
+        }
+
+        // Update distance when rounds change
+        document.addEventListener('DOMContentLoaded', function() {
+            const roundsInput = document.getElementById('rounds');
+            const distanceInput = document.getElementById('distance');
+            
+            function updateDistance() {
+                const rounds = parseInt(roundsInput.value) || 0;
+                const distance = rounds * 25;
+                distanceInput.value = distance + 'm';
+            }
+            
+            roundsInput.addEventListener('input', updateDistance);
+            updateDistance();
+        });
 
         // Load JSON data
         async function loadData() {
@@ -470,6 +569,7 @@
             document.getElementById('workoutForm').reset();
             document.getElementById('variation').disabled = true;
             document.getElementById('weight').disabled = true;
+            updateFormVisibility();
         }
 
         function saveWorkout(workout) {
@@ -495,7 +595,6 @@
         }
 
         function updateStreakTracker(workouts) {
-            const weekGrid = document.getElementById('weekGrid');
             const days = ['M', 'T', 'W', 'T', 'F', 'S'];
             
             // Get current week's dates (Monday to Saturday)
@@ -514,11 +613,30 @@
                 weekDates.push(date.toLocaleDateString('en-CA')); // YYYY-MM-DD in local time
             }
             
-            // Check which dates have workouts
-            const workoutDates = new Set(workouts.map(w => w.date));
+            // Separate workouts by category
+            const gymWorkouts = workouts.filter(w => (w.category || 'gym') === 'gym');
+            const walkWorkouts = workouts.filter(w => w.category === 'walk');
             
-            weekGrid.innerHTML = days.map((day, index) => {
-                const hasWorkout = workoutDates.has(weekDates[index]);
+            // Check which dates have workouts
+            const gymWorkoutDates = new Set(gymWorkouts.map(w => w.date));
+            const walkWorkoutDates = new Set(walkWorkouts.map(w => w.date));
+            
+            // Update gym tracker
+            const weekGridGym = document.getElementById('weekGridGym');
+            weekGridGym.innerHTML = days.map((day, index) => {
+                const hasWorkout = gymWorkoutDates.has(weekDates[index]);
+                return `
+                    <div class="day-column">
+                        <div class="day-label">${day}</div>
+                        <div class="day-box ${hasWorkout ? 'completed' : ''}"></div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update walk tracker
+            const weekGridWalk = document.getElementById('weekGridWalk');
+            weekGridWalk.innerHTML = days.map((day, index) => {
+                const hasWorkout = walkWorkoutDates.has(weekDates[index]);
                 return `
                     <div class="day-column">
                         <div class="day-label">${day}</div>
@@ -557,35 +675,58 @@
             workoutList.innerHTML = sortedDates.map(date => {
                 const dateWorkouts = groupedWorkouts[date];
                 
-                // Group by variation
-                const groupedByVariation = {};
-                dateWorkouts.forEach(workout => {
-                    const key = `${workout.variation}|${workout.machine}`;
-                    if (!groupedByVariation[key]) {
-                        groupedByVariation[key] = [];
-                    }
-                    groupedByVariation[key].push(workout);
-                });
+                // Separate by category
+                const gymWorkouts = dateWorkouts.filter(w => (w.category || 'gym') === 'gym');
+                const walkWorkouts = dateWorkouts.filter(w => w.category === 'walk');
+                
+                let workoutItems = '';
+                
+                // Display gym workouts
+                if (gymWorkouts.length > 0) {
+                    // Group by variation
+                    const groupedByVariation = {};
+                    gymWorkouts.forEach(workout => {
+                        const key = `${workout.variation}|${workout.machine}`;
+                        if (!groupedByVariation[key]) {
+                            groupedByVariation[key] = [];
+                        }
+                        groupedByVariation[key].push(workout);
+                    });
 
-                const workoutItems = Object.keys(groupedByVariation).map(key => {
-                    const [variation, machine] = key.split('|');
-                    const sets = groupedByVariation[key];
-                    const currentUrl = window.location.href.split('?')[0];
-                    const variationUrl = currentUrl + "/machine.html?variation=" + variation;
-                    console.log("variation: ", variation);
-                    
-                    return `
-                        <div class="workout-item">
-<div class="workout-variation"><a href="${variationUrl}">${variation}</a></div>
-                            <div class="workout-machine">${machine}</div>
-                            <div class="workout-sets">
-                                ${sets.map(set => 
-                                    `<div class="workout-set">Set ${set.set} × ${set.reps} reps, ${set.weight}</div>`
-                                ).join('')}
+                    workoutItems += Object.keys(groupedByVariation).map(key => {
+                        const [variation, machine] = key.split('|');
+                        const sets = groupedByVariation[key];
+                        const currentUrl = window.location.href.split('?')[0];
+                        const variationUrl = currentUrl + "/machine.html?variation=" + variation;
+                        
+                        return `
+                            <div class="workout-item">
+                                <div class="workout-variation"><a href="${variationUrl}">${variation}</a></div>
+                                <div class="workout-machine">${machine}</div>
+                                <div class="workout-sets">
+                                    ${sets.map(set => 
+                                        `<div class="workout-set">Set ${set.set} × ${set.reps} reps, ${set.weight}</div>`
+                                    ).join('')}
+                                </div>
                             </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                }
+                
+                // Display walk workouts
+                if (walkWorkouts.length > 0) {
+                    workoutItems += walkWorkouts.map(workout => {
+                        const rounds = workout.rounds || 0;
+                        const distance = rounds * 25;
+                        return `
+                            <div class="workout-item">
+                                <div class="workout-variation">🚶 Walk</div>
+                                <div class="workout-distance">${rounds} rounds • ${distance}m</div>
+                                ${workout.description ? `<div class="workout-description">${workout.description}</div>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                }
 
                 return `
                     <div class="workout-group">
@@ -606,39 +747,59 @@
             e.preventDefault();
 
             const date = new Date().toLocaleDateString('en-CA');
-            const machine = document.getElementById('machine').value;
-            const variation = document.getElementById('variation').value;
-            const set = document.getElementById('set').value;
-            const reps = document.getElementById('reps').value;
-            const weight = document.getElementById('weight').value;
-            const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
+            const category = document.getElementById('category').value;
 
-            if (sameRepsAllSets) {
-                // Create 3 workouts for all sets
-                for (let i = 1; i <= 3; i++) {
-                    const workout = {
-                        date: date,
-                        machine: machine,
-                        variation: variation,
-                        set: i.toString(),
-                        reps: reps,
-                        weight: weight,
-                        timestamp: Date.now() + i
-                    };
-                    saveWorkout(workout);
-                }
-            } else {
-                // Create single workout
+            if (category === 'walk') {
+                // Save walk workout
+                const rounds = document.getElementById('rounds').value;
+                const description = document.getElementById('walkDescription').value;
+                
                 const workout = {
                     date: date,
-                    machine: machine,
-                    variation: variation,
-                    set: set,
-                    reps: reps,
-                    weight: weight,
+                    category: 'walk',
+                    rounds: rounds,
+                    description: description,
                     timestamp: Date.now()
                 };
                 saveWorkout(workout);
+            } else {
+                // Save gym workout
+                const machine = document.getElementById('machine').value;
+                const variation = document.getElementById('variation').value;
+                const set = document.getElementById('set').value;
+                const reps = document.getElementById('reps').value;
+                const weight = document.getElementById('weight').value;
+                const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
+
+                if (sameRepsAllSets) {
+                    // Create 3 workouts for all sets
+                    for (let i = 1; i <= 3; i++) {
+                        const workout = {
+                            date: date,
+                            category: 'gym',
+                            machine: machine,
+                            variation: variation,
+                            set: i.toString(),
+                            reps: reps,
+                            weight: weight,
+                            timestamp: Date.now() + i
+                        };
+                        saveWorkout(workout);
+                    }
+                } else {
+                    // Create single workout
+                    const workout = {
+                        date: date,
+                        category: 'gym',
+                        machine: machine,
+                        variation: variation,
+                        set: set,
+                        reps: reps,
+                        weight: weight,
+                        timestamp: Date.now()
+                    };
+                    saveWorkout(workout);
+                }
             }
 
             loadWorkouts();
