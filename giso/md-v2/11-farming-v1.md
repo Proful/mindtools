@@ -212,7 +212,7 @@ Farmers use **manure, fertilizers, and crop rotation** to maintain soil fertilit
 
 ## **Section 10: Sustainable Agriculture**
 
-* Reducing chemical use.
+* Reducing chemical use
 * Practicing crop rotation.
 * Conserving water.
 * Protecting biodiversity.
