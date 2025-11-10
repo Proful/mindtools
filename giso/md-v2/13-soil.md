@@ -9,6 +9,11 @@ https://youtube.com/watch?v=JdDOv0HXDpw
 
 https://youtube.com/watch?v=xWWOHttrkWI
 
+
+https://youtube.com/watch?v=278gWeNrCxk
+
+
+
 Soil is one of Earth’s most important natural resources. Without soil, life on land would not exist as we know it. Plants need soil to grow, animals depend on plants for food, and humans depend on both plants and animals. Soil gives us crops, forests, and the materials we need to survive.
 
 However, soil does not form overnight. It takes **thousands of years** for rocks to break down into the fine particles that make up soil. Once formed, soil can easily be lost or damaged by natural processes like wind and water, or by human activities such as deforestation and overgrazing.
