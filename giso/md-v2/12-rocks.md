@@ -1,5 +1,8 @@
 #  **Rocks and Minerals**
 
+https://youtube.com/watch?v=rmH4W92eHVM
+
+
 The Earth we live on is made up of different layers. The outermost solid part is called the **crust**. This crust is made up of **rocks**. If you look around — at mountains, valleys, roads, and buildings — you’ll find that rocks are everywhere! But what are rocks really made of?
 
 ## What Are Rocks?
