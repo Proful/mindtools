@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P localStorage Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .connection-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .connection-panel .panel-title {
+            color: white;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .connection-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .peer-id-display {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .peer-id-text {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn-white {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-white:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-transfer {
+            background: #8b5cf6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-transfer:hover {
+            background: #7c3aed;
+        }
+
+        input[type="text"] {
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            flex: 1;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: white;
+        }
+
+        .keys-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .keys-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .key-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-item:hover {
+            background: #f3f4f6;
+            transform: translateX(4px);
+        }
+
+        .key-item.active {
+            background: #dbeafe;
+            border-left: 3px solid #667eea;
+        }
+
+        .key-item.peer-key {
+            background: #fef3c7;
+        }
+
+        .key-item.peer-key:hover {
+            background: #fde68a;
+        }
+
+        .key-item.peer-key.active {
+            background: #fcd34d;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .key-name {
+            font-weight: 500;
+            color: #333;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .key-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.875rem;
+        }
+
+        textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 200px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            opacity: 0.5;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .code-block {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            word-break: break-all;
+            margin: 1rem 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .keys-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .keys-list {
+                max-height: 500px;
+            }
+
+            textarea {
+                min-height: 300px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗄️ P2P localStorage Manager</h1>
+            <p class="subtitle">Manage and sync localStorage with WebRTC peer connections</p>
+        </header>
+
+        <div class="panel connection-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Connection</h2>
+                <div class="connection-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Disconnected</span>
+                </div>
+            </div>
+            <div class="connection-info">
+                <div class="info-group">
+                    <div class="info-label">Your Peer ID</div>
+                    <div class="peer-id-display">
+                        <div class="peer-id-text" id="myPeerId">Connecting...</div>
+                        <button class="btn btn-white" onclick="app.copyPeerId()">📋 Copy</button>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">Connect to Peer</div>
+                    <div class="peer-id-display">
+                        <input type="text" id="remotePeerId" placeholder="Enter peer ID">
+                        <button class="btn btn-white" onclick="app.connectToPeer()">🔗 Connect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Storage Keys</h2>
+                    <button class="btn btn-primary" onclick="app.refreshKeys()">↻ Refresh</button>
+                </div>
+                <div class="keys-container">
+                    <div>
+                        <h3 style="font-size: 1rem; color: #667eea; margin-bottom: 0.75rem;">My Keys (<span id="myKeyCount">0</span>)</h3>
+                        <div id="myKeysList" class="keys-list"></div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1rem; color: #f59e0b; margin-bottom: 0.75rem;">Peer Keys (<span id="peerKeyCount">0</span>)</h3>
+                        <div id="peerKeysList" class="keys-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Editor</h2>
+                </div>
+                <div id="editorContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Confirm Action</div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeModal()">Cancel</button>
+                <button class="btn btn-success" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            peer: null,
+            connection: null,
+            myPeerId: null,
+            currentKey: null,
+            currentSource: 'local', // 'local' or 'peer'
+            peerKeys: {},
+
+            init() {
+                this.initPeer();
+                this.refreshKeys();
+                this.showEmptyEditor();
+            },
+
+            initPeer() {
+                this.peer = new Peer();
+
+                this.peer.on('open', (id) => {
+                    this.myPeerId = id;
+                    document.getElementById('myPeerId').textContent = id;
+                    this.showMessage('Peer initialized. Share your ID to connect!', 'success');
+                });
+
+                this.peer.on('connection', (conn) => {
+                    this.handleConnection(conn);
+                });
+
+                this.peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    this.showMessage('Connection error: ' + err.message, 'error');
+                });
+            },
+
+            handleConnection(conn) {
+                this.connection = conn;
+
+                conn.on('open', () => {
+                    this.updateConnectionStatus(true);
+                    this.showMessage('Connected to peer!', 'success');
+                    this.sendKeys();
+                });
+
+                conn.on('data', (data) => {
+                    this.handleData(data);
+                });
+
+                conn.on('close', () => {
+                    this.updateConnectionStatus(false);
+                    this.showMessage('Peer disconnected', 'error');
+                    this.peerKeys = {};
+                    this.refreshKeys();
+                });
+            },
+
+            connectToPeer() {
+                const remotePeerId = document.getElementById('remotePeerId').value.trim();
+                
+                if (!remotePeerId) {
+                    alert('Please enter a peer ID');
+                    return;
+                }
+
+                if (remotePeerId === this.myPeerId) {
+                    alert('Cannot connect to yourself');
+                    return;
+                }
+
+                const conn = this.peer.connect(remotePeerId);
+                this.handleConnection(conn);
+            },
+
+            updateConnectionStatus(connected) {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                
+                if (connected) {
+                    statusDot.classList.add('connected');
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusDot.classList.remove('connected');
+                    statusText.textContent = 'Disconnected';
+                }
+            },
+
+            sendKeys() {
+                if (!this.connection) return;
+
+                const keys = Object.keys(localStorage);
+                const keysData = {};
+                
+                keys.forEach(key => {
+                    keysData[key] = localStorage.getItem(key);
+                });
+
+                this.connection.send({
+                    type: 'keys',
+                    data: keysData
+                });
+            },
+
+            handleData(message) {
+                switch (message.type) {
+                    case 'keys':
+                        this.peerKeys = message.data;
+                        this.refreshKeys();
+                        break;
+                    case 'update':
+                        this.showConfirmation(
+                            'Peer Update Request',
+                            `Peer wants to update your key "<strong>${this.escapeHtml(message.key)}</strong>"`,
+                            message.data,
+                            () => {
+                                localStorage.setItem(message.key, message.data);
+                                this.showMessage('Key updated from peer', 'success');
+                                this.refreshKeys();
+                                if (this.currentKey === message.key && this.currentSource === 'local') {
+                                    this.selectKey(message.key, 'local');
+                                }
+                            }
+                        );
+                        break;
+                }
+            },
+
+            transferToPeer(key) {
+                if (!this.connection) {
+                    alert('Not connected to any peer');
+                    return;
+                }
+
+                const value = localStorage.getItem(key);
+                this.showConfirmation(
+                    'Transfer to Peer',
+                    `Send "<strong>${this.escapeHtml(key)}</strong>" to peer?`,
+                    value,
+                    () => {
+                        this.connection.send({
+                            type: 'update',
+                            key: key,
+                            data: value
+                        });
+                        this.showMessage('Data sent to peer', 'success');
+                    }
+                );
+            },
+
+            transferFromPeer(key) {
+                if (!this.connection) {
+                    alert('Not connected to any peer');
+                    return;
+                }
+
+                const value = this.peerKeys[key];
+                this.showConfirmation(
+                    'Import from Peer',
+                    `Import "<strong>${this.escapeHtml(key)}</strong>" from peer to your localStorage?`,
+                    value,
+                    () => {
+                        localStorage.setItem(key, value);
+                        this.showMessage('Data imported from peer', 'success');
+                        this.refreshKeys();
+                    }
+                );
+            },
+
+            updatePeerKey(key, value) {
+                if (!this.connection) {
+                    alert('Not connected to any peer');
+                    return;
+                }
+
+                this.showConfirmation(
+                    'Update Peer Data',
+                    `Send updated value for "<strong>${this.escapeHtml(key)}</strong>" to peer?`,
+                    value,
+                    () => {
+                        this.connection.send({
+                            type: 'update',
+                            key: key,
+                            data: value
+                        });
+                        this.showMessage('Update sent to peer', 'success');
+                    }
+                );
+            },
+
+            showConfirmation(title, message, dataPreview, onConfirm) {
+                const modal = document.getElementById('confirmModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+                const confirmBtn = document.getElementById('modalConfirm');
+
+                modalTitle.textContent = title;
+                
+                let previewText = dataPreview;
+                if (dataPreview.length > 200) {
+                    previewText = dataPreview.substring(0, 200) + '...';
+                }
+
+                modalBody.innerHTML = `
+                    <p>${message}</p>
+                    <div class="code-block">${this.escapeHtml(previewText)}</div>
+                `;
+
+                confirmBtn.onclick = () => {
+                    onConfirm();
+                    this.closeModal();
+                };
+
+                modal.classList.add('show');
+            },
+
+            closeModal() {
+                document.getElementById('confirmModal').classList.remove('show');
+            },
+
+            refreshKeys() {
+                this.refreshMyKeys();
+                this.refreshPeerKeys();
+            },
+
+            refreshMyKeys() {
+                const keysList = document.getElementById('myKeysList');
+                const keys = Object.keys(localStorage).sort();
+                const keyCount = document.getElementById('myKeyCount');
+                keyCount.textContent = keys.length;
+
+                if (keys.length === 0) {
+                    keysList.innerHTML = `
+                        <div class="empty-state">
+                            <p style="font-size: 0.875rem;">No local keys</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                keysList.innerHTML = keys.map(key => `
+                    <div class="key-item ${this.currentKey === key && this.currentSource === 'local' ? 'active' : ''}" 
+                         onclick="app.selectKey('${key.replace(/'/g, "\\'")}', 'local')">
+                        <span class="key-name">${this.escapeHtml(key)}</span>
+                        <div class="key-actions">
+                            ${this.connection ? `<button class="btn btn-transfer" onclick="event.stopPropagation(); app.transferToPeer('${key.replace(/'/g, "\\'")}')">→ Send</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            refreshPeerKeys() {
+                const keysList = document.getElementById('peerKeysList');
+                const keys = Object.keys(this.peerKeys).sort();
+                const keyCount = document.getElementById('peerKeyCount');
+                keyCount.textContent = keys.length;
+
+                if (keys.length === 0) {
+                    keysList.innerHTML = `
+                        <div class="empty-state">
+                            <p style="font-size: 0.875rem;">No peer keys</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                keysList.innerHTML = keys.map(key => `
+                    <div class="key-item peer-key ${this.currentKey === key && this.currentSource === 'peer' ? 'active' : ''}" 
+                         onclick="app.selectKey('${key.replace(/'/g, "\\'")}', 'peer')">
+                        <span class="key-name">${this.escapeHtml(key)}</span>
+                        <div class="key-actions">
+                            <button class="btn btn-transfer" onclick="event.stopPropagation(); app.transferFromPeer('${key.replace(/'/g, "\\'")}')">← Import</button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            selectKey(key, source) {
+                this.currentKey = key;
+                this.currentSource = source;
+                this.refreshKeys();
+                this.showEditor(key, source);
+            },
+
+            showEmptyEditor() {
+                const editorContent = document.getElementById('editorContent');
+                editorContent.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <p>Select a key to view and edit</p>
+                    </div>
+                    <div class="input-group">
+                        <label>Create New Key</label>
+                        <input type="text" id="newKeyInput" placeholder="Enter key name" style="color: #333; background: white; border-color: #e5e7eb;">
+                        <button class="btn btn-success" onclick="app.createNew()">Create</button>
+                    </div>
+                `;
+            },
+
+            showEditor(key, source) {
+                const value = source === 'local' ? localStorage.getItem(key) : this.peerKeys[key];
+                let formattedValue = value;
+                let isJson = false;
+
+                try {
+                    const parsed = JSON.parse(value);
+                    formattedValue = JSON.stringify(parsed, null, 2);
+                    isJson = true;
+                } catch (e) {
+                    formattedValue = value;
+                }
+
+                const isPeer = source === 'peer';
+                const editorContent = document.getElementById('editorContent');
+                
+                editorContent.innerHTML = `
+                    <div id="messageArea"></div>
+                    <div class="editor-container">
+                        <div class="input-group">
+                            <label>Key ${isPeer ? '(Peer)' : '(Local)'}</label>
+                            <input type="text" id="keyInput" value="${this.escapeHtml(key)}" readonly style="background: ${isPeer ? '#fef3c7' : '#f9fafb'};">
+                        </div>
+                        <div class="input-group">
+                            <label>Value ${isJson ? '(JSON)' : '(Text)'}</label>
+                            <textarea id="valueInput" ${isPeer ? 'readonly' : ''}>${this.escapeHtml(formattedValue)}</textarea>
+                        </div>
+                        <div class="editor-actions">
+                            ${!isPeer ? `
+                                <button class="btn btn-success" onclick="app.saveValue()">💾 Save Local</button>
+                                <button class="btn btn-secondary" onclick="app.formatJson()">✨ Format JSON</button>
+                                ${this.connection ? `<button class="btn btn-primary" onclick="app.transferToPeer('${key.replace(/'/g, "\\'")}')">→ Send to Peer</button>` : ''}
+                                <button class="btn btn-danger" onclick="app.deleteKey('${key.replace(/'/g, "\\'")}')">🗑️ Delete</button>
+                            ` : `
+                                <button class="btn btn-success" onclick="app.transferFromPeer('${key.replace(/'/g, "\\'")}')">← Import to Local</button>
+                                ${this.connection ? `<button class="btn btn-primary" onclick="app.editAndSendToPeer()">✏️ Edit & Send to Peer</button>` : ''}
+                            `}
+                        </div>
+                    </div>
+                `;
+            },
+
+            editAndSendToPeer() {
+                const valueInput = document.getElementById('valueInput');
+                valueInput.removeAttribute('readonly');
+                valueInput.focus();
+                
+                const editorActions = document.querySelector('.editor-actions');
+                editorActions.innerHTML = `
+                    <button class="btn btn-success" onclick="app.updatePeerKey('${this.currentKey.replace(/'/g, "\\'")}', document.getElementById('valueInput').value)">📤 Send Update to Peer</button>
+                    <button class="btn btn-secondary" onclick="app.selectKey('${this.currentKey.replace(/'/g, "\\'")}', 'peer')">Cancel</button>
+                `;
+            },
+
+            createNew() {
+                const input = document.getElementById('newKeyInput');
+                const key = input.value.trim();
+                
+                if (!key) {
+                    alert('Please enter a key name');
+                    return;
+                }
+
+                if (localStorage.getItem(key) !== null) {
+                    alert('Key already exists');
+                    return;
+                }
+
+                localStorage.setItem(key, '{}');
+                this.selectKey(key, 'local');
+                this.sendKeys();
+            },
+
+            saveValue() {
+                const valueInput = document.getElementById('valueInput');
+                const value = valueInput.value;
+                const messageArea = document.getElementById('messageArea');
+
+                try {
+                    localStorage.setItem(this.currentKey, value);
+                    messageArea.innerHTML = '<div class="success">✓ Saved successfully!</div>';
+                    setTimeout(() => messageArea.innerHTML = '', 3000);
+                    this.refreshKeys();
+                    this.sendKeys();
+                } catch (e) {
+                    messageArea.innerHTML = `<div class="error">Error: ${this.escapeHtml(e.message)}</div>`;
+                }
+            },
+
+            formatJson() {
+                const valueInput = document.getElementById('valueInput');
+                const messageArea = document.getElementById('messageArea');
+                
+                try {
+                    const parsed = JSON.parse(valueInput.value);
+                    valueInput.value = JSON.stringify(parsed, null, 2);
+                    messageArea.innerHTML = '<div class="success">✓ JSON formatted!</div>';
+                    setTimeout(() => messageArea.innerHTML = '', 3000);
+                } catch (e) {
+                    messageArea.innerHTML = `<div class="error">Invalid JSON: ${this.escapeHtml(e.message)}</div>`;
+                }
+            },
+
+            deleteKey(key) {
+                if (confirm(`Delete "${key}"?`)) {
+                    localStorage.removeItem(key);
+                    this.current

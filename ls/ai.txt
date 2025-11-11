@@ -6,3 +6,13 @@
 - edit json value as easily as possible 
 - build a simple json value editor 
 - allow to save updated value
+
+  --- 
+
+  - improve 
+  - use webrtc technology. use peerjs lib and free peerjs cloud server for initiation
+  - show peer keys to  host and vice versa 
+  - on clicking the key, allow the transfer of value
+  - allow to update value of peer by host and vice versa
+  - allow to save updated data from peer to host
+  - prompt for confirmation
