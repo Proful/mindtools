@@ -3,7 +3,7 @@
     {
       "machine": "Leg Press",
       "muscles": ["Quadriceps", "Hamstrings", "Glutes"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg"],
       "variations": [
         {
           "variation": "Both-leg press",
@@ -16,7 +16,18 @@
     {
       "machine": "Leg Extension",
       "muscles": ["Quadriceps"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": [
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "30 Kg",
+        "37.5 Kg",
+        "45 Kg",
+        "60 Kg",
+        "70 Kg"
+      ],
       "variations": [
         {
           "variation": "Both-leg extension",
@@ -29,7 +40,7 @@
     {
       "machine": "Machine Squat",
       "muscles": ["Quadriceps", "Glutes", "Hamstrings"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg"],
       "variations": [
         {
           "variation": "Front squat machine",
@@ -197,7 +208,7 @@
     {
       "machine": "Wrist Curl Machine",
       "muscles": ["Forearm Flexors", "Forearm Extensors"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg"],
       "variations": [
         {
           "variation": "Reverse wrist curl",
