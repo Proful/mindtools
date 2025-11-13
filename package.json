@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",
-    "nanoid": "^3.3.7"
+    "nanoid": "^3.3.7",
+    "peerjs": "^1.5.5"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
