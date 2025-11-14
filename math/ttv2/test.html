@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PeerJS WebRTC Test</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.3/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -216,7 +216,7 @@
         <h2>📡 Connection Setup</h2>
         <div class="input-group">
           <label for="serverHost">Server Host:</label>
-          <input type="text" id="serverHost" value="mindtools.vercel.app" placeholder="localhost or your-app.vercel.app">
+          <input type="text" id="serverHost" value="localhost" placeholder="localhost or your-app.vercel.app">
         </div>
         <div class="input-group">
           <label for="serverPort">Server Port:</label>
@@ -298,7 +298,7 @@
 
       const config = {
         host: host,
-        path: '/api',
+        path: '/peerjs',
         debug: 2
       };
 
