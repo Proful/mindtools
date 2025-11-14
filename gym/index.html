@@ -400,12 +400,19 @@
                             <option value="1" selected>1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="reps">Reps</label>
-                        <input type="number" id="reps" min="1" value="10" placeholder="Enter number of reps">
+                        <input type="number" id="reps" min="1" value="5" placeholder="Enter number of reps">
                     </div>
 
                     <div class="form-group">
@@ -417,9 +424,14 @@
 
                     <div class="form-group">
                         <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="sameRepsAllSets" checked style="width: auto; margin-right: 8px; cursor: pointer;">
+                            <input type="checkbox" id="sameRepsAllSets" style="width: auto; margin-right: 8px; cursor: pointer;">
                             <span>Same reps for all 3 sets</span>
                         </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gymDescription">Description</label>
+                        <textarea id="gymDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; font-family: inherit; resize: vertical;" placeholder="Add notes about your walk..."></textarea>
                     </div>
                 </div>
 
@@ -773,6 +785,7 @@
                 const reps = document.getElementById('reps').value;
                 const weight = document.getElementById('weight').value;
                 const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
+                const description = document.getElementById('gymDescription').value;
 
                 if (sameRepsAllSets) {
                     // Create 3 workouts for all sets
@@ -785,6 +798,7 @@
                             set: i.toString(),
                             reps: reps,
                             weight: weight,
+                            description,
                             timestamp: Date.now() + i
                         };
                         saveWorkout(workout);
@@ -799,6 +813,7 @@
                         set: set,
                         reps: reps,
                         weight: weight,
+                        description,
                         timestamp: Date.now()
                     };
                     saveWorkout(workout);
