@@ -84,3 +84,15 @@ improve st.html
 - update monthly streak based on category
 - return complete html
 
+--- 
+
+- do not save timestamp
+- only save local date
+- allow edit workout functionality
+- allow edit date as well 
+- return complete html
+- 
+---
+
+- for gym workout show the sets group by variations
+- improve edit functionality accordingly

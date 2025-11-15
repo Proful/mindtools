@@ -102,6 +102,7 @@
             background: #f8f9fa;
             border-radius: 6px;
             line-height: 1.5;
+            margin-top: 8px;
         }
 
         .add-btn {
@@ -237,6 +238,25 @@
             transform: none;
         }
 
+        .delete-btn {
+            width: 100%;
+            padding: 14px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            background: #dc2626;
+        }
+
         .workout-list {
             margin-top: 20px;
         }
@@ -262,6 +282,7 @@
             margin-bottom: 16px;
             padding-bottom: 16px;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
         }
 
         .workout-item:last-child {
@@ -295,7 +316,43 @@
             padding: 6px 12px;
             background: #f8f9fa;
             border-radius: 6px;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .set-edit-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            margin-left: 8px;
+        }
+
+        .set-edit-btn:hover {
+            background: #e8eaf6;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: #f0f0f0;
         }
 
         .empty-state {
@@ -365,11 +422,19 @@
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Workout</h2>
+                <h2 id="modalTitle">Add Workout</h2>
                 <button class="close-btn" onclick="closeModal()">×</button>
             </div>
             
             <form id="workoutForm">
+                <input type="hidden" id="editIndex" value="">
+                <input type="hidden" id="editMode" value="">
+                
+                <div class="form-group">
+                    <label for="workoutDate">Date</label>
+                    <input type="date" id="workoutDate" required>
+                </div>
+
                 <div class="form-group">
                     <label for="activity">Activity</label>
                     <select id="activity" required onchange="updateFormVisibility()">
@@ -393,7 +458,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="setGroup">
                         <label for="set">Set</label>
                         <select id="set">
                             <option value="">Select set</option>
@@ -422,7 +487,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="sameRepsGroup">
                         <label style="display: flex; align-items: center; cursor: pointer;">
                             <input type="checkbox" id="sameRepsAllSets" style="width: auto; margin-right: 8px; cursor: pointer;">
                             <span>Same reps for all 3 sets</span>
@@ -431,7 +496,7 @@
 
                     <div class="form-group">
                         <label for="gymDescription">Description</label>
-                        <textarea id="gymDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; font-family: inherit; resize: vertical;" placeholder="Add notes about your walk..."></textarea>
+                        <textarea id="gymDescription" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; font-family: inherit; resize: vertical;" placeholder="Add notes about your workout..."></textarea>
                     </div>
                 </div>
 
@@ -452,7 +517,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Submit</button>
+                <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+                <button type="button" class="delete-btn" id="deleteBtn" style="display: none;" onclick="deleteWorkout()">Delete Workout</button>
             </form>
         </div>
     </div>
@@ -498,6 +564,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             const roundsInput = document.getElementById('rounds');
             const distanceInput = document.getElementById('distance');
+            const dateInput = document.getElementById('workoutDate');
+            
+            // Set today's date as default
+            dateInput.value = new Date().toLocaleDateString('en-CA');
             
             function updateDistance() {
                 const rounds = parseInt(roundsInput.value) || 0;
@@ -553,10 +623,10 @@
                     variationSelect.appendChild(option);
                 });
  
-              // Select the first option by default
-              if (variationSelect.options.length > 0) {
-                  variationSelect.selectedIndex = 1;
-              }
+                // Select the first option by default
+                if (variationSelect.options.length > 0) {
+                    variationSelect.selectedIndex = 1;
+                }
 
                 // Populate weights
                 weightSelect.innerHTML = '<option value="">Select weight</option>';
@@ -568,15 +638,109 @@
                 });
                 weightSelect.disabled = false;
  
-              // Select the first option by default
-              if (weightSelect.options.length > 0) {
-                  weightSelect.selectedIndex = 1;
-              }
+                // Select the first option by default
+                if (weightSelect.options.length > 0) {
+                    weightSelect.selectedIndex = 1;
+                }
             }
         }
 
         function openModal() {
             document.getElementById('modal').classList.add('active');
+            document.getElementById('modalTitle').textContent = 'Add Workout';
+            document.getElementById('submitBtn').textContent = 'Submit';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('editIndex').value = '';
+            document.getElementById('editMode').value = '';
+            document.getElementById('workoutDate').value = new Date().toLocaleDateString('en-CA');
+            document.getElementById('setGroup').style.display = 'block';
+            document.getElementById('sameRepsGroup').style.display = 'block';
+        }
+
+        function openEditModal(index) {
+            const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+            const workout = workouts[index];
+            
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modalTitle').textContent = 'Edit Workout';
+            document.getElementById('submitBtn').textContent = 'Update';
+            document.getElementById('deleteBtn').style.display = 'block';
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editMode').value = 'single';
+            
+            // Populate form with workout data
+            document.getElementById('workoutDate').value = workout.date;
+            document.getElementById('activity').value = workout.activity || 'gym';
+            updateFormVisibility();
+            
+            if (workout.activity === 'walk') {
+                document.getElementById('rounds').value = workout.rounds;
+                document.getElementById('walkDescription').value = workout.description || '';
+                document.getElementById('rounds').dispatchEvent(new Event('input'));
+            } else {
+                // Set machine and trigger variation update
+                document.getElementById('machine').value = workout.machine;
+                updateVariations();
+                
+                // Wait for variations to populate, then set values
+                setTimeout(() => {
+                    document.getElementById('variation').value = workout.variation;
+                    document.getElementById('set').value = workout.set;
+                    document.getElementById('reps').value = workout.reps;
+                    document.getElementById('weight').value = workout.weight;
+                    document.getElementById('gymDescription').value = workout.description || '';
+                }, 50);
+                
+                // Show set selector when editing single set
+                document.getElementById('setGroup').style.display = 'block';
+                document.getElementById('sameRepsGroup').style.display = 'none';
+            }
+        }
+
+        function openEditVariationModal(date, variation, machine) {
+            const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+            const variationWorkouts = workouts.filter(w => 
+                w.date === date && 
+                w.variation === variation && 
+                w.machine === machine &&
+                (w.activity || 'gym') === 'gym'
+            );
+            
+            if (variationWorkouts.length === 0) return;
+            
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modalTitle').textContent = 'Edit Exercise';
+            document.getElementById('submitBtn').textContent = 'Update All Sets';
+            document.getElementById('deleteBtn').style.display = 'block';
+            document.getElementById('editMode').value = 'variation';
+            
+            // Store the variation info for batch update
+            document.getElementById('editIndex').value = JSON.stringify({
+                date: date,
+                variation: variation,
+                machine: machine
+            });
+            
+            document.getElementById('workoutDate').value = date;
+            document.getElementById('activity').value = 'gym';
+            updateFormVisibility();
+            
+            // Set machine and trigger variation update
+            document.getElementById('machine').value = machine;
+            updateVariations();
+            
+            // Wait for variations to populate, then set values
+            setTimeout(() => {
+                document.getElementById('variation').value = variation;
+                // Use first set's values as defaults
+                document.getElementById('reps').value = variationWorkouts[0].reps;
+                document.getElementById('weight').value = variationWorkouts[0].weight;
+                document.getElementById('gymDescription').value = variationWorkouts[0].description || '';
+            }, 50);
+            
+            // Hide set selector and show checkbox when editing variation
+            document.getElementById('setGroup').style.display = 'none';
+            document.getElementById('sameRepsGroup').style.display = 'none';
         }
 
         function closeModal() {
@@ -584,6 +748,11 @@
             document.getElementById('workoutForm').reset();
             document.getElementById('variation').disabled = true;
             document.getElementById('weight').disabled = true;
+            document.getElementById('editIndex').value = '';
+            document.getElementById('editMode').value = '';
+            document.getElementById('workoutDate').value = new Date().toLocaleDateString('en-CA');
+            document.getElementById('setGroup').style.display = 'block';
+            document.getElementById('sameRepsGroup').style.display = 'block';
             updateFormVisibility();
         }
 
@@ -594,6 +763,80 @@
                 localStorage.setItem('workouts', JSON.stringify(workouts));
             } catch (error) {
                 console.error('Error saving workout:', error);
+            }
+        }
+
+        function updateWorkout(index, workout) {
+            try {
+                let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                workouts[index] = workout;
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+            } catch (error) {
+                console.error('Error updating workout:', error);
+            }
+        }
+
+        function updateVariationWorkouts(date, variation, machine, newData) {
+            try {
+                let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                
+                // Update all sets for this variation
+                workouts = workouts.map(w => {
+                    if (w.date === date && 
+                        w.variation === variation && 
+                        w.machine === machine &&
+                        (w.activity || 'gym') === 'gym') {
+                        return {
+                            ...w,
+                            date: newData.date,
+                            machine: newData.machine,
+                            variation: newData.variation,
+                            reps: newData.reps,
+                            weight: newData.weight,
+                            description: newData.description
+                        };
+                    }
+                    return w;
+                });
+                
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+            } catch (error) {
+                console.error('Error updating variation workouts:', error);
+            }
+        }
+
+        function deleteWorkout() {
+            if (!confirm('Are you sure you want to delete this workout?')) {
+                return;
+            }
+            
+            const editMode = document.getElementById('editMode').value;
+            const editIndex = document.getElementById('editIndex').value;
+            
+            if (editIndex === '') return;
+            
+            try {
+                let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+                
+                if (editMode === 'variation') {
+                    // Delete all sets for this variation
+                    const info = JSON.parse(editIndex);
+                    workouts = workouts.filter(w => !(
+                        w.date === info.date && 
+                        w.variation === info.variation && 
+                        w.machine === info.machine &&
+                        (w.activity || 'gym') === 'gym'
+                    ));
+                } else {
+                    // Delete single workout
+                    workouts.splice(parseInt(editIndex), 1);
+                }
+                
+                localStorage.setItem('workouts', JSON.stringify(workouts));
+                loadWorkouts();
+                closeModal();
+            } catch (error) {
+                console.error('Error deleting workout:', error);
             }
         }
 
@@ -675,11 +918,11 @@
 
             // Group workouts by date
             const groupedWorkouts = {};
-            workouts.forEach(workout => {
+            workouts.forEach((workout, index) => {
                 if (!groupedWorkouts[workout.date]) {
                     groupedWorkouts[workout.date] = [];
                 }
-                groupedWorkouts[workout.date].push(workout);
+                groupedWorkouts[workout.date].push({ ...workout, originalIndex: index });
             });
 
             // Sort dates in descending order
@@ -696,9 +939,8 @@
                 
                 let workoutItems = '';
                 
-                // Display gym workouts
+                // Display gym workouts grouped by variation
                 if (gymWorkouts.length > 0) {
-                    // Group by variation
                     const groupedByVariation = {};
                     gymWorkouts.forEach(workout => {
                         const key = `${workout.variation}|${workout.machine}`;
@@ -710,19 +952,24 @@
 
                     workoutItems += Object.keys(groupedByVariation).map(key => {
                         const [variation, machine] = key.split('|');
-                        const sets = groupedByVariation[key];
+                        const sets = groupedByVariation[key].sort((a, b) => parseInt(a.set) - parseInt(b.set));
                         const currentUrl = window.location.href.split('?')[0];
                         const variationUrl = currentUrl + "/machine.html?variation=" + variation;
                         
                         return `
                             <div class="workout-item">
+                                <button class="edit-btn" onclick='openEditVariationModal("${date}", "${variation}", "${machine}")'>✏️</button>
                                 <div class="workout-variation"><a href="${variationUrl}">${variation}</a></div>
                                 <div class="workout-machine">${machine}</div>
                                 <div class="workout-sets">
                                     ${sets.map(set => 
-                                        `<div class="workout-set">Set ${set.set} × ${set.reps} reps, ${set.weight}</div>`
+                                        `<div class="workout-set">
+                                            <span>Set ${set.set} × ${set.reps} reps, ${set.weight}</span>
+                                            <button class="set-edit-btn" onclick="openEditModal(${set.originalIndex})">✏️</button>
+                                        </div>`
                                     ).join('')}
                                 </div>
+                                ${sets[0].description ? `<div class="workout-description">${sets[0].description}</div>` : ''}
                             </div>
                         `;
                     }).join('');
@@ -735,6 +982,7 @@
                         const distance = rounds * 25;
                         return `
                             <div class="workout-item">
+                                <button class="edit-btn" onclick="openEditModal(${workout.originalIndex})">✏️</button>
                                 <div class="workout-variation">🚶 Walk</div>
                                 <div class="workout-distance">${rounds} rounds • ${distance}m</div>
                                 ${workout.description ? `<div class="workout-description">${workout.description}</div>` : ''}
@@ -753,7 +1001,7 @@
         }
 
         function formatDate(dateString) {
-            const date = new Date(dateString);
+            const date = new Date(dateString + 'T00:00:00');
             const options = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
             return date.toLocaleDateString('en-GB', options);
         }
@@ -761,8 +1009,10 @@
         document.getElementById('workoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const date = new Date().toLocaleDateString('en-CA');
+            const date = document.getElementById('workoutDate').value;
             const activity = document.getElementById('activity').value;
+            const editIndex = document.getElementById('editIndex').value;
+            const editMode = document.getElementById('editMode').value;
 
             if (activity === 'walk') {
                 // Save walk workout
@@ -773,38 +1023,36 @@
                     date: date,
                     activity: 'walk',
                     rounds: rounds,
-                    description: description,
-                    timestamp: Date.now()
+                    description: description
                 };
-                saveWorkout(workout);
+                
+                if (editIndex !== '') {
+                    updateWorkout(parseInt(editIndex), workout);
+                } else {
+                    saveWorkout(workout);
+                }
             } else {
                 // Save gym workout
                 const machine = document.getElementById('machine').value;
                 const variation = document.getElementById('variation').value;
-                const set = document.getElementById('set').value;
                 const reps = document.getElementById('reps').value;
                 const weight = document.getElementById('weight').value;
-                const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
                 const description = document.getElementById('gymDescription').value;
 
-                if (sameRepsAllSets) {
-                    // Create 3 workouts for all sets
-                    for (let i = 1; i <= 3; i++) {
-                        const workout = {
-                            date: date,
-                            activity: 'gym',
-                            machine: machine,
-                            variation: variation,
-                            set: i.toString(),
-                            reps: reps,
-                            weight: weight,
-                            description,
-                            timestamp: Date.now() + i
-                        };
-                        saveWorkout(workout);
-                    }
-                } else {
-                    // Create single workout
+                if (editMode === 'variation') {
+                    // Update all sets for this variation
+                    const info = JSON.parse(editIndex);
+                    updateVariationWorkouts(info.date, info.variation, info.machine, {
+                        date: date,
+                        machine: machine,
+                        variation: variation,
+                        reps: reps,
+                        weight: weight,
+                        description: description
+                    });
+                } else if (editMode === 'single') {
+                    // Update single set
+                    const set = document.getElementById('set').value;
                     const workout = {
                         date: date,
                         activity: 'gym',
@@ -813,10 +1061,43 @@
                         set: set,
                         reps: reps,
                         weight: weight,
-                        description,
-                        timestamp: Date.now()
+                        description
                     };
-                    saveWorkout(workout);
+                    updateWorkout(parseInt(editIndex), workout);
+                } else {
+                    // Add new workout(s)
+                    const sameRepsAllSets = document.getElementById('sameRepsAllSets').checked;
+                    const set = document.getElementById('set').value;
+                    
+                    if (sameRepsAllSets) {
+                        // Create 3 workouts for all sets
+                        for (let i = 1; i <= 3; i++) {
+                            const workout = {
+                                date: date,
+                                activity: 'gym',
+                                machine: machine,
+                                variation: variation,
+                                set: i.toString(),
+                                reps: reps,
+                                weight: weight,
+                                description
+                            };
+                            saveWorkout(workout);
+                        }
+                    } else {
+                        // Create single workout
+                        const workout = {
+                            date: date,
+                            activity: 'gym',
+                            machine: machine,
+                            variation: variation,
+                            set: set,
+                            reps: reps,
+                            weight: weight,
+                            description
+                        };
+                        saveWorkout(workout);
+                    }
                 }
             }
 
