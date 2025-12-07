@@ -1077,7 +1077,9 @@
         }
 
         function openRevisionQuiz() {
-          window.open(`${apiBaseUrl}/quiz/indexv4.html?revision=true&timer=${appSettings.timerDuration}`, '_blank', 'noopener');
+          const urlParams = new URLSearchParams(window.location.search);
+          const subject = urlParams.get('subject') || 'science';
+          window.open(`${apiBaseUrl}/quiz/indexv4.html?revision=true&timer=${appSettings.timerDuration}&subject=${subject}`, '_blank', 'noopener');
         }
 
         function unicodeSafeJSONStringify(obj) {
