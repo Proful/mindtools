@@ -560,6 +560,7 @@
 
       function loadWrongAnswers() {
         try {
+          const urlParams = new URLSearchParams(window.location.search);
           const subject = urlParams.get("subject") || "science";
           const stored = localStorage.getItem("quiz-wrong-answers-"+subject.toLowerCase());
           if (stored) {
@@ -573,6 +574,7 @@
 
       function saveWrongAnswer(question) {
         try {
+          const urlParams = new URLSearchParams(window.location.search);
           const subject = urlParams.get("subject") || "science";
           const exists = wrongAnswers.some(
             (q) => q.question === question.question,

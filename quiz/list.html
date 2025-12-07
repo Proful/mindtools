@@ -884,6 +884,7 @@
             card.className = 'url-card';
             card.id = `card-${url.shortCode}`;
 
+            const urlParams = new URLSearchParams(window.location.search);
             const subject = urlParams.get("subject") || "science";
             const displayName = url.name || url.shortCode;
             const createdDate = new Date(url.createdAt).toLocaleDateString('en-US', {
@@ -957,6 +958,7 @@
 
         async function openTimerBasedQuiz(text) {
             try {
+                const urlParams = new URLSearchParams(window.location.search);
                 const subject = urlParams.get("subject") || "science";
                 const url = text.replace('indexv3', 'indexv4') + "&timer=" + appSettings.timerDuration + "&subject=" + subject;
                 window.open(url, '_blank');
