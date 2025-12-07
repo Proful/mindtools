@@ -88,7 +88,7 @@ improve st.html
 
 - do not save timestamp
 - only save local date
-- allow edit workout functionality
+- allow edit study session functionality
 - allow edit date as well 
 - return complete html
 - 

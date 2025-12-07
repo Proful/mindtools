@@ -196,6 +196,10 @@
             cursor: pointer;
         }
 
+        input[type="date"] {
+            cursor: pointer;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 14px;
@@ -218,6 +222,24 @@
             cursor: not-allowed;
         }
 
+        .delete-btn {
+            width: 100%;
+            padding: 14px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
         .sessions-list {
             margin-top: 30px;
         }
@@ -228,6 +250,13 @@
             padding: 20px;
             margin-bottom: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .session-date {
@@ -430,7 +459,6 @@
             }
         }
     </style>
-
 </head>
 <body>
     <div class="container">
@@ -453,15 +481,19 @@
         <div class="sessions-list" id="sessionsList"></div>
     </div>
 
-    <!-- Add Session Modal -->
     <div class="modal" id="addModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Study Session</h2>
+                <h2 id="modalTitle">Add Study Session</h2>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             
             <form id="studyForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="sessionDate">Date</label>
+                    <input type="date" id="sessionDate" required>
+                </div>
+
                 <div class="form-group">
                     <label for="course">Course</label>
                     <select id="course" required onchange="updateUnits()">
@@ -491,12 +523,12 @@
                     <input type="number" id="breakTime" min="0" placeholder="e.g., 15" required>
                 </div>
 
-                <button type="submit" class="submit-btn">Submit</button>
+                <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+                <button type="button" class="delete-btn" id="deleteBtn" style="display: none;" onclick="deleteSession()">Delete Session</button>
             </form>
         </div>
     </div>
 
-    <!-- Time Picker -->
     <div class="time-picker" id="timePicker">
         <div class="time-picker-content">
             <div class="time-picker-header" id="timePickerTitle">Select Time</div>
@@ -541,8 +573,8 @@
         let selectedHour = 12;
         let selectedMinute = 0;
         let selectedPeriod = 'AM';
+        let editingSessionId = null;
 
-        // Load courses data
         async function loadCourses() {
             try {
                 const response = await fetch('courses.json');
@@ -583,6 +615,49 @@
         }
 
         function openModal() {
+            editingSessionId = null;
+            document.getElementById('modalTitle').textContent = 'Add Study Session';
+            document.getElementById('submitBtn').textContent = 'Submit';
+            document.getElementById('deleteBtn').style.display = 'none';
+            document.getElementById('addModal').classList.add('active');
+            const input = document.getElementById('sessionDate');
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+
+            // Set as YYYY-MM-DD (local date)
+            input.value = `${year}-${month}-${day}`;
+        }
+
+        function openEditModal(sessionId) {
+            const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+            const session = sessions.find(s => s.id === sessionId);
+            
+            if (!session) return;
+            
+            editingSessionId = sessionId;
+            document.getElementById('modalTitle').textContent = 'Edit Study Session';
+            document.getElementById('submitBtn').textContent = 'Update';
+            document.getElementById('deleteBtn').style.display = 'block';
+            
+            document.getElementById('sessionDate').value = session.date;
+            
+            const courseValue = JSON.stringify({name: session.course, category: session.category});
+            document.getElementById('course').value = courseValue;
+            
+            updateUnits();
+            
+            setTimeout(() => {
+                const unitValue = JSON.stringify({unit: session.unit, title: session.unitTitle});
+                document.getElementById('unit').value = unitValue;
+            }, 10);
+            
+            document.getElementById('startTime').value = session.startTime;
+            document.getElementById('endTime').value = session.endTime;
+            document.getElementById('breakTime').value = session.breakTime;
+            
             document.getElementById('addModal').classList.add('active');
         }
 
@@ -590,6 +665,7 @@
             document.getElementById('addModal').classList.remove('active');
             document.getElementById('studyForm').reset();
             document.getElementById('unit').disabled = true;
+            editingSessionId = null;
         }
 
         function openTimePicker(field) {
@@ -597,7 +673,6 @@
             const title = field === 'start' ? 'Select Start Time' : 'Select End Time';
             document.getElementById('timePickerTitle').textContent = title;
             
-            // Initialize with current time or default
             const currentValue = document.getElementById(field + 'Time').value;
             if (currentValue) {
                 parseTimeString(currentValue);
@@ -698,9 +773,8 @@
         function updateStreakTracker(sessions) {
             const days = ['M', 'T', 'W', 'T', 'F', 'S'];
             
-            // Get current week's dates (Monday to Saturday)
             const today = new Date();
-            const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            const currentDay = today.getDay();
             const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
             
             const monday = new Date(today);
@@ -711,25 +785,15 @@
             for (let i = 0; i < 6; i++) {
                 const date = new Date(monday);
                 date.setDate(monday.getDate() + i);
-                weekDates.push(date.toLocaleDateString('en-CA')); // YYYY-MM-DD in local time
+                weekDates.push(date.toLocaleDateString('en-CA'));
             }
             
-            // Separate sessions by category
             const mathSessions = sessions.filter(s => s.category === 'Math');
             const scienceSessions = sessions.filter(s => s.category === 'Science');
             
-            // Check which dates have sessions
-            const mathDates = new Set(mathSessions.map(s => {
-                const sessionDate = new Date(s.date);
-                return sessionDate.toLocaleDateString('en-CA');
-            }));
+            const mathDates = new Set(mathSessions.map(s => s.date));
+            const scienceDates = new Set(scienceSessions.map(s => s.date));
             
-            const scienceDates = new Set(scienceSessions.map(s => {
-                const sessionDate = new Date(s.date);
-                return sessionDate.toLocaleDateString('en-CA');
-            }));
-            
-            // Update Math tracker
             const weekGridMath = document.getElementById('weekGridMath');
             weekGridMath.innerHTML = days.map((day, index) => {
                 const hasSession = mathDates.has(weekDates[index]);
@@ -741,7 +805,6 @@
                 `;
             }).join('');
             
-            // Update Science tracker
             const weekGridScience = document.getElementById('weekGridScience');
             weekGridScience.innerHTML = days.map((day, index) => {
                 const hasSession = scienceDates.has(weekDates[index]);
@@ -762,24 +825,54 @@
             const startTime = document.getElementById('startTime').value;
             const endTime = document.getElementById('endTime').value;
             const breakTime = parseInt(document.getElementById('breakTime').value);
+            const sessionDate = document.getElementById('sessionDate').value;
             
-            const session = {
-                id: Date.now(),
-                course: courseData.name,
-                category: courseData.category,
-                activity: courseData.category,
-                unit: unitData.unit,
-                unitTitle: unitData.title,
-                startTime,
-                endTime,
-                breakTime,
-                date: new Date().toISOString()
-            };
-            
-            // Save to localStorage
             const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
-            sessions.unshift(session);
+            
+            if (editingSessionId) {
+                const index = sessions.findIndex(s => s.id === editingSessionId);
+                if (index !== -1) {
+                    sessions[index] = {
+                        ...sessions[index],
+                        course: courseData.name,
+                        category: courseData.category,
+                        activity: courseData.category,
+                        unit: unitData.unit,
+                        unitTitle: unitData.title,
+                        startTime,
+                        endTime,
+                        breakTime,
+                        date: sessionDate
+                    };
+                }
+            } else {
+                const session = {
+                    id: Date.now(),
+                    course: courseData.name,
+                    category: courseData.category,
+                    activity: courseData.category,
+                    unit: unitData.unit,
+                    unitTitle: unitData.title,
+                    startTime,
+                    endTime,
+                    breakTime,
+                    date: sessionDate
+                };
+                sessions.unshift(session);
+            }
+            
             localStorage.setItem('studySessions', JSON.stringify(sessions));
+            
+            closeModal();
+            loadSessions();
+        }
+
+        function deleteSession() {
+            if (!confirm('Are you sure you want to delete this session?')) return;
+            
+            const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+            const filteredSessions = sessions.filter(s => s.id !== editingSessionId);
+            localStorage.setItem('studySessions', JSON.stringify(filteredSessions));
             
             closeModal();
             loadSessions();
@@ -789,7 +882,6 @@
             const sessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
             const sessionsList = document.getElementById('sessionsList');
             
-            // Update streak tracker
             updateStreakTracker(sessions);
             
             if (sessions.length === 0) {
@@ -798,7 +890,7 @@
             }
             
             sessionsList.innerHTML = sessions.map(session => {
-                const date = new Date(session.date);
+                const date = new Date(session.date + 'T00:00:00');
                 const formattedDate = date.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     day: 'numeric', 
@@ -809,7 +901,7 @@
                 const duration = calculateDuration(session.startTime, session.endTime, session.breakTime);
                 
                 return `
-                    <div class="session-card">
+                    <div class="session-card" onclick="openEditModal(${session.id})">
                         <div class="session-date">${formattedDate}</div>
                         <div class="session-course">${session.course}, ${session.category}</div>
                         <div class="session-unit">Unit ${session.unit}. ${session.unitTitle}</div>
@@ -820,7 +912,6 @@
             }).join('');
         }
 
-        // Initialize
         loadCourses();
         loadSessions();
     </script>

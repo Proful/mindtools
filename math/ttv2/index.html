@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Multiplication Quiz</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 <style>
 * {
   margin: 0;
@@ -234,12 +234,11 @@ function startQuizAsHost() {
 function runQuizCycle() {
   if (!quizActive) return;
   
-  const multiplicandOptions = [3, 4, 6, 7, 8, 9]; // 3–9, skip 5
-  const multiplierOptions = [3, 4, 6, 7, 8, 9, 12]; // 3–12, skip 2, 5, 10, 11
-
-  const multiplicand = multiplicandOptions[Math.floor(Math.random() * multiplicandOptions.length)];
-  const multiplier = multiplierOptions[Math.floor(Math.random() * multiplierOptions.length)];
-
+  // Generate random multiplication
+  const multiplicand = Math.floor(Math.random() * 9) + 2; // 2-10
+  const multiplier = Math.floor(Math.random() * 11) + 2; // 2-12
+  const answer = multiplicand * multiplier;
+  
   // Show question
   showQuestion(multiplicand, multiplier);
   broadcast({ type: 'question', multiplicand, multiplier });
