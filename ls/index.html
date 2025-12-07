@@ -381,6 +381,7 @@
                         </div>
                         <div class="editor-actions">
                             <button class="btn btn-success" onclick="app.saveValue()">💾 Save</button>
+                            <button class="btn btn-primary" onclick="app.copyToClipboard()">📋 Copy</button>
                             <button class="btn btn-secondary" onclick="app.formatJson()">✨ Format JSON</button>
                             <button class="btn btn-danger" onclick="app.deleteKey('${key.replace(/'/g, "\\'")}')">🗑️ Delete</button>
                         </div>
@@ -416,6 +417,24 @@
                     messageArea.innerHTML = '<div class="success">✓ Saved successfully!</div>';
                     setTimeout(() => messageArea.innerHTML = '', 3000);
                     this.refreshKeys();
+                } catch (e) {
+                    messageArea.innerHTML = `<div class="error">Error: ${this.escapeHtml(e.message)}</div>`;
+                }
+            },
+
+            copyToClipboard() {
+                const valueInput = document.getElementById('valueInput');
+                const value = valueInput.value;
+                const messageArea = document.getElementById('messageArea');
+
+                try {
+                    navigator.clipboard.writeText(value).then(() => {
+                      messageArea.innerHTML = '<div class="success">✓ Copied successfully!</div>';
+                      setTimeout(() => messageArea.innerHTML = '', 3000);
+                      this.refreshKeys();
+                    }).catch((e1) => {
+                      messageArea.innerHTML = `<div class="error">Error: ${this.escapeHtml(e1.message)}</div>`;
+                    });
                 } catch (e) {
                     messageArea.innerHTML = `<div class="error">Error: ${this.escapeHtml(e.message)}</div>`;
                 }

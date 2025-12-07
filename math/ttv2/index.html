@@ -234,9 +234,13 @@ function startQuizAsHost() {
 function runQuizCycle() {
   if (!quizActive) return;
   
-  // Generate random multiplication
-  const multiplicand = Math.floor(Math.random() * 9) + 2; // 2-10
-  const multiplier = Math.floor(Math.random() * 11) + 2; // 2-12
+  const allowedMultiplicands = [3, 4, 6, 7, 8, 9]; 
+  const multiplicand =
+    allowedMultiplicands[Math.floor(Math.random() * allowedMultiplicands.length)];
+
+  const allowedMultipliers = [3, 4, 5, 6, 7, 8, 9, 12]; 
+  const multiplier =
+  allowedMultipliers[Math.floor(Math.random() * allowedMultipliers.length)];
   const answer = multiplicand * multiplier;
   
   // Show question
@@ -251,8 +255,8 @@ function runQuizCycle() {
     // Next question after 2 seconds
     setTimeout(() => {
       runQuizCycle();
-    }, 2000);
-  }, 3000);
+    }, 1500);
+  }, 2000);
 }
 
 function broadcast(data) {
