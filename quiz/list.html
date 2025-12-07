@@ -884,6 +884,7 @@
             card.className = 'url-card';
             card.id = `card-${url.shortCode}`;
 
+            const subject = urlParams.get("subject") || "science";
             const displayName = url.name || url.shortCode;
             const createdDate = new Date(url.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -919,7 +920,7 @@
                        class="btn btn-whatsapp">
                         💬 WhatsApp
                     </a>
-                    <a href="${url.originalUrl.replace('indexv3', 'indexv2')}" 
+                  <a href="${url.originalUrl.replace('indexv3', 'indexv2')}&subject=${subject}" 
                        target="_blank" 
                        rel="noopener noreferrer" 
                        class="btn btn-single">
@@ -956,8 +957,8 @@
 
         async function openTimerBasedQuiz(text) {
             try {
-                const url = text.replace('indexv3', 'indexv4') + "&timer=" + appSettings.timerDuration;
-                console.log(url)
+                const subject = urlParams.get("subject") || "science";
+                const url = text.replace('indexv3', 'indexv4') + "&timer=" + appSettings.timerDuration + "&subject=" + subject;
                 window.open(url, '_blank');
             } catch (err) {
                 showError('Failed to open Timer Quiz App');

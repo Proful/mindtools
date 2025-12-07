@@ -290,7 +290,7 @@
         background-color: #7b1fa2;
       }
 
-      .btn-remove {
+      .btn-remove, btn-bookmark {
         background-color: #ff9800;
         color: white;
       }
@@ -560,7 +560,8 @@
 
       function loadWrongAnswers() {
         try {
-          const stored = localStorage.getItem("quiz-wrong-answers");
+          const subject = urlParams.get("subject") || "science";
+          const stored = localStorage.getItem("quiz-wrong-answers-"+subject.toLowerCase());
           if (stored) {
             wrongAnswers = JSON.parse(stored);
           }
@@ -572,6 +573,7 @@
 
       function saveWrongAnswer(question) {
         try {
+          const subject = urlParams.get("subject") || "science";
           const exists = wrongAnswers.some(
             (q) => q.question === question.question,
           );
@@ -579,7 +581,7 @@
           if (!exists) {
             wrongAnswers.push(question);
             localStorage.setItem(
-              "quiz-wrong-answers",
+              "quiz-wrong-answers-"+subject.toLowerCase(),
               JSON.stringify(wrongAnswers),
             );
           }
@@ -768,6 +770,8 @@
             location.href = `${apiBaseUrl}/quiz/list.html`
           } else if (e.target.classList.contains("btn-remove")) {
             removeCurrentQuestion(state, quizData);
+          } else if (e.target.classList.contains("btn-bookmark")) {
+            addCurrentQuestion(state, quizData);
           }
         });
       }
@@ -941,6 +945,7 @@
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
+              <button class="btn-bookmark">🔖 Bookmark</button>
               ${state.isRemove ? '<button class="btn-remove">Remove</button>' : ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
@@ -1071,6 +1076,12 @@
         const currentQuestionData = quizData[state.currentQuestion];
         removeFromRevisionList(currentQuestionData);
         alert("This question is removed from revision list.");
+      }
+
+      function addCurrentQuestion(state, quizData) {
+        const currentQuestionData = quizData[state.currentQuestion];
+        saveWrongAnswer(currentQuestionData);
+        alert("This question is added to revision list.");
       }
     </script>
   </body>
