@@ -27,12 +27,19 @@
 
 
 [Lifecycle of a plant](https://www.youtube.com/watch?v=7T2DzHUtqKo)
+
 [Flower](https://www.youtube.com/watch?v=dwzOc6X5aeE)
-[Flower](https://www.youtube.com/watch?v=h_jk8NN2MlE&t=1s)
+
+[Flower](https://www.youtube.com/watch?v=h_jk8NN2MlE)
+
 [Parts of Flower](https://www.youtube.com/watch?v=M_LaeyNv_BE)
+
 [Pollination](https://www.youtube.com/watch?v=hCloCHwrJdQ)
+
 [Seeds](https://www.youtube.com/watch?v=FYFE8nu0hqc)
+
 [Seeds](https://www.youtube.com/watch?v=CfkgCJyclpY)
+
 [Advanced ovary turns into fruit](https://www.youtube.com/watch?v=aoGewloHv7w)
 
 ---
@@ -63,6 +70,7 @@
 - Process of digestion, particularly of carbohydrates, proteins and fats  
 
 [Gastrointestinal system](https://www.khanacademy.org/science/health-and-medicine/human-anatomy-and-physiology/gastrointestinal-system-introduction/v/meet-the-gastrointestinal-tract)
+
 ### Respiratory System
 - Main parts (nose, pharynx, larynx, trachea, bronchi, lungs); functions of each part  
 - Difference between respiration and breathing  
@@ -70,6 +78,7 @@
 - Common respiratory diseases: asthma, bronchitis, pneumonia, tuberculosis (T.B.)  
 
 [Respiratory system](https://www.khanacademy.org/science/health-and-medicine/human-anatomy-and-physiology/lung-introduction/v/meet-the-lungs)
+
 ### Circulatory System
 - Main parts of the circulatory system (heart, blood, blood vessels)  
 - Process of circulation in the body  
@@ -81,6 +90,7 @@
 - Keeping the heart healthy through exercise and good food habits  
 
 [Circulatory system](https://www.khanacademy.org/science/health-and-medicine/human-anatomy-and-physiology/heart-introduction/v/meet-the-heart)
+
 ---
 
 ## Theme 4: Health and Hygiene
