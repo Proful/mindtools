@@ -41,7 +41,6 @@
 
 [Pollination](https://www.youtube.com/watch?v=hCloCHwrJdQ)
 
-[Seeds advanced](https://www.youtube.com/watch?v=FYhttps://youtu.be/YrpfVlMbisc?si=4DpV7rbW-hN8K0GFFE8nu0hqc)
 
 [Seeds](https://www.youtube.com/watch?v=CfkgCJyclpY)
 
