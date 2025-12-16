@@ -37,7 +37,7 @@
 
 [Flower](https://www.youtube.com/watch?v=h_jk8NN2MlE)
 
-[Parts of Flower](https://www.youtube.com/watch?v=M_LaeyNv_BE)
+~~[Parts of Flower](https://www.youtube.com/watch?v=M_LaeyNv_BE)~~
 
 [Pollination](https://www.youtube.com/watch?v=hCloCHwrJdQ)
 
