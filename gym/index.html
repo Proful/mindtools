@@ -477,7 +477,7 @@
 
                     <div class="form-group">
                         <label for="reps">Reps</label>
-                        <input type="number" id="reps" min="1" value="5" placeholder="Enter number of reps">
+                        <input type="number" id="reps" min="1" value="10" placeholder="Enter number of reps">
                     </div>
 
                     <div class="form-group">
@@ -490,7 +490,7 @@
                     <div class="form-group" id="sameRepsGroup">
                         <label style="display: flex; align-items: center; cursor: pointer;">
                             <input type="checkbox" id="sameRepsAllSets" checked style="width: auto; margin-right: 8px; cursor: pointer;">
-                            <span>Same reps for all 5 sets</span>
+                            <span>Same reps for all 3 sets</span>
                         </label>
                     </div>
 
@@ -1070,24 +1070,9 @@
                     const set = document.getElementById('set').value;
                     
                     if (sameRepsAllSets) {
-                      if (set == 6) {
+                      if (set == 1) {
                         // Create 3 workouts for all sets
-                        for (let i = 6; i <= 10; i++) {
-                            const workout = {
-                                date: date,
-                                activity: 'gym',
-                                machine: machine,
-                                variation: variation,
-                                set: i.toString(),
-                                reps: reps,
-                                weight: weight,
-                                description
-                            };
-                            saveWorkout(workout);
-                        }
-                      } else {
-                        // Create 3 workouts for all sets
-                        for (let i = 1; i <= 5; i++) {
+                        for (let i = 1; i <= 3; i++) {
                             const workout = {
                                 date: date,
                                 activity: 'gym',
