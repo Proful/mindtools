@@ -9,9 +9,16 @@
 7. Chemicals as Medicines  
 8. Chemicals in Industries  
 
+
+[Chemistry](https://www.youtube.com/watch?v=gGalnVpaom8)
+
+[Chemistry](https://www.youtube.com/watch?v=Rd4a1X3B61w)
+
 ---
 
 ## Theme 2: Elements, Compounds and Mixtures
+
+[Atom](https://www.youtube.com/watch?v=EXCa58rcIKc)
 
 ### 1) Element  
 *A substance made up of identical atoms.*
@@ -21,10 +28,18 @@
 - Names and symbols of the first 20 elements  
 - Molecules of elements contain atoms of the same element (O₂, N₂, H₂)  
 
+[Elements](https://www.youtube.com/watch?v=IFKnq9QM6_A)
+
+
 ### 2) Compound  
 *Two or more elements combine in fixed definite proportions to form a compound. Original properties of the constituent elements are lost and a substance with new properties is formed.*
 
 - Molecules of compounds contain atoms of different elements (H₂O, CO₂, NO₂, CaO, ZnCl₂)  
+
+[Compounds](https://www.youtube.com/watch?v=36nlbUdRvUM)
+
+[Compounds](https://www.khanacademy.org/science/grade-6-science-snc-aligned/x19bc096754f0b9af:elements-and-compounds)
+
 
 ### 3) Mixture  
 *Components of more than one substance combine in any proportion. Original properties of the components are retained.*
@@ -41,6 +56,15 @@
 - Magnetic separation  
 - Sublimation  
 
+[Mixure](https://www.khanacademy.org/science/mh-grade-9-bridge-course-science/x109ad1e366099af5:composition-of-matter/x109ad1e366099af5:elements-compounds-and-mixtures/v/pure-substances-and-mixtures)
+
+[Mixure](https://www.khanacademy.org/science/revision-term-1-ncert-science-grade-8/x6260f68ca242fbef:week-3/x6260f68ca242fbef:nature-of-matter-elements-compounds-and-mixtures/v/types-of-mixtures-ms)
+
+[Mixure](https://www.khanacademy.org/science/grade-6-science/x88f5990a7622d8f5:physical-science)
+
+[Mixure](https://www.khanacademy.org/science/grade-6-science-snc-aligned/x19bc096754f0b9af:mixtures)
+
+
 ---
 
 ## Theme 3: Matter
@@ -52,6 +76,14 @@
 - There is space between the particles of matter  
 - Effect of heat on matter (expansion, change of state and chemical change)  
 
+
+[Matter](https://www.khanacademy.org/science/ms-chemistry/xc370bc422b7f75fc:classifying-matter)
+
+[Matter](https://www.khanacademy.org/science/ms-chemistry/xc370bc422b7f75fc:physical-properties-of-matter)
+
+[Matter](https://www.khanacademy.org/science/grade-6-science-snc-aligned/x19bc096754f0b9af:matter-as-particles)
+
+
 ---
 
 ## Theme 4: Water
@@ -62,6 +94,17 @@
 - Importance of water for sustenance of life on Earth  
 - Reasons for water pollution; its prevention and conservation of water  
 
+[Water](https://www.youtube.com/watch?v=gY8-ezzf2Qo)
+
+[Water](https://www.youtube.com/watch?v=jFjI6y46QRk)
+
+[Water](https://www.youtube.com/watch?v=ltFNs994mGI)
+
+[Water](https://www.youtube.com/watch?v=kYgGI9Ox3gU)
+
+[Water](https://www.youtube.com/watch?v=5HC1fm6I2mQ)
+
+
 ---
 
 ## Theme 5: Air and Atmosphere
@@ -71,6 +114,14 @@
 - Uses of the components present (importance of nitrogen to plants)  
 - Definition of atmosphere as a layer of air around the Earth  
 
+[Air and Atmosphere](https://www.youtube.com/watch?v=rJIfJN6jdBo)
+
+[Air and Atmosphere](https://www.youtube.com/watch?v=Gyn754vw8ZQ)
+
+[Air and Atmosphere](https://www.youtube.com/watch?v=Jfaipkw691E)
+
+
 ---
 
-Students can access the PDFs of the [ICSE Class 6 Syllabus](https://byjus.com/icse/icse-class-6-syllabus/) at BYJU’S for free. Just click on the download link to get the PDF and plan accordingly for your final examination.
+[Periodic table](https://www.youtube.com/watch?v=t_f8bB1kf6M)
+
