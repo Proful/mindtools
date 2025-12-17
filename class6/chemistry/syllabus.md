@@ -96,9 +96,9 @@
 
 [Forms of water](https://www.youtube.com/watch?v=gY8-ezzf2Qo)
 
-[Water](https://www.youtube.com/watch?v=jFjI6y46QRk)
+[Water cycle](https://www.youtube.com/watch?v=jFjI6y46QRk)
 
-[Water](https://www.youtube.com/watch?v=ltFNs994mGI)
+[physical properties of water](https://www.youtube.com/watch?v=ltFNs994mGI)
 
 [Water](https://www.youtube.com/watch?v=kYgGI9Ox3gU)
 
