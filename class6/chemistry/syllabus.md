@@ -56,7 +56,7 @@
 - Magnetic separation  
 - Sublimation  
 
-[Mixure](https://www.khanacademy.org/science/mh-grade-9-bridge-course-science/x109ad1e366099af5:composition-of-matter/x109ad1e366099af5:elements-compounds-and-mixtures/v/pure-substances-and-mixtures)
+[Pure Substance and Mixure](https://www.khanacademy.org/science/mh-grade-9-bridge-course-science/x109ad1e366099af5:composition-of-matter/x109ad1e366099af5:elements-compounds-and-mixtures/v/pure-substances-and-mixtures)
 
 [Mixure](https://www.khanacademy.org/science/revision-term-1-ncert-science-grade-8/x6260f68ca242fbef:week-3/x6260f68ca242fbef:nature-of-matter-elements-compounds-and-mixtures/v/types-of-mixtures-ms)
 
