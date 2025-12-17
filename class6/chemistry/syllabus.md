@@ -100,9 +100,9 @@
 
 [physical properties of water](https://www.youtube.com/watch?v=ltFNs994mGI)
 
-[Water](https://www.youtube.com/watch?v=kYgGI9Ox3gU)
+[Water solutions](https://www.youtube.com/watch?v=kYgGI9Ox3gU)
 
-[Water](https://www.youtube.com/watch?v=5HC1fm6I2mQ)
+[Water solutions](https://www.youtube.com/watch?v=5HC1fm6I2mQ)
 
 
 ---
