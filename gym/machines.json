@@ -247,7 +247,7 @@
     {
       "machine": "Wrist Curl Machine",
       "muscles": ["Forearm Flexors", "Forearm Extensors"],
-      "weights": ["5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg"],
+      "weights": ["0 Kg","5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg"],
       "variations": [
         {
           "variation": "Reverse wrist curl",
