@@ -113,7 +113,20 @@
     {
       "machine": "Chest Machine Press",
       "muscles": ["Pectoralis Major", "Triceps", "Deltoids"],
-      "weights": ["0 Kg", "2.5 Kg", "5 Kg"],
+
+ "weights": [
+"0 Kg",
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "32.5 Kg",
+        "40 Kg",
+        "47.5 Kg",
+        "55 Kg",
+        "62.5 Kg"
+      ],
       "variations": [
         {
           "variation": "Incline press",
@@ -205,6 +218,32 @@
         }
       ]
     },
+
+{
+      "machine": "Machine Biceps Curl",
+      "muscles": ["Biceps Brachii", "Brachialis", "Brachioradialis"],
+ "weights": [
+"0 Kg",
+        "5 Kg",
+        "10 Kg",
+        "15 Kg",
+        "20 Kg",
+        "25 Kg",
+        "32.5 Kg",
+        "40 Kg",
+        "47.5 Kg",
+        "55 Kg",
+        "62.5 Kg"
+      ],
+      "variations": [
+        {
+          "variation": "Bicep Curls",
+          "muscles": ["Biceps Brachii", "Brachialis"],
+          "description": "A fundamental arm exercise that strengthens and builds the biceps by curling the dumbbells upward through controlled movement."
+        }
+      ]
+    },
+
     {
       "machine": "Wrist Curl Machine",
       "muscles": ["Forearm Flexors", "Forearm Extensors"],
