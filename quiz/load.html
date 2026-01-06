@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save JSON to LocalStorage</title>
+</head>
+<body>
+
+    <form id="jsonForm">
+        <label>
+            JSON URL:
+            <input type="url" id="jsonUrl" required>
+        </label>
+        <br><br>
+
+        <label>
+            LocalStorage Key:
+            <input type="text" id="storageKey" required>
+        </label>
+        <br><br>
+
+        <button type="submit">Save JSON</button>
+    </form>
+
+    <p id="status"></p>
+
+    <script>
+        document.getElementById("jsonForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const url = document.getElementById("jsonUrl").value;
+            const key = document.getElementById("storageKey").value;
+            const status = document.getElementById("status");
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch JSON");
+                }
+
+                const jsonData = await response.json();
+
+                // Store JSON as string in localStorage
+                localStorage.setItem(key, JSON.stringify(jsonData));
+
+                status.textContent = `JSON stored successfully under key "${key}"`;
+            } catch (error) {
+                status.textContent = "Error: " + error.message;
+            }
+        });
+    </script>
+
+</body>
+</html>
