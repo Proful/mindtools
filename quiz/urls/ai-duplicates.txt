@@ -1,0 +1,28 @@
+sample data. read from a json input file
+```
+[
+  {
+    "question": "Which vitamin helps in the clotting of blood?",
+    "options": [
+      "Vitamin A",
+      "Vitamin K",
+      "Vitamin D",
+      "Vitamin C"
+    ],
+    "correct_answer": "Vitamin K",
+    "explanation": "Vitamin K is essential for blood clotting as it helps in the synthesis of proteins required for coagulation. Without it, the body cannot properly stop bleeding after injury. Green leafy vegetables like spinach and kale are good sources of this vitamin."
+  }
+]
+```
+- write a node js javascript program
+- simple compare question text 
+    Normalize tokens
+      Before comparing, normalize
+      * lowercase
+      * trim
+      * remove punctuation
+      * collapse whitespace
+      * optionally remove accents
+  Tokenize + remove stop words
+      Stop words add noise.
+compare each question with other in the array.

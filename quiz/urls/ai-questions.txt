@@ -1,0 +1,21 @@
+- write a nodejs javascript program
+- attached file contains base64 encoded data 
+- each line contains one data.
+- decode base64 data 
+- decoded data
+```
+            const base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/').replace(/~/g, '=');
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            
+            const decompressedStream = new Response(
+              new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+            );
+            const decompressed = await decompressedStream.text();
+            const quizData = JSON.parse(decompressed);
+```
+- use the above code to get the quizData
+- combine all json to single one
