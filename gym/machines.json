@@ -40,7 +40,7 @@
     {
       "machine": "Machine Squat",
       "muscles": ["Quadriceps", "Glutes", "Hamstrings"],
-      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg"],
+      "weights": ["0 Kg", "5 Kg", "10 Kg", "15 Kg", "20 Kg", "25 Kg", "30 Kg","35 Kg", "40 Kg", "45 Kg", "50 Kg"],
       "variations": [
         {
           "variation": "Front squat machine",
