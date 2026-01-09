@@ -1066,7 +1066,6 @@
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
-              <button class="btn-bookmark">📖 Bookmark</button>
               ${state.isRemove ? '<button class="btn-remove">Remove</button>' : ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
