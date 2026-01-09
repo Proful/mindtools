@@ -1059,7 +1059,9 @@
                   <strong>Explanation:</strong>
                   <button class="btn-edit-explanation">✏️ Edit</button>
                 </div>
-                <p>${question.explanation || 'No explanation available.'}</p>
+<p>
+  ${(question.explanation || 'No explanation available.')
+    .replace(/\n/g, '<br>')}</p>
                 ${question.imageUrl ? `<img src="${question.imageUrl}" alt="Explanation image" class="explanation-image" onerror="this.style.display='none'">` : ''}
               </div>
             </div>
