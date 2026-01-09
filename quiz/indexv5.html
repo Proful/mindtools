@@ -316,7 +316,6 @@
       .btn-remove, .btn-bookmark {
         background-color: #ff9800;
         color: white;
-        display: none;
       }
 
       .btn-remove:hover:not(:disabled) {
@@ -388,6 +387,14 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
+      }
+
+      .explanation-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       }
 
       .btn-edit-explanation {
@@ -472,6 +479,13 @@
         margin-bottom: 20px;
       }
 
+      .modal-body label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+      }
+
       .modal-body textarea {
         width: 100%;
         min-height: 150px;
@@ -482,11 +496,45 @@
         font-family: inherit;
         resize: vertical;
         transition: border-color 0.2s ease;
+        margin-bottom: 15px;
       }
 
-      .modal-body textarea:focus {
+      .modal-body input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+      }
+
+      .modal-body textarea:focus,
+      .modal-body input[type="text"]:focus {
         outline: none;
         border-color: #4caf50;
+      }
+
+      .image-preview {
+        margin-top: 10px;
+        border: 2px dashed #e0e0e0;
+        border-radius: 6px;
+        padding: 10px;
+        text-align: center;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-preview img {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 4px;
+      }
+
+      .image-preview-empty {
+        color: #999;
+        font-style: italic;
       }
 
       .modal-footer {
@@ -619,7 +667,15 @@
           <button class="close-modal" onclick="closeEditModal()">&times;</button>
         </div>
         <div class="modal-body">
+          <label for="explanationText">Explanation Text:</label>
           <textarea id="explanationText" placeholder="Enter explanation here..."></textarea>
+          
+          <label for="imageUrl">Image URL (optional):</label>
+          <input type="text" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="previewImage()">
+          
+          <div class="image-preview" id="imagePreview">
+            <span class="image-preview-empty">Image preview will appear here</span>
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
@@ -1004,12 +1060,13 @@
                   <button class="btn-edit-explanation">✏️ Edit</button>
                 </div>
                 <p>${question.explanation || 'No explanation available.'}</p>
+                ${question.imageUrl ? `<img src="${question.imageUrl}" alt="Explanation image" class="explanation-image" onerror="this.style.display='none'">` : ''}
               </div>
             </div>
             
             <div class="actions">
               <button class="btn-prev" ${state.currentQuestion === 0 ? "disabled" : ""}>Previous</button>
-              <!-- <button class="btn-bookmark">📖 Bookmark</button> -->
+              <button class="btn-bookmark">📖 Bookmark</button>
               ${state.isRemove ? '<button class="btn-remove">Remove</button>' : ''}
               ${isLastQuestion ?
                 `<button class="btn-result" ${!showFeedback ? "disabled" : ""}>See Results</button>` :
@@ -1156,21 +1213,49 @@
         const question = currentQuizData[currentState.currentQuestion];
         const modal = document.getElementById('editModal');
         const textarea = document.getElementById('explanationText');
+        const imageUrlInput = document.getElementById('imageUrl');
         
         textarea.value = question.explanation || '';
+        imageUrlInput.value = question.imageUrl || '';
+        
+        // Show preview if image URL exists
+        previewImage();
+        
         modal.style.display = 'block';
       }
 
       function closeEditModal() {
         const modal = document.getElementById('editModal');
+        const imagePreview = document.getElementById('imagePreview');
         modal.style.display = 'none';
+        imagePreview.innerHTML = '<span class="image-preview-empty">Image preview will appear here</span>';
+      }
+
+      function previewImage() {
+        const imageUrl = document.getElementById('imageUrl').value.trim();
+        const imagePreview = document.getElementById('imagePreview');
+        
+        if (imageUrl) {
+          const img = new Image();
+          img.onload = function() {
+            imagePreview.innerHTML = `<img src="${imageUrl}" alt="Preview">`;
+          };
+          img.onerror = function() {
+            imagePreview.innerHTML = '<span class="image-preview-empty" style="color: #f44336;">Invalid image URL</span>';
+          };
+          img.src = imageUrl;
+        } else {
+          imagePreview.innerHTML = '<span class="image-preview-empty">Image preview will appear here</span>';
+        }
       }
 
       function saveExplanation() {
         if (!currentState || !currentQuizData) return;
         
         const textarea = document.getElementById('explanationText');
+        const imageUrlInput = document.getElementById('imageUrl');
         const newExplanation = textarea.value.trim();
+        const newImageUrl = imageUrlInput.value.trim();
         
         if (!newExplanation) {
           alert('Explanation cannot be empty!');
@@ -1179,6 +1264,7 @@
         
         const question = currentQuizData[currentState.currentQuestion];
         question.explanation = newExplanation;
+        question.imageUrl = newImageUrl;
         
         // Save to localStorage
         saveWrongAnswer(question);
