@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solve for x</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 28px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 16px;
+            font-size: 18px;
+            opacity: 0;
+            transform: translateX(-50px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .step.active {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step:nth-child(2) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+        }
+
+        .step:nth-child(3) {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            box-shadow: 0 8px 20px rgba(67, 233, 123, 0.3);
+        }
+
+        .step:nth-child(4) {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            box-shadow: 0 8px 20px rgba(250, 112, 154, 0.3);
+        }
+
+        .step:nth-child(5) {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            box-shadow: 0 8px 20px rgba(48, 207, 208, 0.3);
+        }
+
+        .step:nth-child(6) {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            box-shadow: 0 8px 20px rgba(168, 237, 234, 0.3);
+        }
+
+        .step:nth-child(7) {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            box-shadow: 0 8px 20px rgba(255, 154, 158, 0.3);
+        }
+
+        .step-label {
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .equation {
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .answer {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            margin: 30px 0 20px 0;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0.8);
+            box-shadow: 0 12px 30px rgba(245, 87, 108, 0.4);
+        }
+
+        .answer.show {
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .equation {
+                font-size: 18px;
+            }
+
+            .answer {
+                font-size: 28px;
+                padding: 25px;
+            }
+
+            button {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Solve for x</h1>
+        
+        <div id="steps"></div>
+        
+        <div class="answer" id="answer">x = 10</div>
+        
+        <div class="controls">
+            <button onclick="restart()">Show Again ✨</button>
+        </div>
+    </div>
+
+    <script>
+        const steps = [
+            { label: "Original Equation", equation: "4(x − 3) + 2 = 2x + 10" },
+            { label: "Step 1: Distribute", equation: "4x − 12 + 2 = 2x + 10" },
+            { label: "Step 2: Simplify Left Side", equation: "4x − 10 = 2x + 10" },
+            { label: "Step 3: Subtract 2x", equation: "2x − 10 = 10" },
+            { label: "Step 4: Add 10", equation: "2x = 20" },
+            { label: "Step 5: Divide by 2", equation: "x = 10" }
+        ];
+
+        let currentStep = 0;
+
+        function showNextStep() {
+            if (currentStep < steps.length) {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'step';
+                stepDiv.innerHTML = `
+                    <div class="step-label">${steps[currentStep].label}</div>
+                    <div class="equation">${steps[currentStep].equation}</div>
+                `;
+                document.getElementById('steps').appendChild(stepDiv);
+                
+                setTimeout(() => {
+                    stepDiv.classList.add('active');
+                }, 50);
+                
+                currentStep++;
+                
+                if (currentStep < steps.length) {
+                    setTimeout(showNextStep, 800);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('answer').classList.add('show');
+                    }, 1000);
+                }
+            }
+        }
+
+        function restart() {
+            currentStep = 0;
+            document.getElementById('steps').innerHTML = '';
+            document.getElementById('answer').classList.remove('show');
+            setTimeout(showNextStep, 300);
+        }
+
+        function createParticles() {
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        createParticles();
+        setTimeout(showNextStep, 500);
+    </script>
+</body>
+</html>
