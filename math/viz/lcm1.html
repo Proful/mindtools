@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cardEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardEntrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(-180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .card.exit {
+            animation: cardExit 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes cardExit {
+            0% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(180deg);
+            }
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content {
+            font-size: 18px;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #ffd89b, #19547b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            font-size: 32px;
+            margin: 20px 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .formula {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .instruction {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            opacity: 0.8;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 30px 20px;
+                min-height: 350px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .content {
+                font-size: 16px;
+            }
+
+            .highlight {
+                font-size: 28px;
+            }
+
+            .instruction {
+                font-size: 14px;
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="card">
+            <div class="card-number"><span id="cardNum">1</span>/5</div>
+            <div id="cardContent"></div>
+        </div>
+    </div>
+    <div class="instruction">👆 Tap anywhere to continue</div>
+
+    <script>
+        const cards = [
+            {
+                title: "The Problem",
+                content: `<div class="content">Find the smallest number that when divided by 6, 8, and 12 leaves a remainder of 1.</div>`
+            },
+            {
+                title: "Understanding the Problem",
+                content: `<div class="content">We need a number <strong>N</strong> such that:<br>
+                N = 6k + 1<br>
+                N = 8m + 1<br>
+                N = 12n + 1<br><br>
+                This means N - 1 is divisible by 6, 8, and 12!</div>`
+            },
+            {
+                title: "Finding the LCM",
+                content: `<div class="content">We need to find the LCM of 6, 8, and 12.<br><br>
+                6 = 2 × 3<br>
+                8 = 2³<br>
+                12 = 2² × 3<br><br>
+                <div class="formula">LCM = 2³ × 3 = 24</div></div>`
+            },
+            {
+                title: "The Solution",
+                content: `<div class="content">Since N - 1 must be divisible by 24, the smallest value of N - 1 is 24.<br><br>
+                Therefore: N = 24 + 1</div>
+                <div class="highlight">N = 25</div>`
+            },
+            {
+                title: "Verification",
+                content: `<div class="content">Let's verify:<br><br>
+                25 ÷ 6 = 4 remainder <strong>1</strong> ✓<br>
+                25 ÷ 8 = 3 remainder <strong>1</strong> ✓<br>
+                25 ÷ 12 = 2 remainder <strong>1</strong> ✓<br><br>
+                <div class="highlight">Answer: 25</div></div>`
+            }
+        ];
+
+        let currentCard = 0;
+
+        function createParticles(e) {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ffd89b'];
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = e.clientX + 'px';
+                particle.style.top = e.clientY + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animation = `float ${1 + Math.random()}s ease-out forwards`;
+                particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, 0)`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        function updateCard() {
+            const cardEl = document.getElementById('card');
+            const cardNumEl = document.getElementById('cardNum');
+            const contentEl = document.getElementById('cardContent');
+
+            cardEl.classList.add('exit');
+
+            setTimeout(() => {
+                currentCard = (currentCard + 1) % cards.length;
+                cardNumEl.textContent = currentCard + 1;
+                contentEl.innerHTML = `<h2>${cards[currentCard].title}</h2>${cards[currentCard].content}`;
+                
+                cardEl.classList.remove('exit');
+                void cardEl.offsetWidth;
+                cardEl.style.animation = 'none';
+                setTimeout(() => {
+                    cardEl.style.animation = '';
+                }, 10);
+            }, 600);
+        }
+
+        document.body.addEventListener('click', (e) => {
+            createParticles(e);
+            updateCard();
+        });
+
+        document.getElementById('cardContent').innerHTML = `<h2>${cards[0].title}</h2>${cards[0].content}`;
+    </script>
+</body>
+</html>
