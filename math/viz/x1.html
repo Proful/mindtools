@@ -240,7 +240,7 @@
         <div class="answer" id="answer">x = 10</div>
         
         <div class="controls">
-            <button onclick="restart()">Show Again ✨</button>
+            <button onclick="restart()">Restart ✨</button>
         </div>
     </div>
 
@@ -255,9 +255,11 @@
         ];
 
         let currentStep = 0;
+        let isAnimating = false;
 
         function showNextStep() {
             if (currentStep < steps.length) {
+                isAnimating = true;
                 const stepDiv = document.createElement('div');
                 stepDiv.className = 'step';
                 stepDiv.innerHTML = `
@@ -268,25 +270,28 @@
                 
                 setTimeout(() => {
                     stepDiv.classList.add('active');
+                    isAnimating = false;
                 }, 50);
                 
                 currentStep++;
-                
-                if (currentStep < steps.length) {
-                    setTimeout(showNextStep, 800);
-                } else {
-                    setTimeout(() => {
-                        document.getElementById('answer').classList.add('show');
-                    }, 1000);
-                }
+            } else if (currentStep === steps.length) {
+                document.getElementById('answer').classList.add('show');
+                currentStep++;
             }
         }
 
         function restart() {
             currentStep = 0;
+            isAnimating = false;
             document.getElementById('steps').innerHTML = '';
             document.getElementById('answer').classList.remove('show');
-            setTimeout(showNextStep, 300);
+        }
+
+        function handleClick(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            if (!isAnimating) {
+                showNextStep();
+            }
         }
 
         function createParticles() {
@@ -300,8 +305,8 @@
             }
         }
 
+        document.body.addEventListener('click', handleClick);
         createParticles();
-        setTimeout(showNextStep, 500);
     </script>
 </body>
 </html>
