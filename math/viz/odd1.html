@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Problem Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 500px;
+            min-height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transform-style: preserve-3d;
+            opacity: 0;
+            transform: translateX(100%) rotateY(90deg);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .card.active {
+            opacity: 1;
+            transform: translateX(0) rotateY(0deg);
+        }
+
+        .card.exit {
+            opacity: 0;
+            transform: translateX(-100%) rotateY(-90deg);
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .problem {
+            font-size: 22px;
+            color: #555;
+            margin: 20px 0;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .equation {
+            font-size: 24px;
+            color: #667eea;
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .answer {
+            font-size: 48px;
+            color: #f5576c;
+            font-weight: bold;
+            margin: 30px 0;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .tap-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.2;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 20px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 30px 25px;
+                min-height: 350px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .problem {
+                font-size: 18px;
+            }
+
+            .equation {
+                font-size: 20px;
+            }
+
+            .answer {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container" id="container">
+        <div class="card active" data-card="0">
+            <div class="card-number">1/6</div>
+            <h1>Math Challenge</h1>
+            <p class="problem">If the sum of three consecutive odd numbers is 63, what is the smallest number?</p>
+        </div>
+
+        <div class="card" data-card="1">
+            <div class="card-number">2/6</div>
+            <h1>Let's Solve This!</h1>
+            <p class="problem">Let's call the first odd number <strong>x</strong></p>
+            <p class="problem">The next two consecutive odd numbers would be:</p>
+            <div class="equation">x + 2 and x + 4</div>
+        </div>
+
+        <div class="card" data-card="2">
+            <div class="card-number">3/6</div>
+            <h1>Set Up the Equation</h1>
+            <p class="problem">The sum of all three equals 63:</p>
+            <div class="equation">x + (x + 2) + (x + 4) = 63</div>
+        </div>
+
+        <div class="card" data-card="3">
+            <div class="card-number">4/6</div>
+            <h1>Simplify</h1>
+            <p class="problem">Combine like terms:</p>
+            <div class="equation">3x + 6 = 63</div>
+        </div>
+
+        <div class="card" data-card="4">
+            <div class="card-number">5/6</div>
+            <h1>Solve for x</h1>
+            <p class="problem">Subtract 6 from both sides:</p>
+            <div class="equation">3x = 57</div>
+            <p class="problem">Divide by 3:</p>
+            <div class="equation">x = 19</div>
+        </div>
+
+        <div class="card" data-card="5">
+            <div class="card-number">6/6</div>
+            <h1>The Answer!</h1>
+            <p class="problem">The smallest number is:</p>
+            <div class="answer">19</div>
+            <p class="problem">The three consecutive odd numbers are:<br><strong>19, 21, and 23</strong></p>
+            <p class="problem" style="margin-top: 20px; font-size: 16px;">✓ Check: 19 + 21 + 23 = 63</p>
+        </div>
+    </div>
+
+    <div class="tap-hint">Tap anywhere to continue</div>
+
+    <script>
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+        const container = document.getElementById('container');
+        const totalCards = cards.length;
+
+        container.addEventListener('click', nextCard);
+
+        function nextCard() {
+            if (currentCard < totalCards - 1) {
+                cards[currentCard].classList.remove('active');
+                cards[currentCard].classList.add('exit');
+                
+                currentCard++;
+                
+                setTimeout(() => {
+                    cards[currentCard].classList.add('active');
+                }, 100);
+            } else {
+                // Reset to beginning
+                cards[currentCard].classList.remove('active');
+                cards[currentCard].classList.add('exit');
+                
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.classList.remove('exit');
+                    });
+                    currentCard = 0;
+                    cards[currentCard].classList.add('active');
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
