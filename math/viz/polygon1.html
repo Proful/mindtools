@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon Angles Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 90%;
+            width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: absolute;
+            opacity: 0;
+            transform: scale(0.8) rotateY(-20deg);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .card.active {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            z-index: 10;
+        }
+
+        .card.exit {
+            opacity: 0;
+            transform: scale(0.8) rotateY(20deg) translateX(100px);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            text-align: center;
+        }
+
+        .question {
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        canvas {
+            display: block;
+            margin: 30px auto;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .answer {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: #764ba2;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .explanation {
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            color: #555;
+            text-align: center;
+            margin-top: 15px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #495057;
+        }
+
+        .tap-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 3s ease-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="card active" id="card1">
+            <h1>🔷 Polygon Angles Challenge</h1>
+            <div class="question">
+                How many sides does a polygon have if the sum of its interior angles is 900°?
+            </div>
+            <canvas id="canvas1" width="300" height="300"></canvas>
+        </div>
+
+        <div class="card" id="card2">
+            <h1>📐 Let's Solve It!</h1>
+            <div class="explanation">
+                The formula for the sum of interior angles is:<br>
+                <span class="formula">Sum = (n - 2) × 180°</span><br><br>
+                Where <strong>n</strong> is the number of sides
+            </div>
+            <canvas id="canvas2" width="300" height="250"></canvas>
+        </div>
+
+        <div class="card" id="card3">
+            <h1>🧮 Calculation</h1>
+            <div class="explanation">
+                <span class="formula">900° = (n - 2) × 180°</span><br><br>
+                Divide both sides by 180°:<br>
+                <span class="formula">5 = n - 2</span><br><br>
+                Add 2 to both sides:<br>
+                <span class="formula">n = 7</span>
+            </div>
+        </div>
+
+        <div class="card" id="card4">
+            <h1>✨ The Answer</h1>
+            <div class="answer">7 sides - It's a Heptagon!</div>
+            <canvas id="canvas3" width="300" height="300"></canvas>
+            <div class="explanation">
+                A heptagon has 7 sides and the sum of its interior angles is exactly 900°
+            </div>
+        </div>
+    </div>
+
+    <div class="tap-hint">👆 Tap anywhere to continue</div>
+
+    <script>
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+        const container = document.getElementById('container');
+
+        function createParticles(e) {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b'];
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = e.clientX + 'px';
+                particle.style.top = e.clientY + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px)`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 3000);
+            }
+        }
+
+        function drawPolygon(canvasId, sides, highlight = false) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) / 2 - 40;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const angleStep = (2 * Math.PI) / sides;
+            const startAngle = -Math.PI / 2;
+
+            ctx.beginPath();
+            const points = [];
+            
+            for (let i = 0; i <= sides; i++) {
+                const angle = startAngle + i * angleStep;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                points.push({x, y});
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = highlight ? 'rgba(102, 126, 234, 0.2)' : 'rgba(102, 126, 234, 0.1)';
+            ctx.fill();
+
+            for (let i = 0; i < sides; i++) {
+                ctx.beginPath();
+                ctx.arc(points[i].x, points[i].y, 6, 0, 2 * Math.PI);
+                ctx.fillStyle = '#764ba2';
+                ctx.fill();
+            }
+
+            if (highlight) {
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = '#764ba2';
+                ctx.textAlign = 'center';
+                
+                for (let i = 0; i < sides; i++) {
+                    const angle = ((sides - 2) * 180) / sides;
+                    const textRadius = radius + 25;
+                    const textAngle = startAngle + i * angleStep;
+                    const tx = centerX + textRadius * Math.cos(textAngle);
+                    const ty = centerY + textRadius * Math.sin(textAngle);
+                    ctx.fillText(Math.round(angle) + '°', tx, ty);
+                }
+            }
+        }
+
+        function drawFormula(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = '#667eea';
+            ctx.textAlign = 'center';
+            
+            ctx.fillText('(n - 2) × 180° = 900°', canvas.width / 2, canvas.height / 2 - 20);
+            ctx.fillText('↓', canvas.width / 2, canvas.height / 2 + 20);
+            ctx.fillText('n = 7', canvas.width / 2, canvas.height / 2 + 60);
+        }
+
+        container.addEventListener('click', (e) => {
+            createParticles(e);
+            
+            if (currentCard < cards.length - 1) {
+                cards[currentCard].classList.remove('active');
+                cards[currentCard].classList.add('exit');
+                currentCard++;
+                cards[currentCard].classList.add('active');
+
+                setTimeout(() => {
+                    cards[currentCard - 1].classList.remove('exit');
+                }, 600);
+
+                if (currentCard === 1) {
+                    setTimeout(() => drawFormula('canvas2'), 300);
+                } else if (currentCard === 3) {
+                    setTimeout(() => drawPolygon('canvas3', 7, true), 300);
+                }
+            }
+        });
+
+        drawPolygon('canvas1', 7);
+
+        const bgColors = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+        ];
+
+        let colorIndex = 0;
+        setInterval(() => {
+            colorIndex = (colorIndex + 1) % bgColors.length;
+            document.body.style.background = bgColors[colorIndex];
+        }, 5000);
+    </script>
+</body>
+</html>
