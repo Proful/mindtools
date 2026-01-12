@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Percentage Change</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            cursor: pointer;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .card.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Card 1 - Introduction */
+        .card1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card1 h1 {
+            font-size: clamp(24px, 8vw, 48px);
+            text-align: center;
+            margin-bottom: 20px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .card1 p {
+            font-size: clamp(16px, 5vw, 24px);
+            text-align: center;
+            animation: slideUp 0.8s ease-out 0.3s both;
+        }
+
+        /* Card 2 - Starting Number */
+        .card2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .number-display {
+            font-size: clamp(60px, 20vw, 120px);
+            font-weight: bold;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .card2 p {
+            font-size: clamp(18px, 5vw, 28px);
+            margin-top: 20px;
+        }
+
+        /* Card 3 - Increase by 20% */
+        .card3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .operation {
+            font-size: clamp(20px, 6vw, 36px);
+            margin-bottom: 30px;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: clamp(20px, 6vw, 40px);
+            font-weight: bold;
+            animation: float 2s ease-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .number-grow {
+            font-size: clamp(50px, 15vw, 100px);
+            font-weight: bold;
+            animation: grow 1.5s ease-out;
+        }
+
+        @keyframes grow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Card 4 - Decrease by 20% */
+        .card4 {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .number-shrink {
+            font-size: clamp(50px, 15vw, 100px);
+            font-weight: bold;
+            animation: shrink 1.5s ease-out;
+        }
+
+        @keyframes shrink {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.7); }
+            100% { transform: scale(1); }
+        }
+
+        /* Card 5 - Result */
+        .card5 {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            color: white;
+        }
+
+        .result-big {
+            font-size: clamp(70px, 25vw, 140px);
+            font-weight: bold;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .explanation {
+            font-size: clamp(16px, 4vw, 22px);
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        /* Card 6 - Why */
+        .card6 {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .card6 h2 {
+            font-size: clamp(28px, 8vw, 48px);
+            margin-bottom: 30px;
+        }
+
+        .card6 .math {
+            font-size: clamp(16px, 4vw, 24px);
+            text-align: center;
+            line-height: 2;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 30px;
+            font-size: clamp(14px, 4vw, 18px);
+            opacity: 0.8;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Card 1: Introduction -->
+    <div class="card card1 active">
+        <h1>🎯 The Percentage Paradox</h1>
+        <p>A number is increased by 20%<br>then decreased by 20%</p>
+        <p style="margin-top: 20px; font-size: clamp(18px, 5vw, 28px);">What's the overall change?</p>
+        <div class="tap-hint">Tap anywhere to continue</div>
+    </div>
+
+    <!-- Card 2: Starting Number -->
+    <div class="card card2">
+        <p>Let's start with</p>
+        <div class="number-display">100</div>
+        <div class="tap-hint">Tap to continue</div>
+    </div>
+
+    <!-- Card 3: Increase by 20% -->
+    <div class="card card3">
+        <div class="operation">📈 Increase by 20%</div>
+        <div class="number-grow" id="increased">120</div>
+        <p style="margin-top: 20px; font-size: clamp(16px, 4vw, 22px);">100 + (20% of 100) = 120</p>
+        <div class="particles" id="particles3"></div>
+        <div class="tap-hint">Tap to continue</div>
+    </div>
+
+    <!-- Card 4: Decrease by 20% -->
+    <div class="card card4">
+        <div class="operation">📉 Decrease by 20%</div>
+        <div class="number-shrink" id="decreased">96</div>
+        <p style="margin-top: 20px; font-size: clamp(16px, 4vw, 22px);">120 - (20% of 120) = 96</p>
+        <div class="tap-hint">Tap to continue</div>
+    </div>
+
+    <!-- Card 5: Result -->
+    <div class="card card5">
+        <h2 style="font-size: clamp(24px, 7vw, 42px); margin-bottom: 20px;">Final Result</h2>
+        <div class="result-big">96</div>
+        <div class="explanation">
+            We started with <strong>100</strong><br>
+            We ended with <strong>96</strong><br>
+            <br>
+            Overall change: <strong style="font-size: 1.2em; color: #ffeb3b;">-4%</strong>
+        </div>
+    </div>
+
+    <!-- Card 6: Explanation -->
+    <div class="card card6">
+        <h2>🤔 Why -4%?</h2>
+        <div class="math">
+            <p><strong>The key insight:</strong></p>
+            <p style="margin-top: 20px;">When we decreased by 20%,<br>we took 20% of the NEW number (120)</p>
+            <p style="margin-top: 20px;">20% of 120 = <strong>24</strong></p>
+            <p>20% of 100 = <strong>20</strong></p>
+            <p style="margin-top: 20px;">We gained 20 but lost 24</p>
+            <p style="margin-top: 10px; font-size: 1.2em; color: #e91e63;"><strong>Net loss: 4</strong></p>
+        </div>
+        <div class="tap-hint">Tap to restart</div>
+    </div>
+
+    <script>
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+        const totalCards = cards.length;
+
+        document.body.addEventListener('click', nextCard);
+        document.body.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            nextCard();
+        }, { passive: false });
+
+        function nextCard() {
+            cards[currentCard].classList.remove('active');
+            currentCard = (currentCard + 1) % totalCards;
+            cards[currentCard].classList.add('active');
+
+            // Special animations
+            if (currentCard === 2) {
+                createParticles();
+            }
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles3');
+            container.innerHTML = '';
+            const symbols = ['+20', '+1', '+2', '+5', '↑', '✨'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = '50%';
+                    particle.style.animationDelay = Math.random() * 0.5 + 's';
+                    container.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Initialize first card animation
+        setTimeout(() => {
+            if (currentCard === 2) createParticles();
+        }, 100);
+    </script>
+</body>
+</html>
