@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Problem Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f23;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: manipulation;
+            position: relative;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-wrapper {
+            position: absolute;
+            width: 90%;
+            max-width: 600px;
+            height: 500px;
+            opacity: 0;
+            transform: scale(0.8) rotateX(-20deg);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-wrapper.active {
+            opacity: 1;
+            transform: scale(1) rotateX(0deg);
+        }
+
+        .card-wrapper.exit {
+            opacity: 0;
+            transform: scale(1.2) rotateX(20deg);
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5),
+                        inset 0 0 50px rgba(255, 255, 255, 0.05);
+        }
+
+        .glow {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.4), transparent 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: pulseGlow 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            font-size: 16px;
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        h1 {
+            font-size: 36px;
+            background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #00ffff);
+            background-size: 300% 300%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            animation: gradientShift 4s ease infinite, slideIn 0.6s ease-out;
+            font-weight: 800;
+        }
+
+        .problem {
+            font-size: 20px;
+            color: #e0e0e0;
+            margin: 15px 0;
+            line-height: 1.8;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .equation {
+            font-size: 28px;
+            color: #00ffff;
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 20px #00ffff;
+            animation: neonPulse 2s ease-in-out infinite;
+            font-family: 'Courier New', monospace;
+        }
+
+        .answer {
+            font-size: 80px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            margin: 30px 0;
+            animation: scaleIn 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-shadow: 0 0 30px rgba(255, 0, 110, 0.8);
+        }
+
+        .numbers-display {
+            display: flex;
+            gap: 20px;
+            margin: 25px 0;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .number-box {
+            background: linear-gradient(135deg, #8338ec, #3a86ff);
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 10px 30px rgba(131, 56, 236, 0.5);
+            animation: popIn 0.6s ease-out backwards;
+        }
+
+        .number-box:nth-child(1) { animation-delay: 0.2s; }
+        .number-box:nth-child(2) { animation-delay: 0.4s; }
+        .number-box:nth-child(3) { animation-delay: 0.6s; }
+
+        .tap-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            animation: float 2s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #00ffff);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.2);
+            }
+            50% { 
+                box-shadow: 0 0 40px #00ffff, inset 0 0 30px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0) rotate(-180deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-15px); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .problem {
+                font-size: 17px;
+            }
+
+            .equation {
+                font-size: 22px;
+                padding: 20px;
+            }
+
+            .answer {
+                font-size: 60px;
+            }
+
+            .number-box {
+                padding: 15px 20px;
+                font-size: 26px;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="container" id="container">
+        <div class="card-wrapper active" data-card="0">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">1/6</div>
+                <h1>🌟 Math Challenge 🌟</h1>
+                <p class="problem">If the sum of three consecutive odd numbers is 63,</p>
+                <p class="problem" style="font-size: 24px; margin-top: 20px; color: #00ffff;">what is the smallest number?</p>
+            </div>
+        </div>
+
+        <div class="card-wrapper" data-card="1">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">2/6</div>
+                <h1>Define Variables</h1>
+                <p class="problem">Let's call the first odd number <strong style="color: #ff006e;">x</strong></p>
+                <p class="problem" style="margin-top: 25px;">The next consecutive odd numbers:</p>
+                <div class="equation">x + 2 &nbsp;&nbsp; and &nbsp;&nbsp; x + 4</div>
+            </div>
+        </div>
+
+        <div class="card-wrapper" data-card="2">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">3/6</div>
+                <h1>Build Equation</h1>
+                <p class="problem">Sum equals 63:</p>
+                <div class="equation">x + (x + 2) + (x + 4) = 63</div>
+            </div>
+        </div>
+
+        <div class="card-wrapper" data-card="3">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">4/6</div>
+                <h1>Simplify</h1>
+                <p class="problem">Combine terms:</p>
+                <div class="equation">3x + 6 = 63</div>
+            </div>
+        </div>
+
+        <div class="card-wrapper" data-card="4">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">5/6</div>
+                <h1>Solve</h1>
+                <p class="problem">Subtract 6:</p>
+                <div class="equation">3x = 57</div>
+                <p class="problem" style="margin-top: 25px;">Divide by 3:</p>
+                <div class="equation">x = 19</div>
+            </div>
+        </div>
+
+        <div class="card-wrapper" data-card="5">
+            <div class="glow"></div>
+            <div class="card">
+                <div class="card-number">6/6</div>
+                <h1>Solution!</h1>
+                <p class="problem">The smallest number is:</p>
+                <div class="answer">19</div>
+                <div class="numbers-display">
+                    <div class="number-box">19</div>
+                    <div class="number-box">21</div>
+                    <div class="number-box">23</div>
+                </div>
+                <p class="problem" style="color: #00ffff;">✓ Verified: 19 + 21 + 23 = 63</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tap-hint">✨ Tap to continue ✨</div>
+
+    <script>
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card-wrapper');
+        const container = document.getElementById('container');
+        const progressBar = document.getElementById('progressBar');
+        const totalCards = cards.length;
+
+        // Create particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentCard + 1) / totalCards) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        container.addEventListener('click', nextCard);
+
+        function nextCard() {
+            if (currentCard < totalCards - 1) {
+                cards[currentCard].classList.remove('active');
+                cards[currentCard].classList.add('exit');
+                
+                currentCard++;
+                updateProgress();
+                
+                setTimeout(() => {
+                    cards[currentCard].classList.add('active');
+                }, 200);
+            } else {
+                cards[currentCard].classList.remove('active');
+                cards[currentCard].classList.add('exit');
+                
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.classList.remove('exit');
+                    });
+                    currentCard = 0;
+                    updateProgress();
+                    cards[currentCard].classList.add('active');
+                }, 400);
+            }
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
