@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seed Growth Process</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .card-container {
+            position: relative;
+            width: 90%;
+            max-width: 450px;
+            height: 600px;
+            perspective: 1000px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-style: preserve-3d;
+        }
+
+        .card.active {
+            z-index: 10;
+            transform: scale(1) rotateY(0deg);
+            opacity: 1;
+        }
+
+        .card.exit-left {
+            animation: exitLeft 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .card.exit-right {
+            animation: exitRight 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .card.enter {
+            animation: enter 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .card.hidden {
+            opacity: 0;
+            transform: scale(0.8) translateY(50px);
+            pointer-events: none;
+        }
+
+        @keyframes exitLeft {
+            0% {
+                transform: scale(1) rotateY(0deg) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.7) rotateY(-30deg) translateX(-150%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes exitRight {
+            0% {
+                transform: scale(1) rotateY(0deg) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.7) rotateY(30deg) translateX(150%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes enter {
+            0% {
+                transform: scale(0.8) translateY(50px) rotateX(20deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) translateY(0) rotateX(0deg);
+                opacity: 1;
+            }
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .progress {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: particle-float 4s ease-in-out infinite;
+        }
+
+        @keyframes particle-float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translate(20px, -30px) scale(1.5);
+                opacity: 0.3;
+            }
+        }
+
+        /* Card-specific colors */
+        .card:nth-child(1) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .card:nth-child(2) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .card:nth-child(3) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .card:nth-child(4) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .card:nth-child(5) { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); color: white; }
+
+        .card:nth-child(1) h1, .card:nth-child(2) h1, .card:nth-child(3) h1, 
+        .card:nth-child(4) h1, .card:nth-child(5) h1 { color: white; }
+        
+        .card:nth-child(1) p, .card:nth-child(2) p, .card:nth-child(3) p, 
+        .card:nth-child(4) p, .card:nth-child(5) p { color: rgba(255, 255, 255, 0.95); }
+
+        @media (max-width: 480px) {
+            .card-container {
+                height: 500px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            p {
+                font-size: 16px;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="card-container" id="cardContainer">
+        <div class="card active">
+            <div class="icon">🌱</div>
+            <h1>Which process helps seeds grow into a new plant?</h1>
+            <p>Tap anywhere to explore the answer!</p>
+        </div>
+
+        <div class="card hidden">
+            <div class="icon">💧</div>
+            <h1>Germination</h1>
+            <p>Germination is the magical process where a seed awakens and begins to grow into a new plant!</p>
+        </div>
+
+        <div class="card hidden">
+            <div class="icon">🌊</div>
+            <h1>Step 1: Water Absorption</h1>
+            <p>The seed absorbs water and swells up, breaking through its protective coat.</p>
+        </div>
+
+        <div class="card hidden">
+            <div class="icon">🌿</div>
+            <h1>Step 2: Root Growth</h1>
+            <p>A tiny root emerges first, anchoring the plant and absorbing nutrients from the soil.</p>
+        </div>
+
+        <div class="card hidden">
+            <div class="icon">🌞</div>
+            <h1>Step 3: Shoot Development</h1>
+            <p>The shoot grows upward toward the light, and leaves begin to unfold to start photosynthesis!</p>
+        </div>
+    </div>
+
+    <div class="progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+
+    <script>
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+        const progressDots = document.querySelectorAll('.progress-dot');
+        const totalCards = cards.length;
+        const particles = document.getElementById('particles');
+
+        // Create floating particles
+        function createParticles() {
+            const colors = ['#f093fb', '#4facfe', '#43e97b', '#fa709a', '#30cfd0'];
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        function showNextCard() {
+            if (currentCard >= totalCards - 1) {
+                return; // No more cards
+            }
+
+            const exitDirection = Math.random() > 0.5 ? 'exit-left' : 'exit-right';
+            
+            cards[currentCard].classList.remove('active');
+            cards[currentCard].classList.add(exitDirection);
+            progressDots[currentCard].classList.remove('active');
+
+            currentCard++;
+
+            setTimeout(() => {
+                cards[currentCard].classList.remove('hidden');
+                cards[currentCard].classList.add('enter', 'active');
+                progressDots[currentCard].classList.add('active');
+
+                setTimeout(() => {
+                    cards[currentCard].classList.remove('enter');
+                }, 800);
+            }, 200);
+        }
+
+        document.body.addEventListener('click', showNextCard);
+        document.body.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            showNextCard();
+        });
+    </script>
+</body>
+</html>
