@@ -734,7 +734,7 @@
               ...q,
               correctCount: q.correctCount || 0,
               wrongCount: q.wrongCount || 0
-            })).filter(q => q.correctCount == 0);
+            })).filter(q => q.correctCount == null);
           }
         } catch (error) {
           console.log("No wrong answers stored yet");
