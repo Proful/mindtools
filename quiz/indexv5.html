@@ -732,9 +732,10 @@
            wrongAnswers = JSON.parse(stored);
            wrongAnswers = wrongAnswers.map(q => ({
               ...q,
-              correctCount: q.correctCount || 0,
-              wrongCount: q.wrongCount || 0
-            }));
+              correctCount: q.correctCount ?? 0,
+              wrongCount: q.wrongCount ?? 0
+            })).filter(q => q.correctCount == 0 || q.correctCount == null);
+            // console.log(wrongAnswers)
            // wrongAnswers = wrongAnswers.filter(q => q.correctCount == 0 || q.correctCount == null);
           }
         } catch (error) {
