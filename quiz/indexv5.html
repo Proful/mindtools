@@ -729,12 +729,8 @@
           const stored = localStorage.getItem("quiz-all-answers-"+subject.toLowerCase());
           if (stored) {
 
-wrongAnswers = JSON.parse(stored).filter(
-  q => q.correctCount == null || q.correctCount === 0
-);
-
-            //wrongAnswers = JSON.parse(stored);
-            wrongAnswers = wrongAnswers.map(q => ({
+           wrongAnswers = JSON.parse(stored);
+           wrongAnswers = wrongAnswers.map(q => ({
               ...q,
               correctCount: q.correctCount || 0,
               wrongCount: q.wrongCount || 0
