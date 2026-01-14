@@ -730,11 +730,27 @@
           if (stored) {
 
            wrongAnswers = JSON.parse(stored);
-           wrongAnswers = wrongAnswers.map(q => ({
-              ...q,
-              correctCount: q.correctCount ?? 0,
-              wrongCount: q.wrongCount ?? 0
-            })).filter(q => q.correctCount == 0 || q.correctCount == null);
+
+            const result = [];
+
+            for (const q of wrongAnswers) {
+              const item = {
+                ...q,
+                correctCount: q.correctCount ?? 0,
+                wrongCount: q.wrongCount ?? 0
+              };
+
+              if (item.correctCount === 0) {
+                result.push(item);
+              }
+            }
+
+            wrongAnswers = result;
+           // wrongAnswers = wrongAnswers.map(q => ({
+           //    ...q,
+           //    correctCount: q.correctCount ?? 0,
+           //    wrongCount: q.wrongCount ?? 0
+           //  })).filter(q => q.correctCount == 0 || q.correctCount == null);
             // console.log(wrongAnswers)
            // wrongAnswers = wrongAnswers.filter(q => q.correctCount == 0 || q.correctCount == null);
           }
