@@ -731,28 +731,28 @@
 
            wrongAnswers = JSON.parse(stored);
 
-            // const result = [];
-            //
-            // for (const q of wrongAnswers) {
-            //   const item = {
-            //     ...q,
-            //     correctCount: q.correctCount ?? 0,
-            //     wrongCount: q.wrongCount ?? 0
-            //   };
-            //
-            //   if (item.correctCount === 0) {
-            //     result.push(item);
-            //   }
-            // }
-            //
-            // wrongAnswers = result;
            wrongAnswers = wrongAnswers.map(q => ({
               ...q,
               correctCount: q.correctCount ?? 0,
               wrongCount: q.wrongCount ?? 0
             }));
             // console.log(wrongAnswers)
-           // wrongAnswers = wrongAnswers.filter(q => q.correctCount == 0 || q.correctCount == null);
+            wrongAnswers = wrongAnswers.filter(q => {
+              let cc = q.correctCount ?? 0
+              let wc = q.wrongCount ?? 0
+
+              let display = false
+
+              if (cc == 0) {
+                display = true
+              }
+
+              if (wc > 0 && cc - wc <= 1) {
+                display = true
+              }
+
+              return display
+            });
           }
         } catch (error) {
           console.log("No wrong answers stored yet");

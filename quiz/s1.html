@@ -224,6 +224,25 @@
                 if (wrong in wrongCounts) wrongCounts[wrong]++;
             });
 
+            const displayQuestion = questions.filter(q => {
+              let cc = q.correctCount ?? 0
+              let wc = q.wrongCount ?? 0
+
+              let display = false
+
+              if (cc == 0) {
+                display = true
+              }
+
+              if (wc > 0 && cc - wc <= 1) {
+                display = true
+              }
+
+              return display
+            });
+
+            const displayQuestionCount = displayQuestion.length;
+
             // Calculate percentage for never answered correctly
             const neverCorrect = correctCounts[0];
             const neverCorrectPercent = totalQuestions > 0 ? (neverCorrect / totalQuestions) * 100 : 0;
@@ -238,6 +257,14 @@
                                 Questions in database
                             </span>
                             <span class="stat-value">${totalQuestions}</span>
+                        </div>
+
+                        <div class="stat-item">
+                            <span class="stat-label">
+                                <span class="icon">📚</span>
+                                Display Questions
+                            </span>
+                            <span class="stat-value">${displayQuestionCount}</span>
                         </div>
                     </div>
 
