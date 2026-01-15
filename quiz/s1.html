@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Statistics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h2 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .total-questions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .total-questions h2 {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .total-questions .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .total-questions .stat-value {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 32px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        .correct-icon {
+            color: #10b981;
+        }
+
+        .wrong-icon {
+            color: #ef4444;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (min-width: 640px) {
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .total-questions {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 40px;
+            }
+
+            .header {
+                padding: 32px;
+            }
+
+            .stat-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Quiz Statistics</h1>
+            <p>Track your progress and performance</p>
+        </div>
+
+        <div id="statsContainer"></div>
+    </div>
+
+    <script>
+        function loadStats() {
+            const data = localStorage.getItem('quiz-all-answers-science');
+            
+            if (!data) {
+                document.getElementById('statsContainer').innerHTML = `
+                    <div class="no-data">
+                        <h2 style="font-size: 24px; margin-bottom: 12px;">No quiz data found</h2>
+                        <p>Start taking quizzes to see your statistics here!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const questions = JSON.parse(data);
+            const totalQuestions = questions.length;
+
+            // Count questions by correctCount
+            const correctCounts = {
+                0: 0, 1: 0, 2: 0, 3: 0, 4: 0
+            };
+            
+            // Count questions by wrongCount
+            const wrongCounts = {
+                0: 0, 1: 0, 2: 0, 3: 0, 4: 0
+            };
+
+            questions.forEach(q => {
+                const correct = q.correctCount || 0;
+                const wrong = q.wrongCount || 0;
+                
+                if (correct in correctCounts) correctCounts[correct]++;
+                if (wrong in wrongCounts) wrongCounts[wrong]++;
+            });
+
+            // Calculate percentage for never answered correctly
+            const neverCorrect = correctCounts[0];
+            const neverCorrectPercent = totalQuestions > 0 ? (neverCorrect / totalQuestions) * 100 : 0;
+
+            const statsHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card total-questions">
+                        <h2>Total Questions</h2>
+                        <div class="stat-item">
+                            <span class="stat-label">
+                                <span class="icon">📚</span>
+                                Questions in database
+                            </span>
+                            <span class="stat-value">${totalQuestions}</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h2><span class="correct-icon">✓</span> Correct Answers</h2>
+                        ${Object.entries(correctCounts).map(([count, qty]) => `
+                            <div class="stat-item">
+                                <span class="stat-label">
+                                    Answered correctly ${count} time${count !== '1' ? 's' : ''}
+                                </span>
+                                <span class="stat-value">${qty}</span>
+                            </div>
+                        `).join('')}
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${100 - neverCorrectPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h2><span class="wrong-icon">✗</span> Wrong Answers</h2>
+                        ${Object.entries(wrongCounts).map(([count, qty]) => `
+                            <div class="stat-item">
+                                <span class="stat-label">
+                                    Answered wrong ${count} time${count !== '1' ? 's' : ''}
+                                </span>
+                                <span class="stat-value">${qty}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('statsContainer').innerHTML = statsHTML;
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>
