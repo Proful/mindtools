@@ -521,18 +521,23 @@
 
         // Render pagination
         function renderPagination(totalPages) {
-            const pagination = document.getElementById('pagination');
+            const pagination1 = document.getElementById('pagination1');
+
+            const pagination2 = document.getElementById('pagination2');
             
             if (totalPages <= 1) {
-                pagination.innerHTML = '';
+                pagination1.innerHTML = '';
+pagination2.innerHTML = '';
                 return;
             }
 
-            pagination.innerHTML = `
+            pagination1.innerHTML = `
                 <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
                 <div class="page-info">Page ${currentPage} of ${totalPages}</div>
                 <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
             `;
+
+pagination2 = pagination1
         }
 
         // Change page
