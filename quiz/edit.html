@@ -537,7 +537,7 @@ pagination2.innerHTML = '';
                 <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
             `;
 
-pagination2 = pagination1
+pagination2.innerHTML = pagination1.innerHTML;
         }
 
         // Change page
