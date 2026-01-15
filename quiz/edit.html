@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f1f5f9;
             min-height: 100vh;
             padding: 20px;
         }
@@ -24,7 +24,7 @@
         }
 
         h1 {
-            color: white;
+            color: #475569;
             text-align: center;
             margin-bottom: 30px;
             font-size: 28px;
@@ -32,10 +32,11 @@
 
         .question-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
         }
 
         .question-header {
@@ -49,12 +50,12 @@
         .question-text {
             font-size: 18px;
             font-weight: 600;
-            color: #2d3748;
+            color: #334155;
             flex: 1;
         }
 
         .delete-btn {
-            background: #ef4444;
+            background: #64748b;
             color: white;
             border: none;
             padding: 8px 16px;
@@ -65,7 +66,7 @@
         }
 
         .delete-btn:hover {
-            background: #dc2626;
+            background: #475569;
         }
 
         .options-grid {
@@ -77,14 +78,14 @@
 
         .option {
             padding: 10px;
-            background: #f7fafc;
+            background: #f8fafc;
             border-radius: 6px;
             border: 2px solid #e2e8f0;
         }
 
         .option.correct {
             background: #d1fae5;
-            border-color: #10b981;
+            border-color: #6ee7b7;
             font-weight: 600;
         }
 
@@ -93,24 +94,44 @@
             align-items: center;
             justify-content: space-between;
             padding: 10px;
-            background: #f7fafc;
+            background: #f8fafc;
             border-radius: 6px;
             margin-bottom: 8px;
         }
 
+        .info-section {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 8px;
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
         .info-label {
             font-weight: 600;
-            color: #4a5568;
+            color: #64748b;
             margin-right: 10px;
         }
 
         .info-value {
             flex: 1;
-            color: #2d3748;
+            color: #334155;
+        }
+
+        .info-content {
+            color: #475569;
+            line-height: 1.6;
+            margin-top: 10px;
         }
 
         .edit-icon {
-            background: #3b82f6;
+            background: #64748b;
             color: white;
             border: none;
             width: 32px;
@@ -123,7 +144,7 @@
         }
 
         .edit-icon:hover {
-            background: #2563eb;
+            background: #475569;
         }
 
         .count-controls {
@@ -133,7 +154,7 @@
         }
 
         .count-btn {
-            background: #8b5cf6;
+            background: #94a3b8;
             color: white;
             border: none;
             width: 28px;
@@ -145,7 +166,7 @@
         }
 
         .count-btn:hover {
-            background: #7c3aed;
+            background: #64748b;
         }
 
         .count-value {
@@ -160,6 +181,21 @@
             border-radius: 6px;
             margin-top: 10px;
             display: block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 15px;
         }
 
         .pagination {
@@ -171,8 +207,8 @@
 
         .page-btn {
             background: white;
-            color: #667eea;
-            border: 2px solid white;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
             padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
@@ -182,8 +218,8 @@
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #667eea;
-            color: white;
+            background: #f8fafc;
+            border-color: #cbd5e1;
         }
 
         .page-btn:disabled {
@@ -192,7 +228,7 @@
         }
 
         .page-info {
-            color: white;
+            color: #475569;
             font-size: 16px;
             display: flex;
             align-items: center;
@@ -205,7 +241,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             padding: 20px;
             overflow-y: auto;
@@ -219,7 +255,7 @@
 
         .modal-content {
             background: white;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 30px;
             max-width: 600px;
             width: 100%;
@@ -231,7 +267,7 @@
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #2d3748;
+            color: #334155;
         }
 
         .modal-body {
@@ -254,7 +290,7 @@
 
         textarea:focus, input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #94a3b8;
         }
 
         .modal-actions {
@@ -274,29 +310,30 @@
         }
 
         .modal-btn-save {
-            background: #10b981;
+            background: #64748b;
             color: white;
         }
 
         .modal-btn-save:hover {
-            background: #059669;
+            background: #475569;
         }
 
         .modal-btn-cancel {
             background: #e2e8f0;
-            color: #4a5568;
+            color: #64748b;
         }
 
         .modal-btn-cancel:hover {
-            background: #cbd5e0;
+            background: #cbd5e1;
         }
 
         .empty-state {
             background: white;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 60px 20px;
             text-align: center;
-            color: #718096;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
         }
 
         .empty-state h2 {
@@ -346,7 +383,7 @@
             <div class="modal-header">Edit Image URL</div>
             <div class="modal-body">
                 <input type="text" id="imageUrlInput" placeholder="Enter image URL...">
-                <img id="imagePreview" class="image-preview" style="display: none;">
+                <div id="modalImagePreview" class="image-placeholder">Image preview will appear here</div>
             </div>
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
@@ -457,19 +494,22 @@
                             </div>
                         </div>
 
-                        <div class="info-row">
-                            <span class="info-label">Explanation:</span>
-                            <div class="info-value">${q.explanation ? q.explanation.substring(0, 100) + (q.explanation.length > 100 ? '...' : '') : 'No explanation'}</div>
-                            <button class="edit-icon" onclick="editExplanation(${actualIndex})">✏️</button>
+                        <div class="info-section">
+                            <div class="info-header">
+                                <span class="info-label">Explanation:</span>
+                                <button class="edit-icon" onclick="editExplanation(${actualIndex})">✏️</button>
+                            </div>
+                            <div class="info-content">${q.explanation || 'No explanation provided'}</div>
                         </div>
 
-                        <div class="info-row">
-                            <span class="info-label">Image URL:</span>
-                            <div class="info-value">${q.imageUrl ? q.imageUrl.substring(0, 40) + (q.imageUrl.length > 40 ? '...' : '') : 'No image'}</div>
-                            <button class="edit-icon" onclick="editImageUrl(${actualIndex})">✏️</button>
+                        <div class="info-section">
+                            <div class="info-header">
+                                <span class="info-label">Image:</span>
+                                <button class="edit-icon" onclick="editImageUrl(${actualIndex})">✏️</button>
+                            </div>
+                            <div class="info-content" style="font-size: 14px; word-break: break-all;">${q.imageUrl || 'No image URL'}</div>
+                            ${q.imageUrl ? `<img src="${q.imageUrl}" class="image-preview" onerror="this.style.display='none'">` : ''}
                         </div>
-
-                        ${q.imageUrl ? `<img src="${q.imageUrl}" class="image-preview" onerror="this.style.display='none'">` : ''}
                     </div>
                 `;
             }).join('');
@@ -551,19 +591,48 @@
         function editImageUrl(index) {
             currentEditIndex = index;
             const input = document.getElementById('imageUrlInput');
-            const preview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('modalImagePreview');
             
             input.value = questions[index].imageUrl || '';
             
             if (input.value) {
-                preview.src = input.value;
-                preview.style.display = 'block';
-                preview.onerror = () => preview.style.display = 'none';
+                updateModalImagePreview(input.value);
             } else {
-                preview.style.display = 'none';
+                resetModalImagePreview();
             }
             
             document.getElementById('imageModal').classList.add('active');
+        }
+
+        // Update modal image preview
+        function updateModalImagePreview(url) {
+            const previewContainer = document.getElementById('modalImagePreview');
+            
+            if (url) {
+                const img = new Image();
+                img.onload = function() {
+                    previewContainer.innerHTML = '';
+                    previewContainer.className = '';
+                    const imgElement = document.createElement('img');
+                    imgElement.src = url;
+                    imgElement.className = 'image-preview';
+                    previewContainer.appendChild(imgElement);
+                };
+                img.onerror = function() {
+                    previewContainer.className = 'image-placeholder';
+                    previewContainer.innerHTML = 'Invalid image URL';
+                };
+                img.src = url;
+            } else {
+                resetModalImagePreview();
+            }
+        }
+
+        // Reset modal image preview
+        function resetModalImagePreview() {
+            const previewContainer = document.getElementById('modalImagePreview');
+            previewContainer.className = 'image-placeholder';
+            previewContainer.innerHTML = 'Image preview will appear here';
         }
 
         // Save image URL
@@ -579,14 +648,7 @@
         // Image preview on input
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('imageUrlInput').addEventListener('input', (e) => {
-                const preview = document.getElementById('imagePreview');
-                if (e.target.value) {
-                    preview.src = e.target.value;
-                    preview.style.display = 'block';
-                    preview.onerror = () => preview.style.display = 'none';
-                } else {
-                    preview.style.display = 'none';
-                }
+                updateModalImagePreview(e.target.value);
             });
         });
 
@@ -594,6 +656,7 @@
         function closeModal() {
             document.getElementById('explanationModal').classList.remove('active');
             document.getElementById('imageModal').classList.remove('active');
+            resetModalImagePreview();
             currentEditIndex = -1;
         }
 
