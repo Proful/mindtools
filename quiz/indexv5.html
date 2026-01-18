@@ -686,7 +686,9 @@
     </div>
 
     <script>
-      let wrongAnswers = [];
+      let allAnswers = []; // Never filtered
+      let wrongAnswers = []; // Filtered for display
+      // let wrongAnswers = [];
       let timerInterval = null;
       let TIMER_DURATION = 60;
       let currentState = null;
@@ -728,34 +730,46 @@
           const subject = urlParams.get("subject") || "science";
           const stored = localStorage.getItem("quiz-all-answers-"+subject.toLowerCase());
           if (stored) {
-
-           wrongAnswers = JSON.parse(stored);
-
-           wrongAnswers = wrongAnswers.map(q => ({
+            allAnswers = JSON.parse(stored).map(q => ({
               ...q,
               correctCount: q.correctCount ?? 0,
               wrongCount: q.wrongCount ?? 0
             }));
-            // console.log(wrongAnswers)
-            wrongAnswers = wrongAnswers.filter(q => {
-              let cc = q.correctCount ?? 0
-              let wc = q.wrongCount ?? 0
-
-              let display = false
-
-              if (cc == 0) {
-                display = true
-              }
-
-              if (wc > 0 && cc - wc <= 1) {
-                display = true
-              }
-
-              return display
+            // Filter for revision display only
+            wrongAnswers = allAnswers.filter(q => {
+              let cc = q.correctCount ?? 0;
+              let wc = q.wrongCount ?? 0;
+              return (cc == 0) || (wc > 0 && cc - wc <= 1);
             });
+           // wrongAnswers = JSON.parse(stored);
+
+           // wrongAnswers = wrongAnswers.map(q => ({
+           //    ...q,
+           //    correctCount: q.correctCount ?? 0,
+           //    wrongCount: q.wrongCount ?? 0
+           //  }));
+            // console.log(wrongAnswers)
+            // wrongAnswers = wrongAnswers.filter(q => {
+            //   let cc = q.correctCount ?? 0
+            //   let wc = q.wrongCount ?? 0
+            //
+            //   let display = false
+            //
+            //   if (cc == 0) {
+            //     display = true
+            //   }
+            //
+            //   if (wc > 0 && cc - wc <= 1) {
+            //     display = true
+            //   }
+            //
+            //   return display
+            // });
           }
         } catch (error) {
           console.log("No wrong answers stored yet");
+          // wrongAnswers = [];
+          allAnswers = [];
           wrongAnswers = [];
         }
       }
@@ -769,14 +783,14 @@
           );
 
           if (existingIndex !== -1) {
-            wrongAnswers[existingIndex] = {
-              ...wrongAnswers[existingIndex],
+            allAnswers[existingIndex] = {
+              ...allAnswers[existingIndex],
               correctCount: question.correctCount || 0,
               wrongCount: question.wrongCount || 0,
               explanation: question.explanation || wrongAnswers[existingIndex].explanation
             };
           } else {
-            wrongAnswers.push({
+            allAnswers.push({
               ...question,
               correctCount: question.correctCount || 0,
               wrongCount: question.wrongCount || 0
@@ -785,7 +799,7 @@
 
           localStorage.setItem(
             "quiz-all-answers-"+subject.toLowerCase(),
-            JSON.stringify(wrongAnswers)
+            JSON.stringify(allAnswers)
           );
         } catch (error) {
           console.error("Error saving wrong answer:", error);
@@ -799,10 +813,10 @@
           wrongAnswers = wrongAnswers.filter(
             (q) => q.question !== question.question
           );
-          localStorage.setItem(
-            "quiz-all-answers-"+subject.toLowerCase(),
-            JSON.stringify(wrongAnswers)
-          );
+          // localStorage.setItem(
+          //   "quiz-all-answers-"+subject.toLowerCase(),
+          //   JSON.stringify(wrongAnswers)
+          // );
         } catch (error) {
           console.error("Error removing from revision list:", error);
         }
@@ -813,7 +827,7 @@
           const urlParams = new URLSearchParams(window.location.search);
           const subject = urlParams.get("subject") || "science";
           wrongAnswers = [];
-          localStorage.removeItem("quiz-all-answers-"+subject.toLowerCase());
+          // localStorage.removeItem("quiz-all-answers-"+subject.toLowerCase());
           showHome();
         } catch (error) {
           console.error("Error clearing wrong answers:", error);
