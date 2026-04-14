@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="description" content="A fun app for kids to learn English fruit pronunciation with images and audio." />
   <meta name="theme-color" content="#fff8f0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Fruity Words — Learn Fruit Names</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,6 +32,8 @@
       background: var(--bg);
       font-family: 'Nunito', sans-serif;
       color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     body {
@@ -40,6 +44,52 @@
       background-image:
         radial-gradient(circle at 15% 20%, rgba(46,204,113,0.10) 0%, transparent 50%),
         radial-gradient(circle at 85% 80%, rgba(243,156,18,0.10) 0%, transparent 50%);
+    }
+
+    /* ── Tap-to-start overlay ──
+       Android Chrome blocks speechSynthesis until a user gesture occurs.
+       This overlay forces that gesture before anything plays. */
+    #tapOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      z-index: 100;
+      text-align: center;
+      padding: 2rem;
+      background-image:
+        radial-gradient(circle at 20% 25%, rgba(46,204,113,0.12) 0%, transparent 55%),
+        radial-gradient(circle at 80% 75%, rgba(243,156,18,0.12) 0%, transparent 55%);
+    }
+    #tapOverlay .tap-icon { font-size: 72px; animation: bounce 1.4s ease-in-out infinite; }
+    #tapOverlay h2 {
+      font-family: 'Baloo 2', cursive;
+      font-size: clamp(26px, 7vw, 36px);
+      font-weight: 800;
+      color: var(--text);
+    }
+    #tapOverlay p { font-size: 15px; color: var(--muted); font-weight: 600; }
+    #tapBtn {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 16px 52px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(46,204,113,0.35);
+      transition: transform 0.12s, background 0.2s;
+    }
+    #tapBtn:active { transform: scale(0.95); background: var(--green-dk); }
+    @keyframes bounce {
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-14px); }
     }
 
     /* ── Header ── */
@@ -56,22 +106,15 @@
       line-height: 1.1;
     }
     header h1 span { color: var(--green-dk); }
-    header p {
-      font-size: 15px;
-      color: var(--muted);
-      margin-top: 6px;
-      font-weight: 600;
-    }
+    header p { font-size: 15px; color: var(--muted); margin-top: 6px; font-weight: 600; }
 
     /* ── Card ── */
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      width: 100%;
-      max-width: 380px;
-      display: flex;
-      flex-direction: column;
+      width: 100%; max-width: 380px;
+      display: flex; flex-direction: column;
       align-items: center;
       padding: 1.75rem 1.25rem 1.5rem;
       gap: 1.1rem;
@@ -80,20 +123,15 @@
 
     /* ── Image ── */
     .img-wrap {
-      width: 210px;
-      height: 210px;
+      width: 210px; height: 210px;
       border-radius: calc(var(--radius) - 4px);
       overflow: hidden;
       background: #f2f2f2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       border: 3px solid #f0ede8;
-      position: relative;
     }
     .img-wrap img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
       transition: opacity 0.45s ease;
     }
@@ -102,179 +140,95 @@
     .fruit-name {
       font-family: 'Baloo 2', cursive;
       font-size: clamp(34px, 9vw, 48px);
-      font-weight: 700;
-      color: var(--text);
+      font-weight: 700; color: var(--text);
       letter-spacing: 2px;
       text-transform: capitalize;
       text-align: center;
     }
 
     /* ── Status row ── */
-    .status-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 30px;
-    }
-    .repeat-dots {
-      display: flex;
-      gap: 7px;
-    }
+    .status-row { display: flex; align-items: center; gap: 10px; min-height: 30px; }
+    .repeat-dots { display: flex; gap: 7px; }
     .rdot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+      width: 12px; height: 12px; border-radius: 50%;
       background: #e0ddd8;
       transition: background 0.3s, transform 0.2s;
     }
-    .rdot.active {
-      background: var(--green);
-      transform: scale(1.2);
-    }
-    .status-label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
+    .rdot.active { background: var(--green); transform: scale(1.2); }
+    .status-label { font-size: 13px; color: var(--muted); font-weight: 600; }
 
     /* ── Sound wave ── */
-    .wave {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      height: 22px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+    .wave { display: flex; align-items: flex-end; gap: 3px; height: 22px; opacity: 0; transition: opacity 0.3s; }
     .wave.on { opacity: 1; }
-    .wbar {
-      width: 4px;
-      border-radius: 2px;
-      background: var(--green);
-      animation: wavebar 0.85s ease-in-out infinite;
-    }
+    .wbar { width: 4px; border-radius: 2px; background: var(--green); animation: wavebar 0.85s ease-in-out infinite; }
     .wbar:nth-child(1){ height: 8px;  animation-delay: 0s; }
     .wbar:nth-child(2){ height: 17px; animation-delay: 0.12s; }
     .wbar:nth-child(3){ height: 22px; animation-delay: 0.22s; }
     .wbar:nth-child(4){ height: 14px; animation-delay: 0.32s; }
     .wbar:nth-child(5){ height: 19px; animation-delay: 0.17s; }
-    @keyframes wavebar {
-      0%,100%{ transform: scaleY(0.35); }
-      50%{ transform: scaleY(1); }
-    }
+    @keyframes wavebar { 0%,100%{ transform: scaleY(0.35); } 50%{ transform: scaleY(1); } }
 
-    /* ── Progress tracker ── */
+    /* ── Progress ── */
     .progress-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      max-width: 380px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 10px;
+      width: 100%; max-width: 380px;
       animation: fadeUp 0.6s 0.2s ease both;
     }
-    .progress-label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .progress-dots {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    .progress-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .progress-dots { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
     .pdot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #e0ddd8;
-      border: 1.5px solid #d0cdc8;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #e0ddd8; border: 1.5px solid #d0cdc8;
       transition: background 0.4s, border-color 0.4s, transform 0.2s;
     }
     .pdot.done    { background: var(--green); border-color: var(--green-dk); }
     .pdot.current { background: var(--amber); border-color: var(--amber-dk); transform: scale(1.3); }
 
     /* ── Countdown ring ── */
-    .countdown-ring {
-      position: relative;
-      width: 52px;
-      height: 52px;
-    }
-    .countdown-ring svg {
-      transform: rotate(-90deg);
-    }
-    .ring-track { fill: none; stroke: #e0ddd8; stroke-width: 4; }
+    .countdown-ring { position: relative; width: 52px; height: 52px; }
+    .countdown-ring svg { transform: rotate(-90deg); }
+    .ring-track    { fill: none; stroke: #e0ddd8; stroke-width: 4; }
     .ring-progress { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.1s linear; }
     .ring-number {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 700;
-      font-family: 'Baloo 2', cursive;
-      color: var(--text);
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700;
+      font-family: 'Baloo 2', cursive; color: var(--text);
     }
 
     /* ── Buttons ── */
-    .controls {
-      display: flex;
-      gap: 10px;
-      animation: fadeUp 0.6s 0.3s ease both;
-    }
+    .controls { display: flex; gap: 10px; animation: fadeUp 0.6s 0.3s ease both; }
     .btn {
-      padding: 10px 22px;
+      padding: 12px 24px; min-width: 112px;
       font-family: 'Nunito', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 50px;
-      border: 2px solid transparent;
+      font-size: 15px; font-weight: 700;
+      border-radius: 50px; border: 2px solid transparent;
       cursor: pointer;
-      transition: transform 0.15s, background 0.2s;
+      transition: transform 0.12s, background 0.2s;
     }
-    .btn:active { transform: scale(0.96); }
-    .btn-primary {
-      background: var(--green);
-      color: #fff;
-      border-color: var(--green-dk);
-    }
+    .btn:active { transform: scale(0.95); }
+    .btn-primary   { background: var(--green);  color: #fff; border-color: var(--green-dk); }
     .btn-primary:hover { background: var(--green-dk); }
-    .btn-secondary {
-      background: #fff;
-      color: var(--text);
-      border-color: #d0cdc8;
-    }
+    .btn-secondary { background: #fff; color: var(--text); border-color: #d0cdc8; }
     .btn-secondary:hover { background: #f5f2ee; }
 
     /* ── Done screen ── */
     .done-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      text-align: center;
-      padding: 1.5rem 1rem;
+      display: none; flex-direction: column;
+      align-items: center; gap: 0.75rem;
+      text-align: center; padding: 1.5rem 1rem;
     }
     .done-screen.show { display: flex; }
     .done-emoji { font-size: 56px; animation: pop 0.5s cubic-bezier(0.36,0.07,0.19,0.97); }
     @keyframes pop { 0%{ transform:scale(0); } 70%{ transform:scale(1.2); } 100%{ transform:scale(1); } }
-    .done-screen h2 {
-      font-family: 'Baloo 2', cursive;
-      font-size: 26px;
-      font-weight: 800;
-    }
-    .done-screen p { font-size: 15px; color: var(--muted); font-weight: 600; }
+    .done-screen h2 { font-family: 'Baloo 2', cursive; font-size: 26px; font-weight: 800; }
+    .done-screen p  { font-size: 15px; color: var(--muted); font-weight: 600; }
 
-    /* ── Animations ── */
     @keyframes fadeDown { from{ opacity:0; transform:translateY(-18px); } to{ opacity:1; transform:none; } }
     @keyframes fadeUp   { from{ opacity:0; transform:translateY(16px);  } to{ opacity:1; transform:none; } }
 
-    /* ── Responsive ── */
-    @media (min-width: 480px) {
-      .img-wrap { width: 240px; height: 240px; }
-    }
+    @media (min-width: 480px) { .img-wrap { width: 240px; height: 240px; } }
     @media (min-width: 640px) {
       body { padding: 2.5rem 1.5rem 4rem; }
       .img-wrap { width: 260px; height: 260px; }
@@ -283,17 +237,24 @@
 </head>
 <body>
 
+  <!-- REQUIRED for Android Chrome: speechSynthesis only works after a user gesture -->
+  <div id="tapOverlay">
+    <div class="tap-icon">🍎</div>
+    <h2>Fruity Words</h2>
+    <p>Tap the button to start learning fruit names!</p>
+    <button id="tapBtn">&#9654; Let's Start!</button>
+  </div>
+
   <header>
-    <h1>Fruity <span>Words</span> 🍓</h1>
+    <h1>Fruity <span>Words</span> &#127827;</h1>
     <p>Listen, learn, and say it!</p>
   </header>
 
-  <!-- Main card -->
-  <div class="card" id="mainCard">
+  <div class="card">
     <div class="img-wrap">
       <img id="fruitImg" src="" alt="" />
     </div>
-    <div class="fruit-name" id="fruitName">—</div>
+    <div class="fruit-name" id="fruitName">&#8212;</div>
 
     <div class="status-row">
       <div class="wave" id="waveAnim">
@@ -305,42 +266,40 @@
         <div class="rdot" id="rd1"></div>
         <div class="rdot" id="rd2"></div>
       </div>
-      <div class="status-label" id="statusText">Loading…</div>
+      <div class="status-label" id="statusText">Loading&#8230;</div>
     </div>
 
-    <!-- Done overlay inside card -->
     <div class="done-screen" id="doneScreen">
-      <div class="done-emoji">🎉</div>
+      <div class="done-emoji">&#127881;</div>
       <h2>Amazing job!</h2>
       <p>You learned all the fruit names!</p>
     </div>
   </div>
 
-  <!-- Countdown ring + progress -->
   <div class="progress-wrap" style="margin-top:1.25rem;">
     <div style="display:flex;align-items:center;gap:14px;">
       <div class="countdown-ring" id="countdownRing" style="display:none;">
         <svg width="52" height="52" viewBox="0 0 52 52">
-          <circle class="ring-track" cx="26" cy="26" r="22"/>
+          <circle class="ring-track"    cx="26" cy="26" r="22"/>
           <circle class="ring-progress" id="ringArc" cx="26" cy="26" r="22"
-            stroke-dasharray="138.23"
-            stroke-dashoffset="0"/>
+            stroke-dasharray="138.23" stroke-dashoffset="0"/>
         </svg>
         <div class="ring-number" id="ringNum">5</div>
       </div>
       <div>
         <div class="progress-label" id="progressLabel">Fruit 1 of 8</div>
-        <div class="progress-dots" id="progressDots"></div>
+        <div class="progress-dots"  id="progressDots"></div>
       </div>
     </div>
   </div>
 
   <div class="controls" style="margin-top:1.25rem;">
-    <button class="btn btn-primary" id="btnPause">⏸ Pause</button>
-    <button class="btn btn-secondary" id="btnRestart">↺ Restart</button>
+    <button class="btn btn-primary"   id="btnPause">&#9646;&#9646; Pause</button>
+    <button class="btn btn-secondary" id="btnRestart">&#8635; Restart</button>
   </div>
 
   <script>
+    /* ── DATA ── */
     let fruits = [
       { name: "apple",      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/400px-Red_Apple.jpg" },
       { name: "banana",     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Cavendish_banana_DS.jpg/400px-Cavendish_banana_DS.jpg" },
@@ -352,12 +311,15 @@
       { name: "watermelon", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Watermelon_seedless_%28Citrullus_lanatus%29.jpg/400px-Watermelon_seedless_%28Citrullus_lanatus%29.jpg" }
     ];
 
-    let currentIndex = 0;
-    let paused = false;
-    let aborted = false;
-    let timeoutId = null;
+    /* ── STATE ── */
+    let currentIndex      = 0;
+    let paused            = false;
+    let aborted           = false;
+    let timeoutId         = null;
     let countdownInterval = null;
+    let preferredVoice    = null;
 
+    /* ── DOM ── */
     const fruitImg     = document.getElementById('fruitImg');
     const fruitName    = document.getElementById('fruitName');
     const statusText   = document.getElementById('statusText');
@@ -370,60 +332,84 @@
     const ringNum      = document.getElementById('ringNum');
     const btnPause     = document.getElementById('btnPause');
     const btnRestart   = document.getElementById('btnRestart');
+    const tapOverlay   = document.getElementById('tapOverlay');
+    const tapBtn       = document.getElementById('tapBtn');
     const rdots        = [document.getElementById('rd0'), document.getElementById('rd1'), document.getElementById('rd2')];
 
-    const CIRCUMFERENCE = 2 * Math.PI * 22;
+    const CIRC = 2 * Math.PI * 22;
 
-    /* ── Helpers ── */
-    function setRing(seconds, total) {
+    /* ── VOICE LOADING
+       Android Chrome loads voices asynchronously via onvoiceschanged.
+       We must wait for that event, then pick the best English voice. ── */
+    function pickVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+      preferredVoice =
+        voices.find(v => v.lang === 'en-US' && /google/i.test(v.name)) ||
+        voices.find(v => v.lang === 'en-US') ||
+        voices.find(v => v.lang.startsWith('en')) ||
+        voices[0];
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = pickVoice;
+      pickVoice();
+    }
+
+    /* ── ANDROID KEEPALIVE
+       Chrome on Android silently pauses synthesis after ~15 s.
+       Calling pause()+resume() every 10 s prevents that. ── */
+    setInterval(function() {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }
+    }, 10000);
+
+    /* ── HELPERS ── */
+    function setRing(sec, total) {
       ringWrap.style.display = 'flex';
-      const frac = seconds / total;
-      ringArc.style.strokeDashoffset = CIRCUMFERENCE * (1 - frac);
-      ringNum.textContent = Math.ceil(seconds);
+      ringArc.style.strokeDashoffset = CIRC * (1 - sec / total);
+      ringNum.textContent = Math.ceil(sec);
     }
     function hideRing() { ringWrap.style.display = 'none'; }
 
     function buildDots() {
       progressDots.innerHTML = '';
-      fruits.forEach((_, i) => {
-        const d = document.createElement('div');
+      fruits.forEach(function(_, i) {
+        var d = document.createElement('div');
         d.className = 'pdot' + (i < currentIndex ? ' done' : i === currentIndex ? ' current' : '');
         progressDots.appendChild(d);
       });
-      progressLbl.textContent = `Fruit ${Math.min(currentIndex + 1, fruits.length)} of ${fruits.length}`;
+      progressLbl.textContent = 'Fruit ' + (Math.min(currentIndex + 1, fruits.length)) + ' of ' + fruits.length;
     }
-
     function refreshDots() {
-      const all = progressDots.querySelectorAll('.pdot');
-      all.forEach((d, i) => {
+      var all = progressDots.querySelectorAll('.pdot');
+      all.forEach(function(d, i) {
         d.className = 'pdot' + (i < currentIndex ? ' done' : i === currentIndex ? ' current' : '');
       });
-      progressLbl.textContent = `Fruit ${Math.min(currentIndex + 1, fruits.length)} of ${fruits.length}`;
+      progressLbl.textContent = 'Fruit ' + (Math.min(currentIndex + 1, fruits.length)) + ' of ' + fruits.length;
     }
-
-    function setRepeatDots(activeIdx) {
-      rdots.forEach((d, i) => d.classList.toggle('active', i <= activeIdx));
-    }
-    function clearRepeatDots() { rdots.forEach(d => d.classList.remove('active')); }
+    function setRepeatDots(idx) { rdots.forEach(function(d, i) { d.classList.toggle('active', i <= idx); }); }
+    function clearRepeatDots()  { rdots.forEach(function(d) { d.classList.remove('active'); }); }
 
     function delay(ms) {
-      return new Promise(resolve => { timeoutId = setTimeout(resolve, ms); });
+      return new Promise(function(res) { timeoutId = setTimeout(res, ms); });
     }
     function abortDelay() { if (timeoutId) clearTimeout(timeoutId); }
 
     function countdownDelay(totalSec) {
-      return new Promise(resolve => {
-        let remaining = totalSec;
-        setRing(remaining, totalSec);
-
-        countdownInterval = setInterval(() => {
-          remaining -= 0.1;
-          if (remaining <= 0) {
+      return new Promise(function(res) {
+        var rem = totalSec;
+        setRing(rem, totalSec);
+        countdownInterval = setInterval(function() {
+          rem -= 0.1;
+          if (rem <= 0) {
             clearInterval(countdownInterval);
+            countdownInterval = null;
             hideRing();
-            resolve();
+            res();
           } else {
-            setRing(remaining, totalSec);
+            setRing(rem, totalSec);
           }
         }, 100);
       });
@@ -433,22 +419,44 @@
       hideRing();
     }
 
+    /* ── SPEECH — Android Chrome safe ──
+       Fixes:
+       1. cancel() before every speak() to clear any stuck queue.
+       2. 120 ms pause after cancel() so Android can re-init the engine.
+       3. Explicit voice assignment once voices are loaded.
+       4. 4 s fallback timeout in case onend never fires (known Android bug). ── */
     function speakWord(word) {
-      return new Promise(resolve => {
-        if (!window.speechSynthesis) { resolve(); return; }
+      return new Promise(function(res) {
+        if (!window.speechSynthesis) { res(); return; }
         window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(word);
-        u.rate  = 0.82;
-        u.pitch = 1.1;
-        u.lang  = 'en-US';
-        u.onstart = () => waveAnim.classList.add('on');
-        u.onend   = () => { waveAnim.classList.remove('on'); resolve(); };
-        u.onerror = () => { waveAnim.classList.remove('on'); resolve(); };
-        window.speechSynthesis.speak(u);
+
+        setTimeout(function() {
+          var u = new SpeechSynthesisUtterance(word);
+          u.lang   = 'en-US';
+          u.rate   = 0.82;
+          u.pitch  = 1.1;
+          u.volume = 1.0;
+          if (preferredVoice) u.voice = preferredVoice;
+
+          var done = false;
+          function finish() {
+            if (done) return;
+            done = true;
+            waveAnim.classList.remove('on');
+            res();
+          }
+          var fallback = setTimeout(finish, 4000);
+
+          u.onstart = function() { waveAnim.classList.add('on'); };
+          u.onend   = function() { clearTimeout(fallback); finish(); };
+          u.onerror = function() { clearTimeout(fallback); finish(); };
+
+          window.speechSynthesis.speak(u);
+        }, 120);
       });
     }
 
-    /* ── Main loop ── */
+    /* ── MAIN LOOP ── */
     async function showFruit(index) {
       aborted = false;
 
@@ -462,37 +470,38 @@
       }
 
       doneScreen.classList.remove('show');
-      const fruit = fruits[index];
+      var fruit = fruits[index];
 
       fruitImg.style.opacity = '0';
-      fruitImg.src = fruit.imageUrl;
-      fruitImg.alt = fruit.name;
-      fruitImg.onload = () => { fruitImg.style.opacity = '1'; };
+      fruitImg.src    = fruit.imageUrl;
+      fruitImg.alt    = fruit.name;
+      fruitImg.onload  = function() { fruitImg.style.opacity = '1'; };
+      fruitImg.onerror = function() { fruitImg.style.opacity = '1'; };
       fruitName.textContent = fruit.name;
       clearRepeatDots();
       hideRing();
-      statusText.textContent = 'Look at the picture…';
+      statusText.textContent = 'Look at the picture\u2026';
       refreshDots();
 
       await delay(1200);
       if (aborted) return;
 
-      for (let rep = 0; rep < 3; rep++) {
+      for (var rep = 0; rep < 3; rep++) {
         if (aborted) return;
         setRepeatDots(rep);
-        statusText.textContent = `Saying it (${rep + 1} of 3)…`;
+        statusText.textContent = 'Saying it (' + (rep + 1) + ' of 3)\u2026';
         await speakWord(fruit.name);
         if (aborted) return;
 
         if (rep < 2) {
-          statusText.textContent = 'Listen again in 5 seconds…';
+          statusText.textContent = 'Listen again in 5 seconds\u2026';
           await countdownDelay(5);
           if (aborted) return;
         }
       }
 
       clearRepeatDots();
-      statusText.textContent = 'Next fruit in 5 seconds…';
+      statusText.textContent = 'Next fruit in 5 seconds\u2026';
       await countdownDelay(5);
       if (aborted) return;
 
@@ -500,41 +509,49 @@
       showFruit(currentIndex);
     }
 
-    /* ── Controls ── */
-    btnPause.addEventListener('click', () => {
+    /* ── TAP-TO-START
+       Fire a silent utterance inside the user-gesture handler.
+       This "unlocks" the Android Chrome audio engine for all later calls. ── */
+    tapBtn.addEventListener('click', function() {
+      if (window.speechSynthesis) {
+        var warm = new SpeechSynthesisUtterance(' ');
+        warm.volume = 0;
+        window.speechSynthesis.speak(warm);
+        pickVoice();
+      }
+      tapOverlay.style.display = 'none';
+      buildDots();
+      showFruit(0);
+    });
+
+    /* ── CONTROLS ── */
+    btnPause.addEventListener('click', function() {
       paused = !paused;
       if (paused) {
         aborted = true;
         abortDelay();
         abortCountdown();
-        window.speechSynthesis && window.speechSynthesis.cancel();
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
         waveAnim.classList.remove('on');
-        statusText.textContent = 'Paused ⏸';
-        btnPause.textContent = '▶ Resume';
+        statusText.textContent = 'Paused';
+        btnPause.innerHTML = '&#9654; Resume';
       } else {
-        btnPause.textContent = '⏸ Pause';
+        btnPause.innerHTML = '&#9646;&#9646; Pause';
         showFruit(currentIndex);
       }
     });
 
-    btnRestart.addEventListener('click', () => {
-      paused = false;
+    btnRestart.addEventListener('click', function() {
+      paused  = false;
       aborted = true;
       abortDelay();
       abortCountdown();
-      window.speechSynthesis && window.speechSynthesis.cancel();
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
       waveAnim.classList.remove('on');
-      btnPause.textContent = '⏸ Pause';
+      btnPause.innerHTML = '&#9646;&#9646; Pause';
       currentIndex = 0;
-      setTimeout(() => {
-        buildDots();
-        showFruit(0);
-      }, 80);
+      setTimeout(function() { buildDots(); showFruit(0); }, 80);
     });
-
-    /* ── Init ── */
-    buildDots();
-    showFruit(0);
   </script>
 </body>
 </html>
