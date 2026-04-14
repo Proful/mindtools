@@ -1,0 +1,15 @@
+- html, css, javascript 
+- mobile first, responsive design 
+- clean and simple design
+- build a app for kid to learn pronuntiation of english word by seeing fruit and fruit name
+- use below javascript variable format (load with test data fetch image from wikipedia)
+let fruits = [
+  {
+    "name": "apple",
+    "imageUrl": "https://xxxxxx/apple.jpeg"
+  }
+]
+- the app should show the image followed by its name 
+- the app should read the fruit name using browser audio api. delay 5 second
+- the app should read 3 times followed by 5 second 
+- then it should move to the next image

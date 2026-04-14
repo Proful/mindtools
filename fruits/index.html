@@ -1,0 +1,327 @@
+<html>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  #app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 2rem;
+  }
+  .app-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .app-header h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  .app-header p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+  }
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    width: 100%;
+    max-width: 360px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 1.25rem;
+    gap: 1rem;
+  }
+  .fruit-img-wrap {
+    width: 200px;
+    height: 200px;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--color-background-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .fruit-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s;
+  }
+  .fruit-name {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    letter-spacing: 1px;
+    text-transform: capitalize;
+    text-align: center;
+  }
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+  }
+  .status-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-border-tertiary);
+    transition: background 0.3s;
+  }
+  .dot.active {
+    background: #1D9E75;
+  }
+  .status-text {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+  .progress-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 360px;
+    width: 100%;
+  }
+  .prog-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-secondary);
+    transition: background 0.4s;
+  }
+  .prog-dot.done { background: #1D9E75; border-color: #1D9E75; }
+  .prog-dot.current { background: #EF9F27; border-color: #BA7517; }
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.5rem;
+  }
+  .controls button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+  .wave-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .wave-wrap.speaking { opacity: 1; }
+  .bar {
+    width: 4px;
+    border-radius: 2px;
+    background: #1D9E75;
+    animation: wave 0.9s ease-in-out infinite;
+  }
+  .bar:nth-child(1){ height: 8px; animation-delay: 0s; }
+  .bar:nth-child(2){ height: 16px; animation-delay: 0.1s; }
+  .bar:nth-child(3){ height: 22px; animation-delay: 0.2s; }
+  .bar:nth-child(4){ height: 14px; animation-delay: 0.3s; }
+  .bar:nth-child(5){ height: 20px; animation-delay: 0.15s; }
+  @keyframes wave {
+    0%,100%{ transform: scaleY(0.4); }
+    50%{ transform: scaleY(1); }
+  }
+  @media(min-width:480px){
+    .fruit-img-wrap{ width:240px; height:240px; }
+    .fruit-name{ font-size:38px; }
+  }
+</style>
+
+<div id="app">
+  <h2 class="sr-only">Fruit pronunciation learning app for kids</h2>
+  <div class="app-header">
+    <h1>Learn Fruit Names</h1>
+    <p>Listen and learn how to say each fruit!</p>
+  </div>
+
+  <div class="card">
+    <div class="fruit-img-wrap">
+      <img id="fruitImg" src="" alt="" />
+    </div>
+    <div class="fruit-name" id="fruitName">—</div>
+    <div class="status-row">
+      <div class="wave-wrap" id="waveAnim">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div>
+      </div>
+      <div class="status-dots" id="statusDots">
+        <div class="dot" id="d0"></div>
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+      </div>
+      <div class="status-text" id="statusText">Getting ready…</div>
+    </div>
+  </div>
+
+  <div class="progress-row" id="progressRow"></div>
+
+  <div class="controls">
+    <button id="btnPause">Pause</button>
+    <button id="btnRestart">Restart</button>
+  </div>
+</div>
+
+<script>
+let fruits = [
+  { name: "apple",      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/320px-Red_Apple.jpg" },
+  { name: "banana",     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banana-Chocolate-Chip-Cookies-%281%29.jpg/320px-Banana-Chocolate-Chip-Cookies-%281%29.jpg" },
+  { name: "mango",      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Hapus_Mango.jpg/320px-Hapus_Mango.jpg" },
+  { name: "orange",     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Oranges_and_orange_juice.jpg/320px-Oranges_and_orange_juice.jpg" },
+  { name: "strawberry", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/PerfectStrawberry.jpg/320px-PerfectStrawberry.jpg" },
+  { name: "grapes",     imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Kyoho-grape.jpg/320px-Kyoho-grape.jpg" },
+  { name: "watermelon", imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/320px-PNG_transparency_demonstration_1.png" },
+  { name: "pineapple",  imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Pineapple_and_cross_section.jpg/320px-Pineapple_and_cross_section.jpg" }
+];
+
+let currentIndex = 0;
+let repeatCount = 0;
+let paused = false;
+let timeoutId = null;
+let speaking = false;
+
+const fruitImg   = document.getElementById('fruitImg');
+const fruitName  = document.getElementById('fruitName');
+const statusText = document.getElementById('statusText');
+const waveAnim   = document.getElementById('waveAnim');
+const progressRow= document.getElementById('progressRow');
+const btnPause   = document.getElementById('btnPause');
+const btnRestart = document.getElementById('btnRestart');
+const dots       = [document.getElementById('d0'), document.getElementById('d1'), document.getElementById('d2')];
+
+function buildProgress() {
+  progressRow.innerHTML = '';
+  fruits.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'prog-dot' + (i < currentIndex ? ' done' : i === currentIndex ? ' current' : '');
+    progressRow.appendChild(d);
+  });
+}
+
+function updateProgress() {
+  const all = progressRow.querySelectorAll('.prog-dot');
+  all.forEach((d, i) => {
+    d.className = 'prog-dot' + (i < currentIndex ? ' done' : i === currentIndex ? ' current' : '');
+  });
+}
+
+function setDots(activeIdx) {
+  dots.forEach((d, i) => d.classList.toggle('active', i <= activeIdx));
+}
+
+function clearDots() {
+  dots.forEach(d => d.classList.remove('active'));
+}
+
+function delay(ms) {
+  return new Promise(resolve => {
+    timeoutId = setTimeout(resolve, ms);
+  });
+}
+
+function cancelDelay() {
+  if (timeoutId) clearTimeout(timeoutId);
+}
+
+function speakWord(word) {
+  return new Promise(resolve => {
+    if (!window.speechSynthesis) { resolve(); return; }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.rate = 0.85;
+    utter.pitch = 1.1;
+    utter.lang = 'en-US';
+    utter.onstart  = () => { speaking = true; waveAnim.classList.add('speaking'); };
+    utter.onend    = () => { speaking = false; waveAnim.classList.remove('speaking'); resolve(); };
+    utter.onerror  = () => { speaking = false; waveAnim.classList.remove('speaking'); resolve(); };
+    window.speechSynthesis.speak(utter);
+  });
+}
+
+async function showFruit(index) {
+  if (index >= fruits.length) {
+    statusText.textContent = 'All done! Great job!';
+    clearDots();
+    updateProgress();
+    return;
+  }
+  const fruit = fruits[index];
+  fruitImg.style.opacity = '0';
+  fruitImg.src = fruit.imageUrl;
+  fruitImg.alt = fruit.name;
+  fruitImg.onload = () => { fruitImg.style.opacity = '1'; };
+  fruitName.textContent = fruit.name;
+  clearDots();
+  statusText.textContent = 'Listen carefully…';
+  updateProgress();
+
+  await delay(1200);
+  if (paused) return;
+
+  for (let rep = 0; rep < 3; rep++) {
+    if (paused) return;
+    setDots(rep);
+    statusText.textContent = `Saying it (${rep+1} of 3)…`;
+    await speakWord(fruit.name);
+    if (rep < 2) {
+      if (paused) return;
+      statusText.textContent = 'Again in 5 seconds…';
+      await delay(5000);
+    }
+  }
+
+  if (paused) return;
+  statusText.textContent = 'Next fruit in 5 seconds…';
+  clearDots();
+  await delay(5000);
+  if (paused) return;
+
+  currentIndex++;
+  showFruit(currentIndex);
+}
+
+function start(idx) {
+  paused = false;
+  btnPause.textContent = 'Pause';
+  currentIndex = idx;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  buildProgress();
+  showFruit(currentIndex);
+}
+
+btnPause.addEventListener('click', () => {
+  paused = !paused;
+  if (paused) {
+    cancelDelay();
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    waveAnim.classList.remove('speaking');
+    statusText.textContent = 'Paused';
+    btnPause.textContent = 'Resume';
+  } else {
+    btnPause.textContent = 'Pause';
+    showFruit(currentIndex);
+  }
+});
+
+btnRestart.addEventListener('click', () => {
+  cancelDelay();
+  start(0);
+});
+
+start(0);
+</script>
+</html>
