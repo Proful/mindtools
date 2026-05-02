@@ -1,3 +1,13 @@
+# YT title from user 
+
+below working on 2 may 2026
+```sh
+yt-dlp --flat-playlist --print title "https://www.youtube.com/@USERNAME/videos" > titles.txt
+yt-dlp --flat-playlist --print title "https://www.youtube.com/@KhanAcademyIndiaEnglish/videos" > KhanAcademyIndiaEnglish.txt
+awk '!/Class 11|Class 12|Class12|Math|Algebra|trigonometry|Class 10/' KhanAcademyIndiaEnglish.txt > KhanAcademyIndiaEnglish_sc1.txt
+
+```
+
 # YT Playlist and Quiz
 
 ```
