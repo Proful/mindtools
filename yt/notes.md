@@ -1,3 +1,25 @@
+# YT title, url from user 
+
+- Pass YT user name, fetch title and url for all videos of that user
+- filter all the line containing the string to another file 
+- reverse the file
+- convert to ids
+
+```sh 
+~/all/code/bin/yt-dlp_macos --flat-playlist \
+  --print "%(title)s~%(url)s" \
+  "https://www.youtube.com/@khanacademy/videos" \
+  > KhanAcademyUrl.txt
+
+awk '/Middle school Earth and space science/' KhanAcademyUrl.txt > khan/middle_sch_earth.txt
+tail -r khan/middle_sch_earth.txt > tmp.txt; mv tmp.txt khan/middle_sch_earth.txt
+cat khan/middle_sch_earth.txt | sed -E 's/.*v=([^&]+).*/\1/' | paste -sd "," - | pbcopy
+https://www.youtube.com/watch_videos?video_ids=
+https://www.youtube.com/playlist?list=TLGGE43ZTD8S23AwMzA1MjAyNg
+
+```
+
+
 # YT title from user 
 
 below working on 2 may 2026
