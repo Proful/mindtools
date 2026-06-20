@@ -172,7 +172,7 @@ The metre is not a convenient unit for expressing long lengths. For example, the
 
 For measuring extremely large distances, such as distance of the stars from the Earth, the kilometre is too small of a unit. For measurement of such large distances, the commonly used unit is **light year**.
 
-Light year is equal to the distance travelled by light in one year at a constant speed of \( 3 \times 10^5 \, \text{km} \, \text{per second} \).
+Light year is equal to the distance travelled by light in one year at a constant speed of $$\( 3 \times 10^5 \, \text{km} \, \text{per second} \)$$.
 
 Its magnitude is \( 9.46 \times 10^{12} \, \text{km} \).
 
