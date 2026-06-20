@@ -178,7 +178,7 @@ $$
 \( 3 \times 10^5 \, \text{km} \, \text{per second} \)
 $$
 
-Its magnitude is \( 9.46 \times 10^{12} \, \text{km} \).
+Its magnitude is $\( 9.46 \times 10^{12} \, \text{km} \).$
 
 ---
 
