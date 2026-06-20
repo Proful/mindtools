@@ -1,0 +1,31 @@
+- download from youtube playlist
+
+
+yt-dlp -f "bv*[height<=720]+ba/b[height<=720]" \
+--playlist-items 1-10 \
+--recode-video mp4 \
+--postprocessor-args "ffmpeg:-vf scale=-2:720,fps=30 -c:v libx264 -preset veryfast -profile:v high -level 4.0 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart" \
+-o "%(playlist_index)03d_%(title)s_bravia.%(ext)s" \
+"https://www.youtube.com/playlist?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg"
+
+Algebraic foundations
+https://www.youtube.com/playlist?list=PLSQl0a2vh4HAxgGKXD5Oc_eELflPEddPx
+
+Pre-algebra
+https://www.youtube.com/playlist?list=PL238F98B2C6422A95
+
+Algebra
+https://www.youtube.com/playlist?list=PL1847B1B2268562C7
+
+Foundations
+https://www.youtube.com/playlist?list=PLSQl0a2vh4HB6I9NRYeudXLIdPqCVKXhv
+
+Algebra 1 
+https://www.youtube.com/playlist?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg
+1-10 done
+
+Algebraic Expressions
+https://www.youtube.com/playlist?list=PLSQl0a2vh4HB-gkycxoc-hjjn0YdxEkJ2
+
+Linear equations and inequalities
+https://www.youtube.com/playlist?list=PLSQl0a2vh4HCnd_jI7E7IUcMasEgT6hpe

@@ -19,6 +19,43 @@ https://www.youtube.com/playlist?list=TLGGE43ZTD8S23AwMzA1MjAyNg
 
 ```
 
+# YT transcript
+
+```sh
+    ~/all/code/bin/yt-dlp_macos \
+        --skip-download \
+        --write-auto-subs \
+        --convert-subs srt \
+        -o "%(playlist_index)03d_%(title)s.%(ext)s" \
+        "https://www.youtube.com/playlist?list=PLBBp_kjqRUy0fAmmMwbJkD5Y-x1rsJMU2"
+```
+
+
+```sh 
+
+for f in *.srt
+        set name (string split '｜' "$f")[1]
+        set name (string trim $name)
+        sed -E '/^[0-9]+$/d;/-->/d;/^$/d' "$f" \
+                | paste -sd " " - \
+                > "$name.txt"
+end
+```
+
+```
+/Users/sanvi/all/youtube/buddha/buddhismpodcast/srt/clean_srt.py
+```
+
+
+```
+for file in *.srt
+    python3 clean_srt.py "$file" (string replace -r '\.srt$' '.txt' "$file")
+end
+```
+
+
+cat *.txt > combined.txt 
+ebook-convert combined.txt buddhism_podcast.mobi --title "Buddhism Podcast"
 
 # YT title from user 
 
