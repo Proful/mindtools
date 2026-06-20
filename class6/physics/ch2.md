@@ -208,11 +208,15 @@ Some lengths are even smaller than the centimetre. For example, thickness of coi
 
 ### Relationship Between Units of Length
 
+$$
+
 \[ 10 \, \text{millimetres} \, (\text{mm}) = 1 \, \text{centimetre} \, (\text{cm}) \]
 
 \[ 100 \, \text{centimetres} \, (\text{cm}) = 1 \, \text{metre} \, (\text{m}) \]
 
 \[ 1000 \, \text{metres} \, (\text{m}) = 1 \, \text{kilometre} \, (\text{km}) \]
+
+$$
 
 ---
 
