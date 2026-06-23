@@ -728,7 +728,14 @@
         try {
           const urlParams = new URLSearchParams(window.location.search);
           const subject = urlParams.get("subject") || "science";
-          const stored = localStorage.getItem("quiz-all-answers-"+subject.toLowerCase());
+          // const stored = localStorage.getItem("quiz-all-answers-"+subject.toLowerCase());
+
+          const qtype = urlParams.get("type") || "all";
+          const stored = localStorage.getItem("quiz-"+qtype+"-answers-"+subject.toLowerCase());
+          if (!stored) {
+            stored = localStorage.getItem("quiz-wrong-answers");
+          }
+
           if (stored) {
             allAnswers = JSON.parse(stored).map(q => ({
               ...q,
@@ -798,10 +805,10 @@
             });
           }
 
-          localStorage.setItem(
-            "quiz-all-answers-"+subject.toLowerCase(),
-            JSON.stringify(allAnswers)
-          );
+          // localStorage.setItem(
+          //   "quiz-all-answers-"+subject.toLowerCase(),
+          //   JSON.stringify(allAnswers)
+          // );
         } catch (error) {
           console.error("Error saving wrong answer:", error);
         }
