@@ -613,7 +613,8 @@
             <h1>🫧 Quizzes</h1>
             <p class="subtitle">Learn, revise & improve by continually testing your knowledge.</p>
             <button class="btn-new-quiz" onclick="openNewQuizModal()">➕ New Quiz</button>
-            <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪜 Revision</button>
+            <button class="btn-revision-quiz" onclick="openRevisionQuiz()">🪜 All</button>
+            <button class="btn-revision-quiz" onclick="openRevisionWrongQuiz()">🪜 Wrong</button>
 
             <nav class="subject-nav">
                <a href="?subject=science" class="nav-link" data-subject="science">🔬 Science</a>
@@ -1085,7 +1086,13 @@
         function openRevisionQuiz() {
           const urlParams = new URLSearchParams(window.location.search);
           const subject = urlParams.get('subject') || 'science';
-          window.open(`${apiBaseUrl}/quiz/indexv6.html?revision=true&timer=${appSettings.timerDuration}&subject=${subject}`, '_blank', 'noopener');
+          window.open(`${apiBaseUrl}/quiz/indexv6.html?revision=true&type=all&timer=${appSettings.timerDuration}&subject=${subject}`, '_blank', 'noopener');
+        }
+
+        function openRevisionWrongQuiz() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const subject = urlParams.get('subject') || 'science';
+          window.open(`${apiBaseUrl}/quiz/indexv6.html?revision=true&type=wrong&timer=${appSettings.timerDuration}&subject=${subject}`, '_blank', 'noopener');
         }
 
         function unicodeSafeJSONStringify(obj) {

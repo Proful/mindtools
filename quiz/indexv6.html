@@ -1308,9 +1308,16 @@
         // Update the quiz data array
         const urlParams = new URLSearchParams(window.location.search);
         const subject = urlParams.get("subject") || "science";
-        const stored = localStorage.getItem("quiz-all-answers-"+subject.toLowerCase());
+        const qtype = urlParams.get("type") || "all";
+        const stored = localStorage.getItem("quiz-"+qtype+"-answers-"+subject.toLowerCase());
         if (stored) {
           wrongAnswers = JSON.parse(stored);
+        } else {
+          stored = localStorage.getItem("quiz-wrong-answers");
+
+          if (stored) {
+            wrongAnswers = JSON.parse(stored);
+          }
         }
         
         // Re-render the quiz to show updated explanation
