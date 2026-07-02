@@ -23,3 +23,15 @@ for f in *.jpg *.JPG *.jpeg *.JPEG
     magick "$f" -strip -interlace Plane -quality 50 "compressed/$f"
 end
 ```
+
+# combine md and convert to mobi
+
+```
+# Combine all .md files (alphabetical order)
+cat *.md > combined.md
+
+# Convert to MOBI
+ebook-convert biology.md biology.mobi \
+    --title "Class 6 Biology" \
+    --language en
+```
