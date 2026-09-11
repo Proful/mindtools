@@ -1,0 +1,556 @@
+/*
+## matching fractions, decimals and percentages
+match pair of cards
+4x4 board (4 rows and 4 columns) - total 16 card
+generate 8 matching pairs
+example
+- 1/2 and 50%
+- 0.75 and 3/4
+- 25% and 0.25
+no hard coded values to generate the number
+matching pair should be generated dynamically
+Click on a card in the interactivity below to turn it over. Then click on another one. If the two cards match, they will stay face-up. If the two cards do not match, they will return to being face-down. 
+
+The game ends when all the cards have been matched in pairs. 
+**/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Match It — Fractions, Decimals & Percents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#20303B;
+    --paper:#F6F5F1;
+    --card-back:#2F4858;
+    --card-back-2:#38566A;
+    --teal:#2E8B84;
+    --teal-deep:#1F6660;
+    --coral:#E96A4E;
+    --line:#DAD6CB;
+    --white:#FFFFFF;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    overscroll-behavior:none;
+  }
+
+  body{
+    display:flex;
+    justify-content:center;
+    min-height:100dvh;
+  }
+
+  .app{
+    width:100%;
+    max-width:480px;
+    padding:20px 16px 28px;
+    display:flex;
+    flex-direction:column;
+    min-height:100dvh;
+  }
+
+  header{
+    text-align:left;
+    margin-bottom:16px;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(1.5rem, 6vw, 1.9rem);
+    letter-spacing:-0.01em;
+    margin:0 0 2px;
+    color:var(--ink);
+  }
+
+  .sub{
+    margin:0;
+    font-size:0.9rem;
+    color:#5B6B75;
+  }
+
+  .difficulty{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+  }
+
+  .diff-btn{
+    flex:1;
+    appearance:none;
+    border:1px solid var(--line);
+    background:var(--white);
+    color:#5B6B75;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    padding:9px 6px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .diff-btn.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+
+  .diff-btn:active{
+    transform:scale(0.97);
+  }
+
+  .stats{
+    display:flex;
+    gap:10px;
+    margin:16px 0;
+  }
+
+  .stat{
+    flex:1;
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:9px 10px;
+    text-align:center;
+  }
+
+  .stat .num{
+    display:block;
+    font-family:'Fraunces', serif;
+    font-size:1.25rem;
+    font-weight:600;
+    line-height:1.1;
+    color:var(--teal-deep);
+  }
+
+  .stat .label{
+    font-size:0.68rem;
+    color:#7A8791;
+  }
+
+  .board{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+    width:100%;
+    flex:1;
+  }
+
+  .card{
+    aspect-ratio:3/4;
+    perspective:800px;
+    cursor:pointer;
+  }
+
+  .card-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform 0.45s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+
+  .card.flipped .card-inner,
+  .card.matched .card-inner{
+    transform:rotateY(180deg);
+  }
+
+  .face{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    backface-visibility:hidden;
+  }
+
+  .face-back{
+    background:linear-gradient(155deg, var(--card-back), var(--card-back-2));
+  }
+
+  .face-back::after{
+    content:'';
+    width:38%;
+    height:38%;
+    border:2px solid rgba(255,255,255,0.35);
+    border-radius:50%;
+  }
+
+  .face-front{
+    background:var(--white);
+    border:1.5px solid var(--line);
+    transform:rotateY(180deg);
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(0.95rem, 4.6vw, 1.2rem);
+    color:var(--ink);
+    padding:4px;
+    text-align:center;
+  }
+
+  .card.matched .face-front{
+    background:#EAF5F3;
+    border-color:var(--teal);
+    color:var(--teal-deep);
+  }
+
+  .card.mismatch .face-front{
+    background:#FDEDE8;
+    border-color:var(--coral);
+  }
+
+  .card.matched{
+    cursor:default;
+  }
+
+  footer{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  button.reset{
+    appearance:none;
+    border:none;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:0.9rem;
+    padding:11px 22px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+
+  button.reset:active{
+    transform:scale(0.97);
+  }
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(32,48,59,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.3s ease;
+    z-index:10;
+  }
+
+  .overlay.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .win-card{
+    background:var(--white);
+    border-radius:16px;
+    padding:28px 24px;
+    text-align:center;
+    max-width:320px;
+    width:100%;
+  }
+
+  .win-card h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.4rem;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+
+  .win-card p{
+    margin:0 0 18px;
+    color:#5B6B75;
+    font-size:0.92rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card-inner{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Match It</h1>
+    <p class="sub">Pair each fraction with its matching decimal or percent.</p>
+  </header>
+
+  <div class="difficulty">
+    <button class="diff-btn active" id="easyBtn" data-level="easy">Easy</button>
+    <button class="diff-btn" id="mediumBtn" data-level="medium">Medium</button>
+    <button class="diff-btn" id="hardBtn" data-level="hard">Hard</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="num" id="statMoves">0</span><span class="label">Moves</span></div>
+    <div class="stat"><span class="num" id="statMatches">0/8</span><span class="label">Matched</span></div>
+    <div class="stat"><span class="num" id="statTime">0:00</span><span class="label">Time</span></div>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <footer>
+    <button class="reset" id="resetBtn">New game</button>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="win-card">
+    <h2>All matched!</h2>
+    <p id="winSummary">Nice work.</p>
+    <button class="reset" id="playAgainBtn">Play again</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const board = document.getElementById('board');
+  const statMoves = document.getElementById('statMoves');
+  const statMatches = document.getElementById('statMatches');
+  const statTime = document.getElementById('statTime');
+  const overlay = document.getElementById('overlay');
+  const winSummary = document.getElementById('winSummary');
+  const resetBtn = document.getElementById('resetBtn');
+  const playAgainBtn = document.getElementById('playAgainBtn');
+
+  const PAIR_COUNT = 8;
+  const FORMATS = ['fraction', 'decimal', 'percent'];
+
+  const DIFFICULTIES = {
+    easy:   { denominators: [2, 4, 5, 10], allowImproper: false },
+    medium: { denominators: [4, 5, 8, 10, 20, 25], allowImproper: false },
+    hard:   { denominators: [8, 16, 20, 25, 50, 100], allowImproper: true }
+  };
+
+  let currentLevel = 'easy';
+  let flipped = [];
+  let matchedCount = 0;
+  let moves = 0;
+  let locked = false;
+  let timerId = null;
+  let seconds = 0;
+  let started = false;
+
+  function gcd(a, b){ return b ? gcd(b, a % b) : a; }
+
+  function trimNumber(str){
+    if (str.indexOf('.') === -1) return str;
+    return str.replace(/0+$/, '').replace(/\.$/, '');
+  }
+
+  function formatDecimal(value){
+    return trimNumber(value.toFixed(4));
+  }
+
+  function formatPercent(value){
+    return trimNumber((value * 100).toFixed(2)) + '%';
+  }
+
+  function randomInt(min, max){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function generateValue(config){
+    const den = config.denominators[randomInt(0, config.denominators.length - 1)];
+    const maxNum = config.allowImproper ? (den * 2) - 1 : den - 1;
+    let num = randomInt(1, maxNum);
+    if (num === den) num += 1;
+    const g = gcd(num, den);
+    const rNum = num / g;
+    const rDen = den / g;
+    const decimal = num / den;
+    return {
+      key: decimal.toFixed(6),
+      fraction: rNum + '/' + rDen,
+      decimal: formatDecimal(decimal),
+      percent: formatPercent(decimal)
+    };
+  }
+
+  function generateUniqueValues(count, config){
+    const values = [];
+    const seen = new Set();
+    let guard = 0;
+    while (values.length < count && guard < 3000){
+      guard++;
+      const v = generateValue(config);
+      if (!seen.has(v.key)){
+        seen.add(v.key);
+        values.push(v);
+      }
+    }
+    return values;
+  }
+
+  function shuffle(arr){
+    for (let i = arr.length - 1; i > 0; i--){
+      const j = randomInt(0, i);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function pickTwoFormats(){
+    return shuffle(FORMATS.slice()).slice(0, 2);
+  }
+
+  function buildDeck(){
+    const config = DIFFICULTIES[currentLevel];
+    const values = generateUniqueValues(PAIR_COUNT, config);
+    const cards = [];
+    values.forEach((v, idx) => {
+      const [formatA, formatB] = pickTwoFormats();
+      cards.push({ pairId: idx, type: formatA, text: v[formatA] });
+      cards.push({ pairId: idx, type: formatB, text: v[formatB] });
+    });
+    return shuffle(cards);
+  }
+
+  function formatTime(total){
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function startTimer(){
+    if (started) return;
+    started = true;
+    timerId = setInterval(() => {
+      seconds++;
+      statTime.textContent = formatTime(seconds);
+    }, 1000);
+  }
+
+  function stopTimer(){
+    clearInterval(timerId);
+    timerId = null;
+  }
+
+  function render(){
+    board.innerHTML = '';
+    const deck = buildDeck();
+
+    deck.forEach((cardData, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = index;
+      card.dataset.pairId = cardData.pairId;
+
+      card.innerHTML =
+        '<div class="card-inner">' +
+          '<div class="face face-back"></div>' +
+          '<div class="face face-front">' + cardData.text + '</div>' +
+        '</div>';
+
+      card.addEventListener('click', () => onCardClick(card));
+      board.appendChild(card);
+    });
+  }
+
+  function onCardClick(card){
+    if (locked) return;
+    if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+    if (flipped.length === 2) return;
+
+    startTimer();
+    card.classList.add('flipped');
+    flipped.push(card);
+
+    if (flipped.length === 2){
+      moves++;
+      statMoves.textContent = moves;
+      checkMatch();
+    }
+  }
+
+  function checkMatch(){
+    const [first, second] = flipped;
+    const isMatch = first.dataset.pairId === second.dataset.pairId;
+
+    if (isMatch){
+      locked = true;
+      setTimeout(() => {
+        first.classList.add('matched');
+        second.classList.add('matched');
+        matchedCount++;
+        statMatches.textContent = matchedCount + '/' + PAIR_COUNT;
+        flipped = [];
+        locked = false;
+        if (matchedCount === PAIR_COUNT){
+          finishGame();
+        }
+      }, 350);
+    } else {
+      locked = true;
+      first.classList.add('mismatch');
+      second.classList.add('mismatch');
+      setTimeout(() => {
+        first.classList.remove('flipped', 'mismatch');
+        second.classList.remove('flipped', 'mismatch');
+        flipped = [];
+        locked = false;
+      }, 850);
+    }
+  }
+
+  function finishGame(){
+    stopTimer();
+    winSummary.textContent = moves + ' moves \u00b7 ' + formatTime(seconds);
+    overlay.classList.add('show');
+  }
+
+  function newGame(){
+    stopTimer();
+    flipped = [];
+    matchedCount = 0;
+    moves = 0;
+    locked = false;
+    seconds = 0;
+    started = false;
+    statMoves.textContent = '0';
+    statMatches.textContent = '0/' + PAIR_COUNT;
+    statTime.textContent = '0:00';
+    overlay.classList.remove('show');
+    render();
+  }
+
+  const diffButtons = document.querySelectorAll('.diff-btn');
+
+  function setDifficulty(level){
+    currentLevel = level;
+    diffButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.level === level);
+    });
+    newGame();
+  }
+
+  diffButtons.forEach(btn => {
+    btn.addEventListener('click', () => setDifficulty(btn.dataset.level));
+  });
+
+  resetBtn.addEventListener('click', newGame);
+  playAgainBtn.addEventListener('click', newGame);
+
+  newGame();
+})();
+</script>
+</body>
+</html>
